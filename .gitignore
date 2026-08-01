@@ -1,0 +1,16 @@
+node_modules/
+.expo/
+.npm-cache/
+.pnpm-store/
+.prototype-extract/
+
+.env
+*.log
+
+dist/
+web-build/
+coverage/
+design-previews/
+pnpm-lock.yaml
+
+.DS_Store
