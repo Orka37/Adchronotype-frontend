@@ -7,6 +7,7 @@ import AppNavigator  from './src/navigation/AppNavigator';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import SplashScreen  from './src/screens/SplashScreen';
 import TermsScreen   from './src/screens/TermsScreen';
+import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen';
 import { AuthProvider, useAuth }   from './src/context/AuthContext';
 import { OnboardingProvider, useOnboarding } from './src/context/OnboardingContext';
 import { getStoredItem } from './src/utils/storage';
@@ -24,6 +25,7 @@ const linking = {
     screens: {
       ForgotPassword: 'ForgotPassword',
       ResetPassword: 'reset-password',
+      PrivacyPolicy: 'privacy-policy',
     },
   },
 };
@@ -31,7 +33,7 @@ const linking = {
 function isAuthRecoveryRoute() {
   if (typeof window === 'undefined') return false;
   const path = window.location?.pathname || '';
-  return path === '/ForgotPassword' || path === '/reset-password';
+  return path === '/ForgotPassword' || path === '/reset-password' || path === '/privacy-policy';
 }
 
 function PreAuthNavigator({ onDone }) {
@@ -41,6 +43,7 @@ function PreAuthNavigator({ onDone }) {
         {props => <SplashScreen {...props} onDone={onDone} />}
       </PreAuthStack.Screen>
       <PreAuthStack.Screen name="Terms" component={TermsScreen} />
+      <PreAuthStack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
     </PreAuthStack.Navigator>
   );
 }

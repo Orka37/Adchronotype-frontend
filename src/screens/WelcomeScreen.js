@@ -60,7 +60,11 @@ export default function WelcomeScreen({ navigation }) {
             </TouchableOpacity>
 
             {/* About the Project Button */}
-            <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.8}>
+            <TouchableOpacity
+              style={styles.secondaryButton}
+              activeOpacity={0.8}
+              onPress={() => navigation.navigate('ProjectInfo')}
+            >
               <Text style={styles.secondaryButtonText}>About the Project</Text>
               <View style={styles.iconCircle}>
                 <Feather name="info" size={14} color="#9a73ef" />

@@ -163,7 +163,7 @@ export default function ProfileScreen({ navigation }) {
               <Text style={styles.statKey}>Brain Score</Text>
             </View>
             <View style={styles.statCard}>
-              <Text style={[styles.statVal, { color: '#ffb830', fontSize: score != null ? 13 : 18 }]}>
+              <Text style={[styles.statVal, styles.statLevelVal]}>
                 {similarityLabel ?? '—'}
               </Text>
               <Text style={styles.statKey}>Score Level</Text>
@@ -311,8 +311,9 @@ const styles = StyleSheet.create({
   username:    { color: '#6c7094', fontSize: 13, marginBottom: 2 },
   email:       { color: '#4a5270', fontSize: 12 },
   statsRow:    { flexDirection: 'row', gap: 8, marginHorizontal: 18, marginBottom: 20 },
-  statCard:    { flex: 1, backgroundColor: '#161b3d', borderRadius: 13, paddingVertical: 12, alignItems: 'center', borderWidth: 1, borderColor: '#1f254f' },
+  statCard:    { flex: 1, minHeight: 76, backgroundColor: '#161b3d', borderRadius: 13, paddingVertical: 11, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#1f254f' },
   statVal:     { color: '#7c3aed', fontSize: 17, fontWeight: '800', marginBottom: 2 },
+  statLevelVal:{ color: '#ffb830', fontSize: 13, lineHeight: 17, minHeight: 34, textAlign: 'center', textAlignVertical: 'center' },
   statKey:     { color: '#6c7094', fontSize: 9, fontWeight: '600', letterSpacing: 0.3 },
   sectionLabel:{ color: '#4a5270', fontSize: 10, fontWeight: '700', letterSpacing: 1, marginHorizontal: 20, marginBottom: 7, marginTop: 4 },
   card:        { marginHorizontal: 18, backgroundColor: '#161b3d', borderRadius: 16, borderWidth: 1, borderColor: '#1f254f', marginBottom: 16, overflow: 'hidden' },

@@ -17,6 +17,7 @@ import CognitiveTestScreen  from '../screens/CognitiveTestScreen';
 import ProjectInfoScreen    from '../screens/ProjectInfoScreen';
 import DoctorReportScreen   from '../screens/DoctorReportScreen';
 import CaregiverScreen      from '../screens/CaregiverScreen';
+import PrivacyPolicyScreen  from '../screens/PrivacyPolicyScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,7 @@ export default function AppNavigator({ initialRouteName = 'Welcome' }) {
       <Stack.Screen name="ProjectInfo"    component={ProjectInfoScreen} />
       <Stack.Screen name="DoctorReport"   component={DoctorReportScreen} />
       <Stack.Screen name="Caregiver"      component={CaregiverScreen} />
+      <Stack.Screen name="PrivacyPolicy"  component={PrivacyPolicyScreen} />
     </Stack.Navigator>
   );
 }
