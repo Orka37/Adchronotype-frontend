@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AppNavigator  from './src/navigation/AppNavigator';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import SplashScreen  from './src/screens/SplashScreen';
@@ -42,6 +43,38 @@ function PreAuthNavigator({ onDone }) {
       <PreAuthStack.Screen name="Terms" component={TermsScreen} />
     </PreAuthStack.Navigator>
   );
+}
+
+class AppErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  componentDidCatch(error) {
+    console.error('App startup failed', error);
+  }
+
+  render() {
+    if (!this.state.error) return this.props.children;
+
+    return (
+      <View style={styles.errorScreen}>
+        <Text style={styles.errorTitle}>Unable to start ADChronotype</Text>
+        <Text style={styles.errorText}>
+          Please close and reopen the app. If this keeps happening, send this screen to the ADChronotype team.
+        </Text>
+        <Text style={styles.errorDetail}>{this.state.error?.message || 'Startup error'}</Text>
+        <TouchableOpacity style={styles.errorButton} onPress={() => this.setState({ error: null })}>
+          <Text style={styles.errorButtonText}>Try Again</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 }
 
 function RootNavigator() {
@@ -86,12 +119,54 @@ function RootNavigator() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <OnboardingProvider>
-        <NavigationContainer linking={linking}>
-          <RootNavigator />
-        </NavigationContainer>
-      </OnboardingProvider>
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AppErrorBoundary>
+        <AuthProvider>
+          <OnboardingProvider>
+            <NavigationContainer linking={linking}>
+              <RootNavigator />
+            </NavigationContainer>
+          </OnboardingProvider>
+        </AuthProvider>
+      </AppErrorBoundary>
+    </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  errorScreen: {
+    flex: 1,
+    backgroundColor: '#05082a',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  errorTitle: {
+    color: '#ffffff',
+    fontSize: 24,
+    fontWeight: '800',
+    marginBottom: 12,
+  },
+  errorText: {
+    color: '#b9bad4',
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 16,
+  },
+  errorDetail: {
+    color: '#ffb4b4',
+    fontSize: 13,
+    lineHeight: 20,
+    marginBottom: 24,
+  },
+  errorButton: {
+    backgroundColor: '#7c3aed',
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  errorButtonText: {
+    color: '#fff',
+    fontWeight: '800',
+    fontSize: 16,
+  },
+});
