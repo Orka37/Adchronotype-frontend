@@ -8,7 +8,7 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '../context/AuthContext';
 import { useOnboarding } from '../context/OnboardingContext';
-import { getMe, updateMe } from '../api/users';
+import { deleteAccount, getMe, updateMe } from '../api/users';
 import { useCaregiverRequestCount } from '../hooks/useCaregiverRequestCount';
 import { parseApiError } from '../utils/errors';
 import { log } from '../utils/logger';
@@ -24,6 +24,7 @@ export default function ProfileScreen({ navigation }) {
   const [firstName, setFirstName] = useState('');
   const [lastName,  setLastName]  = useState('');
   const [showMEQ,   setShowMEQ]   = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
   const caregiverRequestCount = useCaregiverRequestCount();
 
   useEffect(() => { fetchProfile(); }, []);
@@ -84,6 +85,36 @@ export default function ProfileScreen({ navigation }) {
     Alert.alert('Log out', 'Are you sure you want to log out?', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Log Out', style: 'destructive', onPress: performLogout },
+    ]);
+  }
+
+  async function performDeleteAccount() {
+    try {
+      setDeletingAccount(true);
+      await deleteAccount();
+      log.info('ProfileScreen: account deleted');
+      await signOut({ skipServerLogout: true });
+    } catch (err) {
+      log.error('ProfileScreen.performDeleteAccount', err);
+      Alert.alert('Could not delete account', parseApiError(err));
+    } finally {
+      setDeletingAccount(false);
+    }
+  }
+
+  function handleDeleteAccount() {
+    const message = 'This permanently deletes your account, predictions, sleep logs, cognitive test results, and caregiver connections. This cannot be undone.';
+
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      if (window.confirm(`Delete account?\n\n${message}`)) {
+        performDeleteAccount();
+      }
+      return;
+    }
+
+    Alert.alert('Delete account?', message, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete Account', style: 'destructive', onPress: performDeleteAccount },
     ]);
   }
 
@@ -208,6 +239,13 @@ export default function ProfileScreen({ navigation }) {
             <MenuItem icon={<Feather name="bell" size={18} color="#7c3aed" />} label="Notifications" badge="Soon" />
             <View style={styles.divider} />
             <MenuItem icon={<Feather name="shield" size={18} color="#7c3aed" />} label="Privacy & Data" badge="Soon" />
+            <View style={styles.divider} />
+            <MenuItem
+              icon={<Feather name="trash-2" size={18} color="#ef4444" />}
+              label={deletingAccount ? 'Deleting Account...' : 'Delete Account'}
+              onPress={deletingAccount ? null : handleDeleteAccount}
+              danger
+            />
           </View>
 
           {/* App */}
@@ -281,11 +319,11 @@ export default function ProfileScreen({ navigation }) {
   );
 }
 
-function MenuItem({ icon, label, onPress, badge, disabled = false }) {
+function MenuItem({ icon, label, onPress, badge, disabled = false, danger = false }) {
   return (
     <TouchableOpacity style={[styles.menuItem, disabled && styles.menuItemDisabled]} onPress={onPress} activeOpacity={onPress ? 0.7 : 1} disabled={!onPress || disabled}>
       <View style={styles.menuIcon}>{icon}</View>
-      <Text style={[styles.menuLabel, disabled && styles.menuLabelDisabled]}>{label}</Text>
+      <Text style={[styles.menuLabel, danger && styles.menuLabelDanger, disabled && styles.menuLabelDisabled]}>{label}</Text>
       {badge
         ? <View style={styles.badgeWrap}><Text style={styles.badgeText}>{badge}</Text></View>
         : onPress ? <Feather name="chevron-right" size={16} color="#4a5270" /> : null
@@ -322,6 +360,7 @@ const styles = StyleSheet.create({
   menuItemDisabled: { opacity: 0.8 },
   menuIcon:    { width: 34, alignItems: 'center' },
   menuLabel:   { flex: 1, color: '#e0e0e0', fontSize: 14, fontWeight: '500' },
+  menuLabelDanger: { color: '#ef4444', fontWeight: '700' },
   menuLabelDisabled: { color: '#6c7094' },
   badgeWrap:   { backgroundColor: '#1f254f', borderRadius: 9, paddingHorizontal: 7, paddingVertical: 2 },
   badgeText:   { color: '#4a5270', fontSize: 10, fontWeight: '600' },

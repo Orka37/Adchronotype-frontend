@@ -67,9 +67,9 @@ export function AuthProvider({ children }) {
     setWelcomeShown(true);
   }
 
-  async function signOut() {
+  async function signOut(options = {}) {
     try {
-      const raw = await getStoredItem('tokens');
+      const raw = options.skipServerLogout ? null : await getStoredItem('tokens');
       if (raw) {
         const { refresh_token } = JSON.parse(raw);
         await logoutUser(refresh_token);

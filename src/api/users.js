@@ -15,3 +15,7 @@ export async function changePassword(payload) {
   // payload: { current_password, new_password }
   await api.post('/users/me/change-password', payload);
 }
+
+export async function deleteAccount() {
+  await api.delete('/users/me');
+}
