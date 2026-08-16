@@ -13,44 +13,48 @@ import { Feather } from '@expo/vector-icons';
 
 const SECTIONS = [
   {
-    title: 'Information We Collect',
-    body: 'ADChronotype collects account information such as name, username, and email address. The app also collects information users enter for the questionnaire, including chronotype, sleep and wake times, age, sex, height, weight, ethnicity, and family history. Sleep logs, cognitive test results, prediction results, factor contributions, caregiver connections, and app interaction records may also be stored.',
+    title: '1. Who We Are',
+    body: 'ADC is a solo-developed app. If you have questions about this policy or your data, you can reach the developer directly at adchronotype.study@gmail.com.',
   },
   {
-    title: 'How We Use Information',
-    body: 'We use this information to create and manage user accounts, generate cognitive similarity scores, show factor contributions, store sleep and cognitive test history, support caregiver connection features, provide password reset, improve app reliability, and support research and awareness goals.',
+    title: '2. Information We Collect',
+    body: 'When you create an account and use ADC, we collect account information, chronotype and lifestyle data, family health history, and optional cognitive test data. We do not collect this data through hidden tracking. Everything above is information you directly enter into the app.',
   },
   {
-    title: 'Health And Sensitive Information',
-    body: 'Some information entered in ADChronotype may be health-related or sensitive, including sleep patterns, cognitive test results, ethnicity, sex, family history, and generated similarity scores. This information is used for app functionality and research-related analysis. ADChronotype is not a medical device and does not provide a clinical diagnosis.',
+    title: '3. How We Use Your Information',
+    body: 'We use your information to calculate and show your chronotype result, operate your account, maintain the app, and improve reliability. If you opt in to cognitive testing, your cognitive scores together with lifestyle and chronotype factors may be used to improve our research dataset and train the model. This research use is never linked back to your identity or account.',
   },
   {
-    title: 'Caregiver Connections',
-    body: 'If users enable caregiver search and accept a connection request, connected users may be able to view selected app information such as score, factor contributions, and cognitive test results. Users can control whether they appear in caregiver search.',
+    title: '4. Not Medical Advice',
+    body: 'ADC is a research and educational tool. It does not diagnose Alzheimer\'s disease or any other medical condition, and it is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider with any questions about your health.',
   },
   {
-    title: 'Data Sharing',
-    body: 'We do not sell personal data. We do not use personal data for third-party advertising or tracking. Data may be processed by service providers needed to operate the app, such as hosting, database, authentication, and email delivery providers.',
+    title: '5. How We Store and Protect Your Data',
+    body: 'Your account and assessment data are stored in a secure backend database that we control. We take reasonable technical and organizational measures to protect your information, but no electronic storage or transmission method is 100% secure.',
   },
   {
-    title: 'Data Security',
-    body: 'We use authenticated backend APIs, secure password hashing, password reset tokens, and hosted database services to protect user information. No online service can guarantee absolute security, but we take reasonable steps to protect the data used by the app.',
+    title: '6. Data Sharing',
+    body: 'We do not sell your personal information. We may share data with service providers who host our infrastructure only to operate the app, or with authorities if required by law. If cognitive-test and lifestyle data is ever used in aggregate research findings, it will be de-identified and not linked back to you individually.',
   },
   {
-    title: 'Data Retention',
-    body: 'We keep account, questionnaire, prediction, sleep log, cognitive test, and caregiver connection records for as long as needed to provide the app experience, maintain user history, support research goals, or comply with legal and operational requirements.',
+    title: '7. Your Choices and Rights',
+    body: 'Cognitive testing is optional. You can use the core chronotype assessment without taking cognitive tests. You can contact us to review or correct account information, and you can delete your account and associated data directly in the app or by emailing adchronotype.study@gmail.com.',
   },
   {
-    title: 'Children',
-    body: 'ADChronotype is intended for users aged 18 and older. The app is not intended for children.',
+    title: '8. Children\'s Privacy',
+    body: 'ADC does not set a maximum age limit, and our research dataset and model are built around adults aged 40-60, so results are most meaningful within that range. ADC is not directed at and does not knowingly collect information from children under 13.',
   },
   {
-    title: 'Your Choices',
-    body: 'Users may update profile information, reset passwords, control caregiver search visibility, disconnect caregiver relationships where available, and contact the ADChronotype team for account or data questions.',
+    title: '9. Data Retention',
+    body: 'We retain your account and assessment data for as long as your account is active, or as needed to provide the app and support the research described above. You can delete your account and data at any time using the delete account button in the app, or by contacting us.',
   },
   {
-    title: 'Contact',
-    body: 'For privacy questions, contact the ADChronotype team at support@adchronotype.com.',
+    title: '10. Changes to This Policy',
+    body: 'We may update this Privacy Policy from time to time as the app evolves. We will update the Last updated date when we do. Continued use of the app after changes means you accept the updated policy.',
+  },
+  {
+    title: '11. Contact Us',
+    body: 'Questions about this Privacy Policy or your data? Email adchronotype.study@gmail.com.',
   },
 ];
 
@@ -76,12 +80,12 @@ export default function PrivacyPolicyScreen({ navigation }) {
         </View>
 
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-          <Text style={styles.updated}>Last updated: August 2026</Text>
+          <Text style={styles.updated}>ADC (AD Chronotype) • Last updated: August 16, 2026</Text>
 
           <View style={styles.notice}>
             <Feather name="shield" size={20} color="#8b5cf6" />
             <Text style={styles.noticeText}>
-              This policy explains how ADChronotype handles information used to operate the app.
+              ADC is a research-oriented app that estimates your chronotype and explores its relationship to lifestyle and cognitive factors associated with Alzheimer's disease risk.
             </Text>
           </View>
 

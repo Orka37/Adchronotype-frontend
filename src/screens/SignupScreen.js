@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  Alert, ActivityIndicator, SafeAreaView, Platform,
+  ActivityIndicator, SafeAreaView, Platform,
   KeyboardAvoidingView, ScrollView,
   Keyboard, Dimensions, Pressable,
 } from 'react-native';
@@ -55,9 +55,11 @@ export default function SignupScreen({ navigation }) {
   const [secureText, setSecureText] = useState(true);
   const [focused,    setFocused]    = useState(null);
   const [errs,       setErrs]       = useState({});
+  const [submitError, setSubmitError] = useState('');
 
   function clearErr(k) {
     if (errs[k]) setErrs(p => ({ ...p, [k]: null }));
+    if (submitError) setSubmitError('');
   }
 
   function validate() {
@@ -75,6 +77,7 @@ export default function SignupScreen({ navigation }) {
     if (!validate()) return;
     try {
       setSubmitting(true);
+      setSubmitError('');
       Keyboard.dismiss();
       const result = await signupUser({
         firstName: firstName.trim(),
@@ -87,7 +90,7 @@ export default function SignupScreen({ navigation }) {
       await signIn(result.user, result.tokens);
     } catch (err) {
       log.error('SignupScreen.handleSignup', err);
-      Alert.alert('Signup failed', parseApiError(err));
+      setSubmitError(parseApiError(err));
     } finally {
       setSubmitting(false);
     }
@@ -146,6 +149,16 @@ export default function SignupScreen({ navigation }) {
             </View>
             {hasErr('pw') && <Text style={styles.errText}>{errs.pw}</Text>}
 
+            {!!submitError && (
+              <View style={styles.submitErrorBox}>
+                <Feather name="alert-circle" size={18} color="#fbbf24" style={styles.submitErrorIcon} />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.submitErrorTitle}>Could not create account</Text>
+                  <Text style={styles.submitErrorText}>{submitError}</Text>
+                </View>
+              </View>
+            )}
+
             <TouchableOpacity
               style={[styles.btn, submitting && styles.btnDisabled]}
               onPress={handleSignup}
@@ -188,6 +201,20 @@ const styles = StyleSheet.create({
   inputFocused: { borderColor: '#7c3aed' },
   inputErr: { borderColor: '#ef4444' },
   errText: { color: '#ef4444', fontSize: 11, marginBottom: 2, marginLeft: 2 },
+  submitErrorBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: '#231a31',
+    borderColor: '#7f1d1d',
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginTop: 16,
+  },
+  submitErrorIcon: { marginRight: 10, marginTop: 1 },
+  submitErrorTitle: { color: '#fff', fontSize: 13, fontWeight: '700', marginBottom: 3 },
+  submitErrorText: { color: '#fca5a5', fontSize: 12, lineHeight: 17 },
   icon: { marginRight: 10 },
   input: { flex: 1, color: '#fff', fontSize: 15 },
   btn: {

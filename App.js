@@ -26,6 +26,7 @@ const linking = {
       ForgotPassword: 'ForgotPassword',
       ResetPassword: 'reset-password',
       PrivacyPolicy: 'privacy-policy',
+      Terms: 'terms',
     },
   },
 };
@@ -33,7 +34,10 @@ const linking = {
 function isAuthRecoveryRoute() {
   if (typeof window === 'undefined') return false;
   const path = window.location?.pathname || '';
-  return path === '/ForgotPassword' || path === '/reset-password' || path === '/privacy-policy';
+  return path === '/ForgotPassword'
+    || path === '/reset-password'
+    || path === '/privacy-policy'
+    || path === '/terms';
 }
 
 function PreAuthNavigator({ onDone }) {
