@@ -48,6 +48,15 @@ const INFO_SECTIONS = [
 export default function ProjectInfoScreen({ navigation }) {
   const { hasCompletedPrediction } = useOnboarding();
 
+  const handleBack = () => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+      return;
+    }
+
+    navigation.navigate(hasCompletedPrediction ? 'Report' : 'Welcome');
+  };
+
   return (
     <>
       <SafeAreaView style={styles.safeTop} />
@@ -55,7 +64,7 @@ export default function ProjectInfoScreen({ navigation }) {
         <LinearGradient colors={['#030827', '#030A31']} style={StyleSheet.absoluteFillObject} />
 
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.75}>
+          <TouchableOpacity style={styles.backBtn} onPress={handleBack} activeOpacity={0.75}>
             <Feather name="chevron-left" size={28} color="#ffffff" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Project Info</Text>
