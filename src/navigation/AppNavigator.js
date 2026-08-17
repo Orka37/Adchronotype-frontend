@@ -18,6 +18,7 @@ import ProjectInfoScreen    from '../screens/ProjectInfoScreen';
 import DoctorReportScreen   from '../screens/DoctorReportScreen';
 import CaregiverScreen      from '../screens/CaregiverScreen';
 import PrivacyPolicyScreen  from '../screens/PrivacyPolicyScreen';
+import TermsScreen          from '../screens/TermsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -41,6 +42,7 @@ export default function AppNavigator({ initialRouteName = 'Welcome' }) {
       <Stack.Screen name="DoctorReport"   component={DoctorReportScreen} />
       <Stack.Screen name="Caregiver"      component={CaregiverScreen} />
       <Stack.Screen name="PrivacyPolicy"  component={PrivacyPolicyScreen} />
+      <Stack.Screen name="Terms"          component={TermsScreen} />
     </Stack.Navigator>
   );
 }

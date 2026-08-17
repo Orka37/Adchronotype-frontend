@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useOnboarding } from '../context/OnboardingContext';
 
 const INFO_SECTIONS = [
   {
@@ -45,6 +46,8 @@ const INFO_SECTIONS = [
 ];
 
 export default function ProjectInfoScreen({ navigation }) {
+  const { hasCompletedPrediction } = useOnboarding();
+
   return (
     <>
       <SafeAreaView style={styles.safeTop} />
@@ -86,6 +89,17 @@ export default function ProjectInfoScreen({ navigation }) {
               <Text style={styles.cardBody}>{item.body}</Text>
             </View>
           ))}
+
+          {!hasCompletedPrediction && (
+            <TouchableOpacity
+              style={styles.startBtn}
+              onPress={() => navigation.navigate('Welcome')}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.startBtnText}>Get Started</Text>
+              <Feather name="arrow-right" size={18} color="#ffffff" />
+            </TouchableOpacity>
+          )}
 
           <View style={styles.versionCard}>
             <Text style={styles.versionLabel}>Version</Text>
@@ -156,6 +170,19 @@ const styles = StyleSheet.create({
   },
   cardTitle: { flex: 1, color: '#fff', fontSize: 15, fontWeight: '800' },
   cardBody: { color: '#9aa0c5', fontSize: 13, lineHeight: 21 },
+  startBtn: {
+    marginTop: 4,
+    marginBottom: 12,
+    backgroundColor: '#7c3aed',
+    borderRadius: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  startBtnText: { color: '#fff', fontSize: 16, fontWeight: '900' },
   versionCard: {
     backgroundColor: '#0d1030',
     borderRadius: 14,

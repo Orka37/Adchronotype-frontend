@@ -238,7 +238,9 @@ export default function ProfileScreen({ navigation }) {
             <View style={styles.divider} />
             <MenuItem icon={<Feather name="bell" size={18} color="#7c3aed" />} label="Notifications" badge="Soon" />
             <View style={styles.divider} />
-            <MenuItem icon={<Feather name="shield" size={18} color="#7c3aed" />} label="Privacy & Data" badge="Soon" />
+            <MenuItem icon={<Feather name="shield" size={18} color="#7c3aed" />} label="Privacy Policy" onPress={() => navigation.navigate('PrivacyPolicy')} />
+            <View style={styles.divider} />
+            <MenuItem icon={<Feather name="file-text" size={18} color="#7c3aed" />} label="Terms of Service" onPress={() => navigation.navigate('Terms')} />
             <View style={styles.divider} />
             <MenuItem
               icon={<Feather name="trash-2" size={18} color="#ef4444" />}
