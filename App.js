@@ -120,7 +120,7 @@ function RootNavigator() {
   }
 
   return user
-    ? <AppNavigator initialRouteName={hasCompletedPrediction ? 'Report' : 'ProjectInfo'} />
+    ? <AppNavigator initialRouteName={hasCompletedPrediction ? 'Report' : 'Welcome'} />
     : <AuthNavigator />;
 }
 
