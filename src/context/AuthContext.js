@@ -12,6 +12,7 @@ import {
   recordAccountLegalConsent,
   TERMS_VERSION,
   PRIVACY_VERSION,
+  clearLegalConsentAfterAccountDeletion,
 } from '../utils/legalConsent';
 
 const AuthContext = createContext(null);
@@ -21,6 +22,7 @@ export function AuthProvider({ children }) {
   const [loading,       setLoading]       = useState(true);
   const [consentShown,  setConsentShown]  = useState(false);
   const [welcomeShown,  setWelcomeShown]  = useState(false);
+  const [requiresPreAuthConsent, setRequiresPreAuthConsent] = useState(false);
 
   useEffect(() => { restoreSession(); }, []);
 
@@ -121,13 +123,35 @@ export function AuthProvider({ children }) {
     } catch (err) {
       log.warn('signOut: server revocation failed', err?.message);
     } finally {
+      const deletedUser = user;
+      if (options.accountDeleted) setRequiresPreAuthConsent(true);
       setUser(null);
       setConsentShown(false);
       setWelcomeShown(false);
-      await deleteStoredItem('user').catch(() => {});
-      await deleteStoredItem('tokens').catch(() => {});
+      const deletionKeys = deletedUser
+        ? [
+            `latest_prediction_${deletedUser.id || deletedUser.username}`,
+            `prediction_count_${deletedUser.id || deletedUser.username}`,
+            `cognitive_draft_${deletedUser.id || deletedUser.username}`,
+            'sleepLogs',
+          ]
+        : [];
+      await Promise.all([
+        deleteStoredItem('user').catch(() => {}),
+        deleteStoredItem('tokens').catch(() => {}),
+        ...deletionKeys.map(key => options.accountDeleted
+          ? deleteStoredItem(key).catch(() => {})
+          : Promise.resolve()),
+      ]);
+      if (options.accountDeleted) {
+        await clearLegalConsentAfterAccountDeletion(deletedUser);
+      }
       log.info('local session cleared');
     }
+  }
+
+  function markPreAuthConsentComplete() {
+    setRequiresPreAuthConsent(false);
   }
 
   return (
@@ -135,6 +159,7 @@ export function AuthProvider({ children }) {
       user, loading, signIn, signOut,
       consentShown, markConsentGiven,
       welcomeShown, markWelcomeShown,
+      requiresPreAuthConsent, markPreAuthConsentComplete,
     }}>
       {children}
     </AuthContext.Provider>

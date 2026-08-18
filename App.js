@@ -85,7 +85,10 @@ class AppErrorBoundary extends React.Component {
 }
 
 function RootNavigator() {
-  const { user, loading, consentShown, markConsentGiven } = useAuth();
+  const {
+    user, loading, consentShown, markConsentGiven,
+    requiresPreAuthConsent, markPreAuthConsentComplete,
+  } = useAuth();
   const { hasCompletedPrediction, loadingSavedPrediction } = useOnboarding();
   const [splashChecked, setSplashChecked] = useState(false);
   const [showSplash,    setShowSplash]    = useState(false);
@@ -93,6 +96,7 @@ function RootNavigator() {
 
   async function completeLegalConsent() {
     if (user) await markConsentGiven();
+    markPreAuthConsentComplete();
     setShowSplash(false);
   }
 
@@ -120,7 +124,7 @@ function RootNavigator() {
     );
   }
 
-  if (showSplash) {
+  if (showSplash || requiresPreAuthConsent) {
     return <PreAuthNavigator onDone={completeLegalConsent} />;
   }
 

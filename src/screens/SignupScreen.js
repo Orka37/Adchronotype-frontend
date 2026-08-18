@@ -90,7 +90,14 @@ export default function SignupScreen({ navigation }) {
       await signIn(result.user, result.tokens);
     } catch (err) {
       log.error('SignupScreen.handleSignup', err);
-      setSubmitError(parseApiError(err));
+      const detail = err?.response?.data?.detail;
+      if (err?.response?.status === 409 && detail === 'username already taken') {
+        setErrs(current => ({ ...current, un: 'Username is already taken.' }));
+      } else if (err?.response?.status === 409 && detail === 'email already registered') {
+        setErrs(current => ({ ...current, em: 'Email address is already registered.' }));
+      } else {
+        setSubmitError(parseApiError(err));
+      }
     } finally {
       setSubmitting(false);
     }

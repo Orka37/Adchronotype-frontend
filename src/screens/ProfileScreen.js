@@ -16,7 +16,9 @@ import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function ProfileScreen({ navigation }) {
   const { user, signOut, signIn } = useAuth();
-  const { predictionResult, predictionCount, resetOnboarding } = useOnboarding();
+  const {
+    predictionResult, predictionCount, resetOnboarding, clearSavedPrediction,
+  } = useOnboarding();
 
   const [profile,   setProfile]   = useState(null);
   const [loading,   setLoading]   = useState(true);
@@ -86,7 +88,9 @@ export default function ProfileScreen({ navigation }) {
       setDeletingAccount(true);
       await deleteAccount();
       log.info('ProfileScreen: account deleted');
-      await signOut({ skipServerLogout: true });
+      resetOnboarding();
+      await clearSavedPrediction();
+      await signOut({ skipServerLogout: true, accountDeleted: true });
     } catch (err) {
       log.error('ProfileScreen.performDeleteAccount', err);
       Alert.alert('Could not delete account', parseApiError(err));

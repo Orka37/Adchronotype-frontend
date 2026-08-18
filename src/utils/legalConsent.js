@@ -69,3 +69,11 @@ export async function cacheAccountLegalConsent(user, consent) {
   await setStoredItem(DEVICE_CONSENT_KEY, serialized);
   return true;
 }
+
+export async function clearLegalConsentAfterAccountDeletion(user) {
+  await Promise.all([
+    user ? deleteStoredItem(accountConsentKey(user)).catch(() => {}) : Promise.resolve(),
+    deleteStoredItem(DEVICE_CONSENT_KEY).catch(() => {}),
+    deleteStoredItem(PENDING_CONSENT_KEY).catch(() => {}),
+  ]);
+}
