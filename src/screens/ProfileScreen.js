@@ -12,6 +12,7 @@ import { deleteAccount, getMe, updateMe } from '../api/users';
 import { useCaregiverRequestCount } from '../hooks/useCaregiverRequestCount';
 import { parseApiError } from '../utils/errors';
 import { log } from '../utils/logger';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function ProfileScreen({ navigation }) {
   const { user, signOut, signIn } = useAuth();
@@ -25,6 +26,7 @@ export default function ProfileScreen({ navigation }) {
   const [lastName,  setLastName]  = useState('');
   const [showMEQ,   setShowMEQ]   = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [confirmation, setConfirmation] = useState(null);
   const caregiverRequestCount = useCaregiverRequestCount();
 
   useEffect(() => { fetchProfile(); }, []);
@@ -70,22 +72,13 @@ export default function ProfileScreen({ navigation }) {
   }
 
   async function performLogout() {
+    setConfirmation(null);
     log.info('ProfileScreen: user logging out');
     await signOut();
   }
 
   function handleLogout() {
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      if (window.confirm('Are you sure you want to log out?')) {
-        performLogout();
-      }
-      return;
-    }
-
-    Alert.alert('Log out', 'Are you sure you want to log out?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Log Out', style: 'destructive', onPress: performLogout },
-    ]);
+    setConfirmation('logout');
   }
 
   async function performDeleteAccount() {
@@ -103,19 +96,7 @@ export default function ProfileScreen({ navigation }) {
   }
 
   function handleDeleteAccount() {
-    const message = 'This permanently deletes your account, predictions, sleep logs, cognitive test results, and caregiver connections. This cannot be undone.';
-
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      if (window.confirm(`Delete account?\n\n${message}`)) {
-        performDeleteAccount();
-      }
-      return;
-    }
-
-    Alert.alert('Delete account?', message, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete Account', style: 'destructive', onPress: performDeleteAccount },
-    ]);
+    setConfirmation('delete');
   }
 
   function openMEQ() {
@@ -317,6 +298,26 @@ export default function ProfileScreen({ navigation }) {
           </View>
         </View>
       </Modal>
+
+      <ConfirmationModal
+        visible={confirmation === 'logout'}
+        title="Log out?"
+        message="You will need to enter your credentials again to access your account."
+        confirmLabel="Log Out"
+        onCancel={() => setConfirmation(null)}
+        onConfirm={performLogout}
+      />
+
+      <ConfirmationModal
+        visible={confirmation === 'delete'}
+        title="Delete account?"
+        message="This permanently deletes your account, predictions, sleep logs, cognitive test results, and caregiver connections. This cannot be undone."
+        confirmLabel="Delete Account"
+        danger
+        busy={deletingAccount}
+        onCancel={() => setConfirmation(null)}
+        onConfirm={performDeleteAccount}
+      />
     </>
   );
 }

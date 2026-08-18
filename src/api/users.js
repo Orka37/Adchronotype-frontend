@@ -19,3 +19,13 @@ export async function changePassword(payload) {
 export async function deleteAccount() {
   await api.delete('/users/me');
 }
+
+export async function getLegalConsent() {
+  const res = await api.get('/users/me/legal-consent');
+  return res.data;
+}
+
+export async function saveLegalConsent(payload) {
+  const res = await api.post('/users/me/legal-consent', payload);
+  return res.data;
+}

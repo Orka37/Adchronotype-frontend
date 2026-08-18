@@ -19,6 +19,7 @@ import { CAREGIVER_MESSAGES, acceptCaregiverRequest, getCaregiverConnections, ge
 import { getMe } from '../api/users';
 import { parseApiError } from '../utils/errors';
 import { log } from '../utils/logger';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 function displayName(user) {
   if (!user) return 'Unknown user';
@@ -77,6 +78,7 @@ export default function CaregiverScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [connectionToRemove, setConnectionToRemove] = useState(null);
 
   const factorRows = useMemo(() => {
     const factors = predictionFactors(selectedStats?.latestPrediction || selectedStats?.latest_prediction);
@@ -260,35 +262,29 @@ export default function CaregiverScreen({ navigation }) {
   }
 
   function confirmRemoveConnection(link) {
-    const name = displayName(otherUserFor(link));
-    const remove = async () => {
-      try {
-        setBusy(true);
-        await removeCaregiverConnection(link.id);
-        if (selectedConnection?.id === link.id) {
-          setSelectedConnection(null);
-          setSelectedStats(null);
-          setMessages([]);
-        }
-        await loadCaregiverData();
-        log.info('CaregiverScreen: connection removed');
-      } catch (err) {
-        log.error('CaregiverScreen.confirmRemoveConnection', err);
-        Alert.alert('Could not remove connection', parseApiError(err));
-      } finally {
-        setBusy(false);
+    setConnectionToRemove(link);
+  }
+
+  async function performRemoveConnection() {
+    const link = connectionToRemove;
+    if (!link) return;
+    try {
+      setBusy(true);
+      await removeCaregiverConnection(link.id);
+      setConnectionToRemove(null);
+      if (selectedConnection?.id === link.id) {
+        setSelectedConnection(null);
+        setSelectedStats(null);
+        setMessages([]);
       }
-    };
-
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      if (window.confirm(`Remove ${name} from your caregiver connections?`)) remove();
-      return;
+      await loadCaregiverData();
+      log.info('CaregiverScreen: connection removed');
+    } catch (err) {
+      log.error('CaregiverScreen.performRemoveConnection', err);
+      Alert.alert('Could not remove connection', parseApiError(err));
+    } finally {
+      setBusy(false);
     }
-
-    Alert.alert('Remove connection', `Remove ${name} from your caregiver connections?`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Remove', style: 'destructive', onPress: remove },
-    ]);
   }
 
   const latestPrediction = selectedStats?.latestPrediction || selectedStats?.latest_prediction;
@@ -315,7 +311,14 @@ export default function CaregiverScreen({ navigation }) {
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#8a52f3" colors={['#8a52f3']} />}
           >
             <View style={styles.header}>
-              <View>
+              <TouchableOpacity
+                style={styles.backBtn}
+                onPress={() => navigation.navigate('Report')}
+                activeOpacity={0.8}
+              >
+                <Feather name="chevron-left" size={26} color="#fff" />
+              </TouchableOpacity>
+              <View style={styles.headerText}>
                 <Text style={styles.title}>Caregiver</Text>
                 <Text style={styles.subtitle}>Connect with trusted people and share progress.</Text>
               </View>
@@ -562,6 +565,17 @@ export default function CaregiverScreen({ navigation }) {
           </View>
         </View>
       </SafeAreaView>
+
+      <ConfirmationModal
+        visible={Boolean(connectionToRemove)}
+        title="Remove connection?"
+        message={`Remove ${displayName(otherUserFor(connectionToRemove))} from your caregiver connections?`}
+        confirmLabel="Remove"
+        danger
+        busy={busy}
+        onCancel={() => setConnectionToRemove(null)}
+        onConfirm={performRemoveConnection}
+      />
     </>
   );
 }
@@ -574,6 +588,8 @@ const styles = StyleSheet.create({
   scroll: { flex: 1, paddingHorizontal: 16 },
   scrollContent: { paddingTop: 24 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
+  backBtn: { alignItems: 'center', height: 40, justifyContent: 'center', marginRight: 8, width: 40 },
+  headerText: { flex: 1 },
   title: { color: '#fff', fontSize: 26, fontWeight: '900' },
   subtitle: { color: '#8c91b5', fontSize: 13, marginTop: 4 },
   card: { backgroundColor: '#161b3d', borderRadius: 16, borderWidth: 1, borderColor: '#1f254f', padding: 14, marginBottom: 14 },

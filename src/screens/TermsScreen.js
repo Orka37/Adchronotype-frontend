@@ -65,6 +65,7 @@ const TERMS = [
 export default function TermsScreen({ navigation, route }) {
   const [reachedBottom, setReachedBottom] = useState(false);
   const scrollRef = useRef(null);
+  const consentFlow = route?.params?.consentFlow === true;
 
   function handleScroll({ nativeEvent }) {
     const { contentOffset, contentSize, layoutMeasurement } = nativeEvent;
@@ -74,12 +75,11 @@ export default function TermsScreen({ navigation, route }) {
 
   function handleAccept() {
     log.info('TermsScreen: user accepted T&C');
-    // Pass accepted=true back to SplashScreen via navigation param
+    if (consentFlow) {
+      navigation.navigate('PrivacyPolicy', { consentFlow: true, termsAccepted: true });
+      return;
+    }
     navigation.navigate('Splash', { accepted: true });
-  }
-
-  function openPrivacyPolicy() {
-    navigation.navigate('PrivacyPolicy');
   }
 
   return (
@@ -98,7 +98,7 @@ export default function TermsScreen({ navigation, route }) {
             <View style={{ width: 32 }} />
           </View>
 
-          {!reachedBottom && (
+          {consentFlow && !reachedBottom && (
             <View style={styles.scrollHint}>
               <Text style={styles.scrollHintText}>↓ Scroll to the bottom to accept</Text>
             </View>
@@ -108,7 +108,7 @@ export default function TermsScreen({ navigation, route }) {
             ref={scrollRef}
             style={styles.scroll}
             contentContainerStyle={styles.scrollContent}
-            onScroll={handleScroll}
+            onScroll={consentFlow ? handleScroll : undefined}
             scrollEventThrottle={100}
             showsVerticalScrollIndicator={true}
           >
@@ -120,21 +120,6 @@ export default function TermsScreen({ navigation, route }) {
               </Text>
             </View>
 
-            <TouchableOpacity
-              style={styles.policyLinkCard}
-              onPress={openPrivacyPolicy}
-              activeOpacity={0.85}
-            >
-              <Feather name="shield" size={18} color="#a78bfa" />
-              <View style={styles.policyLinkTextWrap}>
-                <Text style={styles.policyLinkTitle}>Privacy Policy</Text>
-                <Text style={styles.policyLinkBody}>
-                  See how your information is collected, stored, and used.
-                </Text>
-              </View>
-              <Feather name="chevron-right" size={20} color="#8c91b5" />
-            </TouchableOpacity>
-
             {TERMS.map((section, i) => (
               <View key={i} style={styles.section}>
                 <Text style={styles.sectionHeading}>{section.heading}</Text>
@@ -145,22 +130,23 @@ export default function TermsScreen({ navigation, route }) {
             <View style={{ height: 30 }} />
           </ScrollView>
 
-          {/* Accept button — only active after scrolling to bottom */}
-          <View style={styles.footer}>
-            {!reachedBottom && (
-              <Text style={styles.footerHint}>Please read all terms before accepting</Text>
-            )}
-            <TouchableOpacity
-              style={[styles.acceptBtn, !reachedBottom && styles.acceptBtnDisabled]}
-              onPress={handleAccept}
-              disabled={!reachedBottom}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.acceptBtnText}>
-                {reachedBottom ? 'I Accept — Get Started →' : 'Scroll to the bottom to accept'}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          {consentFlow && (
+            <View style={styles.footer}>
+              {!reachedBottom && (
+                <Text style={styles.footerHint}>Please read all terms before accepting</Text>
+              )}
+              <TouchableOpacity
+                style={[styles.acceptBtn, !reachedBottom && styles.acceptBtnDisabled]}
+                onPress={handleAccept}
+                disabled={!reachedBottom}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.acceptBtnText}>
+                  {reachedBottom ? 'I Accept — Continue to Privacy →' : 'Scroll to the bottom to accept'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </SafeAreaView>
     </>
@@ -186,11 +172,6 @@ const styles = StyleSheet.create({
   disclaimerBox:  { backgroundColor: 'rgba(10,8,40,0.9)', borderRadius: 12, padding: 14, marginBottom: 20, borderWidth: 1.5, borderColor: '#ffb83066' },
   disclaimerText: { color: '#c0c0d0', fontSize: 13, lineHeight: 20 },
   bold:           { color: '#ffb830', fontWeight: '800' },
-
-  policyLinkCard:     { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: 'rgba(124,58,237,0.12)', borderRadius: 14, padding: 14, marginBottom: 22, borderWidth: 1, borderColor: '#7c3aed66' },
-  policyLinkTextWrap: { flex: 1 },
-  policyLinkTitle:    { color: '#ffffff', fontSize: 14, fontWeight: '800', marginBottom: 3 },
-  policyLinkBody:     { color: '#8c91b5', fontSize: 12, lineHeight: 18 },
 
   section:         { marginBottom: 22 },
   sectionHeading:  { color: '#ffffff', fontSize: 14, fontWeight: '700', marginBottom: 8 },

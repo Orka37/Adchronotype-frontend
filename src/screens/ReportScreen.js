@@ -68,12 +68,6 @@ const SUGGESTIONS = [
   },
 ];
 
-function impactColor(val) {
-  if (val > 0) return '#ff5c5c';
-  if (val < 0) return '#00c9b1';
-  return '#6c7094';
-}
-
 function impactLabel(val) {
   const abs = Math.abs(val);
   if (abs >= 10) return { text: 'High Impact', color: '#ff5c5c', icon: '⚠️' };
@@ -263,12 +257,11 @@ export default function ReportScreen({ navigation }) {
                       const val = factors[key];
                       if (val === undefined || val === null) return null;
                       const impact = impactLabel(val);
-                      const col = impactColor(val);
                       const sign = val > 0 ? '+' : '';
                       return (
                         <View key={key} style={styles.factorCell}>
                           <Text style={styles.factorLabel}>{label}</Text>
-                          <Text style={[styles.factorVal, { color: col }]}>{sign}{val.toFixed(1)}%</Text>
+                          <Text style={[styles.factorVal, { color: impact.color }]}>{sign}{val.toFixed(1)}%</Text>
                           <View style={[styles.impactBadge, { backgroundColor: impact.color + '22' }]}>
                             <Text style={styles.impactIcon}>{impact.icon}</Text>
                             <Text style={[styles.impactText, { color: impact.color }]}>{impact.text}</Text>

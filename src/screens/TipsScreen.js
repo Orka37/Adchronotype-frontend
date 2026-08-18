@@ -94,7 +94,17 @@ export default function TipsScreen({ navigation }) {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scroll}
           >
-            <Text style={styles.heading}>Research Tips</Text>
+            <View style={styles.headerRow}>
+              <TouchableOpacity
+                style={styles.backBtn}
+                onPress={() => navigation.navigate('Report')}
+                activeOpacity={0.8}
+              >
+                <Feather name="chevron-left" size={26} color="#fff" />
+              </TouchableOpacity>
+              <Text style={styles.heading}>Research Tips</Text>
+              <View style={styles.headerSpacer} />
+            </View>
             <Text style={styles.sub}>
               Evidence-based resources on each factor that influences your brain health score.
             </Text>
@@ -187,7 +197,10 @@ const styles = StyleSheet.create({
   safeBottom: { flex: 1, backgroundColor: '#030A31' },
   root:       { flex: 1 },
   scroll:     { padding: 20, paddingTop: 32 },
-  heading:    { color: '#fff', fontSize: 26, fontWeight: '800', marginBottom: 8 },
+  headerRow:  { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
+  backBtn:    { alignItems: 'center', height: 40, justifyContent: 'center', width: 40 },
+  headerSpacer: { width: 40 },
+  heading:    { color: '#fff', fontSize: 26, fontWeight: '800' },
   sub:        { color: '#6c7094', fontSize: 13, lineHeight: 20, marginBottom: 24 },
 
   card:       { backgroundColor: '#161b3d', borderRadius: 16, borderWidth: 1, borderColor: '#1f254f', marginBottom: 12, overflow: 'hidden' },

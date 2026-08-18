@@ -6,7 +6,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle, Path, Line, G } from 'react-native-svg';
 import { log } from '../utils/logger';
-import { setStoredItem } from '../utils/storage';
+import { recordPreAuthLegalConsent } from '../utils/legalConsent';
 
 function BrainIllustration() {
   return (
@@ -60,21 +60,23 @@ function BrainIllustration() {
 }
 
 export default function SplashScreen({ navigation, route, onDone }) {
-  // accepted comes back as a route param after user accepts T&C
-  const accepted = route?.params?.accepted === true;
+  // Both flags come back after the user accepts each legal document.
+  const termsAccepted = route?.params?.termsAccepted === true;
+  const privacyAccepted = route?.params?.privacyAccepted === true;
+  const legalAccepted = termsAccepted && privacyAccepted;
 
   async function handleGetStarted() {
     try {
-      await setStoredItem('splash_seen', 'true');
-      log.info('SplashScreen: accepted T&C, proceeding to auth');
+      await recordPreAuthLegalConsent();
+      log.info('SplashScreen: recorded current Terms and Privacy consent');
     } catch (err) {
-      log.warn('SplashScreen: could not persist splash_seen', err?.message);
+      log.warn('SplashScreen: could not persist legal consent', err?.message);
     }
     if (onDone) onDone();
   }
 
   function openTerms() {
-    navigation.navigate('Terms');
+    navigation.navigate('Terms', { consentFlow: true });
   }
 
   return (
@@ -131,29 +133,29 @@ export default function SplashScreen({ navigation, route, onDone }) {
             {/* T&C link — replaces checkbox */}
             <TouchableOpacity style={styles.termsRow} onPress={openTerms} activeOpacity={0.8}>
               <Text style={styles.termsText}>
-                By tapping Get Started you agree to our{' '}
-                <Text style={styles.termsLink}>Terms & Conditions →</Text>
+                Review and accept our{' '}
+                <Text style={styles.termsLink}>Terms & Conditions and Privacy Policy →</Text>
               </Text>
             </TouchableOpacity>
 
-            {accepted && (
+            {legalAccepted && (
               <View style={styles.acceptedBadge}>
-                <Text style={styles.acceptedText}>✓ Terms accepted</Text>
+                <Text style={styles.acceptedText}>✓ Terms and Privacy Policy accepted</Text>
               </View>
             )}
 
             <TouchableOpacity
-              style={[styles.btn, !accepted && styles.btnDisabled]}
+              style={[styles.btn, !legalAccepted && styles.btnDisabled]}
               onPress={handleGetStarted}
-              disabled={!accepted}
+              disabled={!legalAccepted}
               activeOpacity={0.85}
             >
               <Text style={styles.btnText}>Get Started  →</Text>
             </TouchableOpacity>
 
-            {!accepted && (
+            {!legalAccepted && (
               <Text style={styles.readFirst}>
-                Please read and accept the Terms & Conditions first
+                Please read and accept both documents first
               </Text>
             )}
 

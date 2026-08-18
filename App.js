@@ -10,7 +10,7 @@ import TermsScreen   from './src/screens/TermsScreen';
 import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen';
 import { AuthProvider, useAuth }   from './src/context/AuthContext';
 import { OnboardingProvider, useOnboarding } from './src/context/OnboardingContext';
-import { getStoredItem } from './src/utils/storage';
+import { hasCurrentDeviceConsent } from './src/utils/legalConsent';
 
 const PreAuthStack = createNativeStackNavigator();
 
@@ -85,11 +85,16 @@ class AppErrorBoundary extends React.Component {
 }
 
 function RootNavigator() {
-  const { user, loading } = useAuth();
+  const { user, loading, consentShown, markConsentGiven } = useAuth();
   const { hasCompletedPrediction, loadingSavedPrediction } = useOnboarding();
   const [splashChecked, setSplashChecked] = useState(false);
   const [showSplash,    setShowSplash]    = useState(false);
   const bypassSplash = isAuthRecoveryRoute();
+
+  async function completeLegalConsent() {
+    if (user) await markConsentGiven();
+    setShowSplash(false);
+  }
 
   useEffect(() => {
     if (bypassSplash) {
@@ -98,8 +103,8 @@ function RootNavigator() {
       return;
     }
 
-    getStoredItem('splash_seen').then(val => {
-      setShowSplash(val !== 'true');
+    hasCurrentDeviceConsent().then(hasConsent => {
+      setShowSplash(!hasConsent);
       setSplashChecked(true);
     }).catch(() => {
       setShowSplash(false);
@@ -116,7 +121,13 @@ function RootNavigator() {
   }
 
   if (showSplash) {
-    return <PreAuthNavigator onDone={() => setShowSplash(false)} />;
+    return <PreAuthNavigator onDone={completeLegalConsent} />;
+  }
+
+  if (user && !consentShown) {
+    return (
+      <PreAuthNavigator onDone={completeLegalConsent} />
+    );
   }
 
   return user
