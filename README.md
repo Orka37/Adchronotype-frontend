@@ -1,4 +1,4 @@
-# ADChronotype
+# ADChronotype.
 
 ADChronotype is an Expo React Native application for sleep, chronotype, cognitive-test, caregiver, and physician-report workflows. The mobile app connects to the ADChronotype backend API hosted on Railway.
 
