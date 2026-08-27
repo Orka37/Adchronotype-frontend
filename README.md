@@ -36,9 +36,17 @@ Then scan the Expo QR code with Expo Go or run an iOS/Android development build.
 ## Production Checks
 
 ```bash
+npm run lint
 npm run typecheck
+npm run test
+npm run verify
 npm run export:web
 ```
+
+`npm run typecheck` checks the typed JavaScript quality baseline in
+`src/utils/validators.js`. Extend `tsconfig.quality.json` as modules receive
+JSDoc type contracts; this keeps the migration incremental without masking
+existing type failures in the rest of the application.
 
 ## Web Deployment
 

@@ -1,9 +1,11 @@
+/** @param {string} val @returns {string | null} */
 export function validateEmail(val) {
   if (!val.trim()) return 'Email is required.';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim())) return 'Enter a valid email address.';
   return null;
 }
 
+/** @param {string} val @returns {string | null} */
 export function validateUsername(val) {
   if (!val.trim()) return 'Username is required.';
   if (val.trim().length < 3) return 'Username must be at least 3 characters.';
@@ -12,12 +14,14 @@ export function validateUsername(val) {
   return null;
 }
 
+/** @param {string} val @returns {string | null} */
 export function validatePassword(val) {
   if (!val) return 'Password is required.';
   if (val.length < 8) return 'Password must be at least 8 characters.';
   return null;
 }
 
+/** @param {unknown} val @param {string} label @returns {string | null} */
 export function validateRequired(val, label) {
   if (!val || !String(val).trim()) return `${label} is required.`;
   return null;
