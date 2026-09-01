@@ -10,7 +10,12 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useOnboarding } from '../context/OnboardingContext';
 import { useCaregiverRequestCount } from '../hooks/useCaregiverRequestCount';
 import { log } from '../utils/logger';
-import { RESEARCH_DISCLAIMER, RESEARCH_METHODOLOGY, RESEARCH_SOURCES } from '../constants/researchDisclosure';
+import {
+  RESEARCH_DISCLAIMER,
+  RESEARCH_DISCLAIMER_SHORT,
+  RESEARCH_METHODOLOGY,
+  RESEARCH_SOURCES,
+} from '../constants/researchDisclosure';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -213,19 +218,20 @@ export default function ReportScreen({ navigation }) {
                 {/* Disclaimer */}
                 <View style={styles.disclaimer}>
                   <Text style={styles.disclaimerTitle}>IMPORTANT — NOT A CLINICAL DIAGNOSIS</Text>
-                  <Text style={styles.disclaimerBody}>{RESEARCH_DISCLAIMER}</Text>
+                  <Text style={styles.disclaimerBody}>{RESEARCH_DISCLAIMER_SHORT}</Text>
                   <TouchableOpacity
                     style={styles.researchToggle}
                     onPress={() => setShowResearchDetails(value => !value)}
                     activeOpacity={0.75}
                   >
                     <Text style={styles.researchToggleText}>
-                      {showResearchDetails ? 'Hide methodology and sources' : 'View methodology and research sources'}
+                      {showResearchDetails ? 'Hide details' : 'View full disclaimer and research sources'}
                     </Text>
                     <Feather name={showResearchDetails ? 'chevron-up' : 'chevron-down'} size={12} color="#c8b8ff" />
                   </TouchableOpacity>
                   {showResearchDetails && (
                     <View style={styles.researchDetails}>
+                      <Text style={styles.disclaimerBody}>{RESEARCH_DISCLAIMER}</Text>
                       <Text style={styles.disclaimerBody}>{RESEARCH_METHODOLOGY}</Text>
                       <Text style={styles.sourcesTitle}>Research Sources</Text>
                       {RESEARCH_SOURCES.map(source => (
