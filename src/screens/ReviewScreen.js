@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity,
-  SafeAreaView, Platform, Image, Alert, ActivityIndicator, ScrollView, Linking,
+  SafeAreaView, Platform, Image, Alert, ActivityIndicator, ScrollView, Linking, Modal,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -10,7 +10,12 @@ import { useOnboarding } from '../context/OnboardingContext';
 import { predictBrainHealth } from '../api/predict';
 import { parseApiError } from '../utils/errors';
 import { log } from '../utils/logger';
-import { RESEARCH_DISCLAIMER, RESEARCH_METHODOLOGY, RESEARCH_SOURCES } from '../constants/researchDisclosure';
+import {
+  RESEARCH_DISCLAIMER,
+  RESEARCH_DISCLAIMER_SHORT,
+  RESEARCH_METHODOLOGY,
+  RESEARCH_SOURCES,
+} from '../constants/researchDisclosure';
 
 export default function ReviewScreen({ navigation }) {
   const [submitting, setSubmitting] = useState(false);
@@ -187,18 +192,11 @@ export default function ReviewScreen({ navigation }) {
 
             <View style={styles.consentCard}>
               <Text style={styles.consentTitle}>Important — Research Use Only</Text>
-              <Text style={styles.consentBody}>{RESEARCH_DISCLAIMER}</Text>
-              <Text style={styles.consentBody}>{RESEARCH_METHODOLOGY}</Text>
-              <TouchableOpacity onPress={() => setShowSources(value => !value)} style={styles.sourcesToggle}>
-                <Text style={styles.sourcesToggleText}>{showSources ? 'Hide research sources' : 'View research sources'}</Text>
-                <Feather name={showSources ? 'chevron-up' : 'chevron-down'} size={16} color="#c8b8ff" />
+              <Text style={styles.consentBody}>{RESEARCH_DISCLAIMER_SHORT}</Text>
+              <TouchableOpacity onPress={() => setShowSources(true)} style={styles.sourcesToggle}>
+                <Text style={styles.sourcesToggleText}>View full disclaimer and research sources</Text>
+                <Feather name="info" size={15} color="#c8b8ff" />
               </TouchableOpacity>
-              {showSources && RESEARCH_SOURCES.map(source => (
-                <TouchableOpacity key={source.label} onPress={() => Linking.openURL(source.url)} style={styles.sourceRow}>
-                  <Text style={styles.sourceLink}>{source.label} — View published research</Text>
-                  <Feather name="external-link" size={13} color="#9b72ff" />
-                </TouchableOpacity>
-              ))}
               <TouchableOpacity style={styles.ackRow} onPress={() => setAcknowledged(value => !value)} activeOpacity={0.8}>
                 <View style={[styles.checkbox, acknowledged && styles.checkboxChecked]}>
                   {acknowledged && <Feather name="check" size={14} color="#ffffff" />}
@@ -237,6 +235,40 @@ export default function ReviewScreen({ navigation }) {
           </View>
         </View>
       </SafeAreaView>
+
+      <Modal
+        visible={showSources}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSources(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.researchModal}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>About Your Research Score</Text>
+              <TouchableOpacity onPress={() => setShowSources(false)} accessibilityLabel="Close">
+                <Feather name="x" size={22} color="#ffffff" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator>
+              <Text style={styles.modalSectionTitle}>Not a Clinical Diagnosis</Text>
+              <Text style={styles.modalBody}>{RESEARCH_DISCLAIMER}</Text>
+              <Text style={styles.modalSectionTitle}>How the Score Is Calculated</Text>
+              <Text style={styles.modalBody}>{RESEARCH_METHODOLOGY}</Text>
+              <Text style={styles.modalSectionTitle}>Research Sources</Text>
+              {RESEARCH_SOURCES.map(source => (
+                <TouchableOpacity key={source.label} onPress={() => Linking.openURL(source.url)} style={styles.modalLinkRow}>
+                  <Text style={styles.modalLink}>{source.label} — View published research</Text>
+                  <Feather name="external-link" size={13} color="#c8b8ff" />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <TouchableOpacity style={styles.modalCloseButton} onPress={() => setShowSources(false)}>
+              <Text style={styles.modalCloseText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
@@ -258,8 +290,6 @@ const styles = StyleSheet.create({
   consentBody: { color: '#b9bdd2', fontSize: 10, lineHeight: 15, marginBottom: 6 },
   sourcesToggle: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 5 },
   sourcesToggleText: { color: '#c8b8ff', fontSize: 11, fontWeight: '700' },
-  sourceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4 },
-  sourceLink: { color: '#9b72ff', fontSize: 10, textDecorationLine: 'underline' },
   ackRow: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 8, gap: 9 },
   checkbox: { width: 20, height: 20, borderRadius: 4, borderWidth: 1.5, borderColor: '#8a52f3', alignItems: 'center', justifyContent: 'center' },
   checkboxChecked: { backgroundColor: '#7c3aed' },
@@ -280,4 +310,15 @@ const styles = StyleSheet.create({
   buttonDisabled: { opacity: 0.55 },
   generateLoading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
   generateButtonText: { color: '#ffffff', fontSize: 18, fontWeight: '600' },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 20 },
+  researchModal: { width: '100%', maxWidth: 520, maxHeight: '82%', backgroundColor: '#101533', borderRadius: 16, borderWidth: 1, borderColor: '#7c3aed66', padding: 18 },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 },
+  modalTitle: { color: '#ffffff', fontSize: 18, fontWeight: '800', flex: 1 },
+  modalScroll: { flexGrow: 0 },
+  modalSectionTitle: { color: '#d8ceff', fontSize: 13, fontWeight: '800', marginTop: 10, marginBottom: 5 },
+  modalBody: { color: '#b7bad1', fontSize: 12, lineHeight: 19 },
+  modalLinkRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, paddingVertical: 7 },
+  modalLink: { color: '#c8b8ff', fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
+  modalCloseButton: { backgroundColor: '#7c3aed', borderRadius: 10, alignItems: 'center', paddingVertical: 11, marginTop: 14 },
+  modalCloseText: { color: '#ffffff', fontSize: 14, fontWeight: '800' },
 });
