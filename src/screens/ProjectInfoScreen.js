@@ -38,11 +38,6 @@ const INFO_SECTIONS = [
     title: 'Privacy & Security',
     body: 'Authentication uses secure tokens, password reset links expire, and protected data is sent through authenticated backend APIs. Keep your password private and log out on shared devices.',
   },
-  {
-    icon: 'mail',
-    title: 'Support',
-    body: 'For account help, password issues, or study questions, email adchronotype.study@gmail.com.',
-  },
 ];
 
 export default function ProjectInfoScreen({ navigation }) {

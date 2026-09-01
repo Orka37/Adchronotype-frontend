@@ -79,11 +79,6 @@ export default function ProfileScreen({ navigation }) {
     await signOut();
   }
 
-  function handleSupport() {
-    Linking.openURL('mailto:adchronotype.study@gmail.com?subject=ADChronotype%20Support')
-      .catch(() => Alert.alert('Support', 'Email adchronotype.study@gmail.com for help.'));
-  }
-
   function handleLogout() {
     setConfirmation('logout');
   }
@@ -244,9 +239,10 @@ export default function ProfileScreen({ navigation }) {
             <MenuItem icon={<MaterialCommunityIcons name="brain" size={18} color="#7c3aed" />} label="Project Info" onPress={() => navigation.navigate('ProjectInfo')} />
             <View style={styles.divider} />
             <MenuItem icon={<Feather name="file-text" size={18} color="#7c3aed" />} label="Doctor Report" onPress={() => navigation.navigate('DoctorReport')} />
-            <View style={styles.divider} />
-            <MenuItem icon={<Feather name="help-circle" size={18} color="#7c3aed" />} label="Help & Support" onPress={handleSupport} />
           </View>
+          <Text style={styles.contactText}>
+            For questions, email adchronotype.study@gmail.com.
+          </Text>
 
           {/* Logout */}
           <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.8}>
@@ -364,6 +360,7 @@ const styles = StyleSheet.create({
   statLevelVal:{ color: '#ffb830', fontSize: 13, lineHeight: 17, minHeight: 34, textAlign: 'center', textAlignVertical: 'center' },
   statKey:     { color: '#6c7094', fontSize: 9, fontWeight: '600', letterSpacing: 0.3 },
   sectionLabel:{ color: '#4a5270', fontSize: 10, fontWeight: '700', letterSpacing: 1, marginHorizontal: 20, marginBottom: 7, marginTop: 4 },
+  contactText: { color: '#8c91b5', fontSize: 11, lineHeight: 17, textAlign: 'center', marginHorizontal: 24, marginTop: 9, marginBottom: 14 },
   card:        { marginHorizontal: 18, backgroundColor: '#161b3d', borderRadius: 16, borderWidth: 1, borderColor: '#1f254f', marginBottom: 16, overflow: 'hidden' },
   divider:     { height: 1, backgroundColor: '#1f254f', marginLeft: 48 },
   menuItem:    { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 14 },

@@ -85,6 +85,7 @@ export default function ReportScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [sugOpen,    setSugOpen]    = useState(false);
   const [sugIdx,     setSugIdx]     = useState(0);
+  const [showResearchDetails, setShowResearchDetails] = useState(false);
   const caregiverRequestCount = useCaregiverRequestCount();
 
   const score      = predictionResult?.prediction ?? 0;
@@ -213,14 +214,28 @@ export default function ReportScreen({ navigation }) {
                 <View style={styles.disclaimer}>
                   <Text style={styles.disclaimerTitle}>IMPORTANT — NOT A CLINICAL DIAGNOSIS</Text>
                   <Text style={styles.disclaimerBody}>{RESEARCH_DISCLAIMER}</Text>
-                  <Text style={styles.disclaimerBody}>{RESEARCH_METHODOLOGY}</Text>
-                  <Text style={styles.sourcesTitle}>Research Sources</Text>
-                  {RESEARCH_SOURCES.map(source => (
-                    <TouchableOpacity key={source.label} onPress={() => openLink(source.url)} style={styles.researchLinkRow}>
-                      <Text style={styles.researchLink}>{source.label} — View published research</Text>
-                      <Feather name="external-link" size={11} color="#c8b8ff" />
-                    </TouchableOpacity>
-                  ))}
+                  <TouchableOpacity
+                    style={styles.researchToggle}
+                    onPress={() => setShowResearchDetails(value => !value)}
+                    activeOpacity={0.75}
+                  >
+                    <Text style={styles.researchToggleText}>
+                      {showResearchDetails ? 'Hide methodology and sources' : 'View methodology and research sources'}
+                    </Text>
+                    <Feather name={showResearchDetails ? 'chevron-up' : 'chevron-down'} size={12} color="#c8b8ff" />
+                  </TouchableOpacity>
+                  {showResearchDetails && (
+                    <View style={styles.researchDetails}>
+                      <Text style={styles.disclaimerBody}>{RESEARCH_METHODOLOGY}</Text>
+                      <Text style={styles.sourcesTitle}>Research Sources</Text>
+                      {RESEARCH_SOURCES.map(source => (
+                        <TouchableOpacity key={source.label} onPress={() => openLink(source.url)} style={styles.researchLinkRow}>
+                          <Text style={styles.researchLink}>{source.label} — View published research</Text>
+                          <Feather name="external-link" size={11} color="#c8b8ff" />
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
                 </View>
 
                 {/* BMI */}
@@ -353,6 +368,9 @@ const styles = StyleSheet.create({
   disclaimer:      { backgroundColor: '#1a2010', borderRadius: 10, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: '#3a4a20' },
   disclaimerTitle: { color: '#c8d080', fontSize: 11, fontWeight: '700', marginBottom: 6 },
   disclaimerBody:  { color: '#a0aa70', fontSize: 10, lineHeight: 15 },
+  researchToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4, marginTop: 7, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#3a4a20' },
+  researchToggleText: { color: '#c8b8ff', fontSize: 9, lineHeight: 13, fontWeight: '700', flex: 1 },
+  researchDetails: { marginTop: 7 },
   sourcesTitle: { color: '#c8d080', fontSize: 10, fontWeight: '700', marginTop: 8, marginBottom: 2 },
   researchLinkRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 3 },
   researchLink: { color: '#c8b8ff', fontSize: 9, textDecorationLine: 'underline', flex: 1 },
