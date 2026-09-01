@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import {
   StyleSheet, Text, View, SafeAreaView, TouchableOpacity,
-  ScrollView, Platform, RefreshControl, Animated, Linking,
+  ScrollView, Platform, RefreshControl, Animated, Linking, Modal,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
@@ -221,27 +221,14 @@ export default function ReportScreen({ navigation }) {
                   <Text style={styles.disclaimerBody}>{RESEARCH_DISCLAIMER_SHORT}</Text>
                   <TouchableOpacity
                     style={styles.researchToggle}
-                    onPress={() => setShowResearchDetails(value => !value)}
+                    onPress={() => setShowResearchDetails(true)}
                     activeOpacity={0.75}
                   >
                     <Text style={styles.researchToggleText}>
-                      {showResearchDetails ? 'Hide details' : 'View full disclaimer and research sources'}
+                      View full disclaimer and research sources
                     </Text>
-                    <Feather name={showResearchDetails ? 'chevron-up' : 'chevron-down'} size={12} color="#c8b8ff" />
+                    <Feather name="info" size={12} color="#c8b8ff" />
                   </TouchableOpacity>
-                  {showResearchDetails && (
-                    <View style={styles.researchDetails}>
-                      <Text style={styles.disclaimerBody}>{RESEARCH_DISCLAIMER}</Text>
-                      <Text style={styles.disclaimerBody}>{RESEARCH_METHODOLOGY}</Text>
-                      <Text style={styles.sourcesTitle}>Research Sources</Text>
-                      {RESEARCH_SOURCES.map(source => (
-                        <TouchableOpacity key={source.label} onPress={() => openLink(source.url)} style={styles.researchLinkRow}>
-                          <Text style={styles.researchLink}>{source.label} — View published research</Text>
-                          <Feather name="external-link" size={11} color="#c8b8ff" />
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  )}
                 </View>
 
                 {/* BMI */}
@@ -342,6 +329,40 @@ export default function ReportScreen({ navigation }) {
           </View>
         </View>
       </SafeAreaView>
+
+      <Modal
+        visible={showResearchDetails}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowResearchDetails(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.researchModal}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>About Your Research Score</Text>
+              <TouchableOpacity onPress={() => setShowResearchDetails(false)} accessibilityLabel="Close">
+                <Feather name="x" size={22} color="#fff" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator>
+              <Text style={styles.modalSectionTitle}>Not a Clinical Diagnosis</Text>
+              <Text style={styles.modalBody}>{RESEARCH_DISCLAIMER}</Text>
+              <Text style={styles.modalSectionTitle}>How the Score Is Calculated</Text>
+              <Text style={styles.modalBody}>{RESEARCH_METHODOLOGY}</Text>
+              <Text style={styles.modalSectionTitle}>Research Sources</Text>
+              {RESEARCH_SOURCES.map(source => (
+                <TouchableOpacity key={source.label} onPress={() => openLink(source.url)} style={styles.modalLinkRow}>
+                  <Text style={styles.modalLink}>{source.label} — View published research</Text>
+                  <Feather name="external-link" size={13} color="#c8b8ff" />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <TouchableOpacity style={styles.modalCloseButton} onPress={() => setShowResearchDetails(false)}>
+              <Text style={styles.modalCloseText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
@@ -376,10 +397,17 @@ const styles = StyleSheet.create({
   disclaimerBody:  { color: '#a0aa70', fontSize: 10, lineHeight: 15 },
   researchToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4, marginTop: 7, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#3a4a20' },
   researchToggleText: { color: '#c8b8ff', fontSize: 9, lineHeight: 13, fontWeight: '700', flex: 1 },
-  researchDetails: { marginTop: 7 },
-  sourcesTitle: { color: '#c8d080', fontSize: 10, fontWeight: '700', marginTop: 8, marginBottom: 2 },
-  researchLinkRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 3 },
-  researchLink: { color: '#c8b8ff', fontSize: 9, textDecorationLine: 'underline', flex: 1 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 20 },
+  researchModal: { width: '100%', maxWidth: 520, maxHeight: '82%', backgroundColor: '#101533', borderRadius: 16, borderWidth: 1, borderColor: '#7c3aed66', padding: 18 },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 },
+  modalTitle: { color: '#fff', fontSize: 18, fontWeight: '800', flex: 1 },
+  modalScroll: { flexGrow: 0 },
+  modalSectionTitle: { color: '#d8ceff', fontSize: 13, fontWeight: '800', marginTop: 10, marginBottom: 5 },
+  modalBody: { color: '#b7bad1', fontSize: 12, lineHeight: 19 },
+  modalLinkRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, paddingVertical: 7 },
+  modalLink: { color: '#c8b8ff', fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
+  modalCloseButton: { backgroundColor: '#7c3aed', borderRadius: 10, alignItems: 'center', paddingVertical: 11, marginTop: 14 },
+  modalCloseText: { color: '#fff', fontSize: 14, fontWeight: '800' },
 
   bmiCard:    { borderWidth: 1.5, borderRadius: 10, padding: 10, marginBottom: 12 },
   bmiText:    { fontSize: 12, fontWeight: '700', textAlign: 'center' },
