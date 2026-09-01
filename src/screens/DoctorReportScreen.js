@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Linking,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -20,6 +21,12 @@ import { getSleepLogs } from '../api/sleepLogs';
 import { getMe } from '../api/users';
 import { useOnboarding } from '../context/OnboardingContext';
 import { log } from '../utils/logger';
+import {
+  RESEARCH_DISCLAIMER,
+  RESEARCH_METHODOLOGY,
+  RESEARCH_SOURCES,
+  researchSourcesText,
+} from '../constants/researchDisclosure';
 
 function fmtDate(value) {
   if (!value) return '—';
@@ -66,7 +73,6 @@ function modelInputRows(prediction, fallbackInputs = {}) {
     ['Wake time', displayTime(source.wake_time)],
     ['Sleep duration', source.sleep_duration == null ? '—' : `${Number(source.sleep_duration).toFixed(1)} hours`],
     ['Ethnicity', displayValue(source.ethnicity)],
-    ['Family history', displayValue(source.family_history)],
   ];
 }
 
@@ -111,7 +117,11 @@ function reportText({ profile, latestPrediction, sleepLogs, cognitiveTests, fall
       ? cognitiveTests.slice(0, 8).map(item => `${item.test_type}: ${item.score} ${item.unit || ''} (Attempt ${item.attempt_number || 1})`)
       : ['No saved cognitive test results yet.']),
     '',
-    'Important: This report is for research awareness and discussion only. It is not a diagnosis or medical device output.',
+    'Important — Research Use Only',
+    RESEARCH_DISCLAIMER,
+    RESEARCH_METHODOLOGY,
+    '',
+    researchSourcesText(),
   ];
   return lines.join('\n');
 }
@@ -253,9 +263,11 @@ export default function DoctorReportScreen({ navigation }) {
 
             <View style={styles.noticeCard}>
               <Feather name="alert-triangle" size={18} color="#ffb830" />
-              <Text style={styles.noticeText}>
-                This report is for awareness and discussion only. It is not a diagnosis.
-              </Text>
+              <View style={styles.noticeContent}>
+                <Text style={styles.noticeTitle}>Important — Research Use Only</Text>
+                <Text style={styles.noticeText}>{RESEARCH_DISCLAIMER}</Text>
+                <Text style={styles.noticeText}>{RESEARCH_METHODOLOGY}</Text>
+              </View>
             </View>
 
             <View style={styles.section}>
@@ -304,6 +316,21 @@ export default function DoctorReportScreen({ navigation }) {
                     {value == null ? '—' : `${Number(value) > 0 ? '+' : ''}${Number(value).toFixed(1)}%`}
                   </Text>
                 </View>
+              ))}
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Research Sources</Text>
+              {RESEARCH_SOURCES.map(source => (
+                <TouchableOpacity
+                  key={source.label}
+                  style={styles.sourceRow}
+                  onPress={() => Linking.openURL(source.url)}
+                  activeOpacity={0.75}
+                >
+                  <Text style={styles.sourceText}>{source.label} — View published research</Text>
+                  <Feather name="external-link" size={14} color="#c8b8ff" />
+                </TouchableOpacity>
               ))}
             </View>
 
@@ -413,7 +440,9 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 12,
   },
-  noticeText: { flex: 1, color: '#f8e7a6', fontSize: 12, lineHeight: 18, fontWeight: '700' },
+  noticeContent: { flex: 1 },
+  noticeTitle: { color: '#ffcf66', fontSize: 12, lineHeight: 18, fontWeight: '800', marginBottom: 4 },
+  noticeText: { color: '#f8e7a6', fontSize: 11, lineHeight: 17, marginBottom: 5 },
   section: {
     backgroundColor: '#101538',
     borderRadius: 14,
@@ -435,6 +464,8 @@ const styles = StyleSheet.create({
   factorRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#1f254f' },
   factorLabel: { color: '#9aa0c5', fontSize: 13, fontWeight: '700' },
   factorValue: { fontSize: 17, fontWeight: '900' },
+  sourceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: '#1f254f' },
+  sourceText: { color: '#c8b8ff', fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
   metricRow: { flexDirection: 'row', gap: 8 },
   metricCard: { flex: 1, backgroundColor: '#0d1030', borderRadius: 12, borderWidth: 1, borderColor: '#1f254f', padding: 12 },
   metricValue: { color: '#c8b8ff', fontSize: 18, fontWeight: '900', marginBottom: 4 },

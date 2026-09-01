@@ -79,6 +79,11 @@ export default function ProfileScreen({ navigation }) {
     await signOut();
   }
 
+  function handleSupport() {
+    Linking.openURL('mailto:adchronotype.study@gmail.com?subject=ADChronotype%20Support')
+      .catch(() => Alert.alert('Support', 'Email adchronotype.study@gmail.com for help.'));
+  }
+
   function handleLogout() {
     setConfirmation('logout');
   }
@@ -209,7 +214,7 @@ export default function ProfileScreen({ navigation }) {
             <View style={styles.divider} />
             <TouchableOpacity style={styles.updateBtn} onPress={handleUpdateFactors} activeOpacity={0.85}>
               <Feather name="refresh-cw" size={16} color="#fff" style={{ marginRight: 8 }} />
-              <Text style={styles.updateBtnText}>Update My Factors & Get New Prediction</Text>
+              <Text style={styles.updateBtnText}>Update My Factors & Get New Research Score</Text>
             </TouchableOpacity>
             <Text style={styles.updateHint}>
               If your sleep type or lifestyle has changed, update your factors to get an updated brain health score.
@@ -220,8 +225,6 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.sectionLabel}>ACCOUNT</Text>
           <View style={styles.card}>
             <MenuItem icon={<Feather name="lock" size={18} color="#7c3aed" />} label="Change Password" onPress={() => navigation.navigate('ChangePassword')} />
-            <View style={styles.divider} />
-            <MenuItem icon={<Feather name="bell" size={18} color="#7c3aed" />} label="Notifications" badge="Soon" />
             <View style={styles.divider} />
             <MenuItem icon={<Feather name="shield" size={18} color="#7c3aed" />} label="Privacy Policy" onPress={() => navigation.navigate('PrivacyPolicy')} />
             <View style={styles.divider} />
@@ -242,7 +245,7 @@ export default function ProfileScreen({ navigation }) {
             <View style={styles.divider} />
             <MenuItem icon={<Feather name="file-text" size={18} color="#7c3aed" />} label="Doctor Report" onPress={() => navigation.navigate('DoctorReport')} />
             <View style={styles.divider} />
-            <MenuItem icon={<Feather name="help-circle" size={18} color="#7c3aed" />} label="Help & Support" badge="Soon" />
+            <MenuItem icon={<Feather name="help-circle" size={18} color="#7c3aed" />} label="Help & Support" onPress={handleSupport} />
           </View>
 
           {/* Logout */}

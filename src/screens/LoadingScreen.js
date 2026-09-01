@@ -83,7 +83,7 @@ export default function LoadingScreen({ navigation }) {
               </View>
             </View>
 
-            <Text style={styles.title}>Generating Prediction</Text>
+            <Text style={styles.title}>Generating Research Score</Text>
             <Text style={styles.subtitle}>{loadingText}</Text>
           </View>
 

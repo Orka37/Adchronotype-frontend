@@ -257,7 +257,7 @@ export default function CognitiveTestScreen({ navigation }) {
     setAttemptNumber(cognitiveStatus.next_attempt_number || 1);
     setPhase('intro');
     Alert.alert(
-      'Retake not available yet',
+      'Retake scheduled',
       `You can take the cognitive tests again on ${formatAvailableDate(cognitiveStatus.next_available_at)}.`
     );
   }, [cognitiveStatus, draftKey, hasDraft]);

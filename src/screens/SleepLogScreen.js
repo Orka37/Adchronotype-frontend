@@ -441,7 +441,7 @@ export default function SleepLogScreen({ navigation }) {
                 </Text>
               </View>
               {dataSource === 'local' && (
-                <Text style={styles.sourceHint}>Showing locally saved sleep logs until backend sync is available.</Text>
+                <Text style={styles.sourceHint}>Showing sleep logs saved on this device.</Text>
               )}
             </View>
 
@@ -552,12 +552,6 @@ export default function SleepLogScreen({ navigation }) {
               )}
 
               <Text style={styles.hint}>💡 Logging daily tracks your brain health score over time.</Text>
-            </View>
-
-            {/* Coming soon */}
-            <View style={styles.comingSoonCard}>
-              <Text style={styles.comingSoonTitle}>🔗 Auto-sync Coming Soon</Text>
-              <Text style={styles.comingSoonBody}>Future versions will sync from Apple Health, Google Fit, and Fitbit automatically.</Text>
             </View>
 
             <View style={{ height: 80 }} />
@@ -719,9 +713,6 @@ const styles = StyleSheet.create({
   saveBtnText:{ color: '#fff', fontSize: 14, fontWeight: '700' },
   hint:       { color: '#4a5270', fontSize: 10, textAlign: 'center', lineHeight: 16 },
 
-  comingSoonCard: { backgroundColor: '#0e1228', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#7c3aed33' },
-  comingSoonTitle:{ color: '#7c3aed', fontSize: 12, fontWeight: '700', marginBottom: 4 },
-  comingSoonBody: { color: '#4a5270', fontSize: 11, lineHeight: 17 },
 
   navWrap:   { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#030A31', borderTopWidth: 1, borderTopColor: '#1f254f' },
   nav:       { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },

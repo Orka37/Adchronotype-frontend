@@ -41,7 +41,7 @@ const INFO_SECTIONS = [
   {
     icon: 'mail',
     title: 'Support',
-    body: 'For account help, password issues, or study questions, contact the project team through the support channel provided by the ADChronotype team.',
+    body: 'For account help, password issues, or study questions, email adchronotype.study@gmail.com.',
   },
 ];
 

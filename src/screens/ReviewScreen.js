@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity,
-  SafeAreaView, Platform, Image, Alert, ActivityIndicator, ScrollView,
+  SafeAreaView, Platform, Image, Alert, ActivityIndicator, ScrollView, Linking,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -10,9 +10,12 @@ import { useOnboarding } from '../context/OnboardingContext';
 import { predictBrainHealth } from '../api/predict';
 import { parseApiError } from '../utils/errors';
 import { log } from '../utils/logger';
+import { RESEARCH_DISCLAIMER, RESEARCH_METHODOLOGY, RESEARCH_SOURCES } from '../constants/researchDisclosure';
 
 export default function ReviewScreen({ navigation }) {
   const [submitting, setSubmitting] = useState(false);
+  const [acknowledged, setAcknowledged] = useState(false);
+  const [showSources, setShowSources] = useState(false);
 
   const {
     sleepType, bedTime, wakeTime,
@@ -91,7 +94,7 @@ export default function ReviewScreen({ navigation }) {
   };
 
   const handleGeneratePrediction = async () => {
-    if (submitting) return;
+    if (submitting || !acknowledged) return;
 
     const payload = {
       // user_id comes from the JWT on the backend
@@ -181,6 +184,28 @@ export default function ReviewScreen({ navigation }) {
                 ))}
               </View>
             </ScrollView>
+
+            <View style={styles.consentCard}>
+              <Text style={styles.consentTitle}>Important — Research Use Only</Text>
+              <Text style={styles.consentBody}>{RESEARCH_DISCLAIMER}</Text>
+              <Text style={styles.consentBody}>{RESEARCH_METHODOLOGY}</Text>
+              <TouchableOpacity onPress={() => setShowSources(value => !value)} style={styles.sourcesToggle}>
+                <Text style={styles.sourcesToggleText}>{showSources ? 'Hide research sources' : 'View research sources'}</Text>
+                <Feather name={showSources ? 'chevron-up' : 'chevron-down'} size={16} color="#c8b8ff" />
+              </TouchableOpacity>
+              {showSources && RESEARCH_SOURCES.map(source => (
+                <TouchableOpacity key={source.label} onPress={() => Linking.openURL(source.url)} style={styles.sourceRow}>
+                  <Text style={styles.sourceLink}>{source.label} — View published research</Text>
+                  <Feather name="external-link" size={13} color="#9b72ff" />
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity style={styles.ackRow} onPress={() => setAcknowledged(value => !value)} activeOpacity={0.8}>
+                <View style={[styles.checkbox, acknowledged && styles.checkboxChecked]}>
+                  {acknowledged && <Feather name="check" size={14} color="#ffffff" />}
+                </View>
+                <Text style={styles.ackText}>I understand this is a research score and not a medical diagnosis.</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.bottomButtons}>
@@ -194,10 +219,10 @@ export default function ReviewScreen({ navigation }) {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.generateButton, submitting && styles.generateButtonDisabled]}
+              style={[styles.generateButton, (submitting || !acknowledged) && styles.generateButtonDisabled]}
               activeOpacity={0.8}
               onPress={handleGeneratePrediction}
-              disabled={submitting}
+              disabled={submitting || !acknowledged}
             >
               {submitting
                 ? (
@@ -206,7 +231,7 @@ export default function ReviewScreen({ navigation }) {
                     <Text style={styles.generateButtonText}>Generating...</Text>
                   </View>
                 )
-                : <Text style={styles.generateButtonText}>Generate Prediction</Text>
+                : <Text style={styles.generateButtonText}>Generate Research Score</Text>
               }
             </TouchableOpacity>
           </View>
@@ -228,6 +253,17 @@ const styles = StyleSheet.create({
   contentWrapper: { flex: 1, justifyContent: 'flex-start', paddingTop: 40 },
   textContainer: { alignItems: 'center', marginBottom: 24, paddingHorizontal: 10 },
   title: { fontSize: 30, fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 38, marginBottom: 12 },
+  consentCard: { backgroundColor: '#10142e', borderRadius: 12, borderWidth: 1, borderColor: '#ffb83066', padding: 12, marginBottom: 10 },
+  consentTitle: { color: '#ffb830', fontSize: 12, fontWeight: '800', marginBottom: 6 },
+  consentBody: { color: '#b9bdd2', fontSize: 10, lineHeight: 15, marginBottom: 6 },
+  sourcesToggle: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 5 },
+  sourcesToggleText: { color: '#c8b8ff', fontSize: 11, fontWeight: '700' },
+  sourceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4 },
+  sourceLink: { color: '#9b72ff', fontSize: 10, textDecorationLine: 'underline' },
+  ackRow: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 8, gap: 9 },
+  checkbox: { width: 20, height: 20, borderRadius: 4, borderWidth: 1.5, borderColor: '#8a52f3', alignItems: 'center', justifyContent: 'center' },
+  checkboxChecked: { backgroundColor: '#7c3aed' },
+  ackText: { flex: 1, color: '#ffffff', fontSize: 11, lineHeight: 16, fontWeight: '600' },
   cardScrollView: { flex: 1 },
   cardScrollContent: { paddingBottom: 18 },
   summaryCard: { backgroundColor: '#161b3d', borderRadius: 16, paddingVertical: 8, paddingHorizontal: 20, borderWidth: 1.5, borderColor: 'transparent' },

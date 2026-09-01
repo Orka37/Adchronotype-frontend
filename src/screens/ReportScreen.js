@@ -10,6 +10,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useOnboarding } from '../context/OnboardingContext';
 import { useCaregiverRequestCount } from '../hooks/useCaregiverRequestCount';
 import { log } from '../utils/logger';
+import { RESEARCH_DISCLAIMER, RESEARCH_METHODOLOGY, RESEARCH_SOURCES } from '../constants/researchDisclosure';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -210,10 +211,16 @@ export default function ReportScreen({ navigation }) {
 
                 {/* Disclaimer */}
                 <View style={styles.disclaimer}>
-                  <Text style={styles.disclaimerTitle}>Note: THIS IS NOT A CLINICAL DIAGNOSIS!</Text>
-                  <Text style={styles.disclaimerBody}>
-                    This is a statistical research comparison based on the information you entered. It does not diagnose or predict disease.
-                  </Text>
+                  <Text style={styles.disclaimerTitle}>IMPORTANT — NOT A CLINICAL DIAGNOSIS</Text>
+                  <Text style={styles.disclaimerBody}>{RESEARCH_DISCLAIMER}</Text>
+                  <Text style={styles.disclaimerBody}>{RESEARCH_METHODOLOGY}</Text>
+                  <Text style={styles.sourcesTitle}>Research Sources</Text>
+                  {RESEARCH_SOURCES.map(source => (
+                    <TouchableOpacity key={source.label} onPress={() => openLink(source.url)} style={styles.researchLinkRow}>
+                      <Text style={styles.researchLink}>{source.label} — View published research</Text>
+                      <Feather name="external-link" size={11} color="#c8b8ff" />
+                    </TouchableOpacity>
+                  ))}
                 </View>
 
                 {/* BMI */}
@@ -269,26 +276,11 @@ export default function ReportScreen({ navigation }) {
                         </View>
                       );
                     })}
-                    {/* Coming soon factors */}
-                    {[
-                      { label: 'Physical Activity' },
-                      { label: 'Diet Quality' },
-                      { label: 'Social Engagement' },
-                      { label: 'Stress Level' },
-                    ].map(f => (
-                      <View key={f.label} style={styles.factorCellDim}>
-                        <Text style={styles.factorLabelDim}>{f.label}</Text>
-                        <Text style={styles.factorValDim}>—</Text>
-                        <View style={styles.comingSoonBadge}>
-                          <Text style={styles.comingSoonText}>Coming Soon</Text>
-                        </View>
-                      </View>
-                    ))}
                   </View>
                 ) : (
                   <View style={styles.factorPlaceholder}>
                     <Text style={styles.factorPlaceholderText}>
-                      Factor breakdown will appear here once the backend is updated to return contributions.
+                      Factor contribution information is unavailable for this result.
                     </Text>
                   </View>
                 )}
@@ -361,6 +353,9 @@ const styles = StyleSheet.create({
   disclaimer:      { backgroundColor: '#1a2010', borderRadius: 10, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: '#3a4a20' },
   disclaimerTitle: { color: '#c8d080', fontSize: 11, fontWeight: '700', marginBottom: 6 },
   disclaimerBody:  { color: '#a0aa70', fontSize: 10, lineHeight: 15 },
+  sourcesTitle: { color: '#c8d080', fontSize: 10, fontWeight: '700', marginTop: 8, marginBottom: 2 },
+  researchLinkRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 3 },
+  researchLink: { color: '#c8b8ff', fontSize: 9, textDecorationLine: 'underline', flex: 1 },
 
   bmiCard:    { borderWidth: 1.5, borderRadius: 10, padding: 10, marginBottom: 12 },
   bmiText:    { fontSize: 12, fontWeight: '700', textAlign: 'center' },
@@ -404,11 +399,6 @@ const styles = StyleSheet.create({
   sugArrowText: { color: '#888', fontSize: 14, lineHeight: 18 },
 
   // bottom nav
-  factorCellDim:  { width: '47%', gap: 2, opacity: 0.5, minHeight: 72 },
-  factorLabelDim: { color: '#4a5270', fontSize: 11, fontWeight: '600' },
-  factorValDim:   { fontSize: 16, fontWeight: '800', color: '#2a3060' },
-  comingSoonBadge:{ backgroundColor: '#1a1e36', borderRadius: 6, paddingHorizontal: 5, paddingVertical: 2, alignSelf: 'flex-start', marginTop: 2 },
-  comingSoonText: { color: '#3a4060', fontSize: 8, fontWeight: '700' },
   navWrap:   { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#030A31', borderTopWidth: 1, borderTopColor: '#1f254f' },
   nav:       { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
   navItem:   { alignItems: 'center', width: 64 },
