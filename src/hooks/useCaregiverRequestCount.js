@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { getIncomingCaregiverRequests } from '../api/caregivers';
+import { getIncomingCarePatientInvitations } from '../api/caregivers';
 import { log } from '../utils/logger';
 
 export function useCaregiverRequestCount() {
@@ -12,7 +12,7 @@ export function useCaregiverRequestCount() {
 
       async function loadCount() {
         try {
-          const requests = await getIncomingCaregiverRequests();
+          const requests = await getIncomingCarePatientInvitations();
           if (mounted) setCount(Array.isArray(requests) ? requests.length : 0);
         } catch (err) {
           if (mounted) setCount(0);

@@ -1,649 +1,539 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  RefreshControl,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+  ActivityIndicator, Linking, Modal, Platform, SafeAreaView, ScrollView, StyleSheet,
+  Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
-import { CAREGIVER_MESSAGES, acceptCaregiverRequest, getCaregiverConnections, getCaregiverMessages, getCaregiverStats, getIncomingCaregiverRequests, getOutgoingCaregiverRequests, rejectCaregiverRequest, removeCaregiverConnection, searchCaregivers, sendCaregiverMessage, sendCaregiverRequest, updateCaregiverSearch } from '../api/caregivers';
-import { getMe } from '../api/users';
-import { parseApiError } from '../utils/errors';
-import { log } from '../utils/logger';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Feather } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import ConfirmationModal from '../components/ConfirmationModal';
+import { useAuth } from '../context/AuthContext';
+import { useCaregiverRequestCount } from '../hooks/useCaregiverRequestCount';
+import {
+  acceptCarePatientInvitation, cancelCarePatientInvitation, createCarePatient,
+  createCarePatientEvent, createCarePatientHandoffNote, declineCarePatientInvitation,
+  deleteCarePatientHandoffNote, getCarePatientEvents, getCarePatientHandoffNotes,
+  getCarePatientDailySummaries, getCarePatientInvitations, getCarePatientMembers, getCarePatients,
+  getCarePatientRoutine, getIncomingCarePatientInvitations, inviteCarePatientHelper,
+  revokeCarePatientMember, saveCarePatientRoutine, updateCarePatient,
+  updateCarePatientHandoffNote,
+  createCaregiverWellnessCheckIn, getCaregiverWellnessSummary,
+  createCarePatientMedicationSchedule, getCarePatientMedicationSchedules,
+  createCarePatientMedicationLog, getCarePatientMedicationLogs,
+} from '../api/caregivers';
 
-function displayName(user) {
-  if (!user) return 'Unknown user';
-  const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
-  return fullName || user.username || 'Unknown user';
-}
+const EVENT_TYPES = [
+  { key: 'slept', label: 'Slept', icon: 'moon', tint: '#7568ff' },
+  { key: 'woke', label: 'Woke', icon: 'sunrise', tint: '#f3aa3d' },
+  { key: 'napped', label: 'Napped', icon: 'cloud', tint: '#57a7d9' },
+  { key: 'agitated', label: 'Agitated', icon: 'alert-circle', tint: '#ef776d' },
+];
+const HANDOFF_TAGS = ['calm', 'agitated', 'ate well', 'slept', 'music helped', 'refused meal'];
 
-function otherUserFor(link) {
-  return link?.otherUser || link?.other_user || null;
-}
+const messageFrom = error => error?.response?.data?.detail || error?.message || 'Something went wrong. Please try again.';
+const eventLabel = key => [...EVENT_TYPES, { key: 'other', label: 'Other' }].find(item => item.key === key)?.label || 'Event';
+const timeLabel = value => new Date(value).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
-function predictionFactors(prediction) {
-  return prediction?.factorContributions || prediction?.factor_contributions || null;
-}
-
-function formatScore(value) {
-  if (value == null) return '—';
-  const number = Number(value);
-  return Number.isFinite(number) ? `${number.toFixed(1)}%` : '—';
-}
-
-function formatDate(value) {
-  if (!value) return '';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-}
-
-function formatContribution(value) {
-  if (value == null) return '—';
-  const number = Number(value);
-  if (!Number.isFinite(number)) return '—';
-  return `${number > 0 ? '+' : ''}${number.toFixed(1)}%`;
-}
-
-function formatTestScore(test) {
-  if (!test) return '—';
-  const score = Number(test.score);
-  const value = Number.isFinite(score) && Number.isInteger(score) ? score : score.toFixed(1);
-  return `${value} ${test.unit || 'pts'}`;
+function tonightWindow(now = new Date()) {
+  const start = new Date(now);
+  if (start.getHours() < 18) start.setDate(start.getDate() - 1);
+  start.setHours(18, 0, 0, 0);
+  return { start, end: now };
 }
 
 export default function CaregiverScreen({ navigation }) {
-  const [profile, setProfile] = useState(null);
-  const [searchEnabled, setSearchEnabled] = useState(false);
-  const [query, setQuery] = useState('');
-  const [searching, setSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchMessage, setSearchMessage] = useState('');
+  const { user } = useAuth();
+  const [patients, setPatients] = useState([]);
   const [incoming, setIncoming] = useState([]);
-  const [outgoing, setOutgoing] = useState([]);
-  const [connections, setConnections] = useState([]);
-  const [selectedConnection, setSelectedConnection] = useState(null);
-  const [selectedStats, setSelectedStats] = useState(null);
-  const [messages, setMessages] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [members, setMembers] = useState([]);
+  const [pending, setPending] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [routine, setRoutine] = useState(null);
+  const [handoffNotes, setHandoffNotes] = useState([]);
+  const [dailySummaries, setDailySummaries] = useState(null);
+  const [wellness, setWellness] = useState(null);
+  const [medications, setMedications] = useState([]);
+  const [medicationLogs, setMedicationLogs] = useState([]);
+  const [wellnessForm, setWellnessForm] = useState({ feeling: 'okay', sleepHours: '', broken_night: false, note: '' });
+  const [medicationOpen, setMedicationOpen] = useState(false);
+  const [medicationForm, setMedicationForm] = useState({ name: '', instructions: '', window_start: '08:00', window_end: '09:00', clinician_confirmed: false });
+  const [routineForm, setRoutineForm] = useState({ usual_bedtime: '22:00', usual_wake_time: '07:00', nap_start_time: '', nap_end_time: '', notes: '' });
+  const [view, setView] = useState('log');
+  const [newPatientName, setNewPatientName] = useState('');
+  const [patientName, setPatientName] = useState('');
+  const [inviteTarget, setInviteTarget] = useState('');
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [connectionToRemove, setConnectionToRemove] = useState(null);
+  const [notice, setNotice] = useState(null);
+  const [revokeTarget, setRevokeTarget] = useState(null);
+  const [customOpen, setCustomOpen] = useState(false);
+  const [customType, setCustomType] = useState('other');
+  const [customTime, setCustomTime] = useState(new Date());
+  const [customNote, setCustomNote] = useState('');
+  const [handoffOpen, setHandoffOpen] = useState(false);
+  const [handoffTags, setHandoffTags] = useState([]);
+  const [handoffText, setHandoffText] = useState('');
+  const [editingHandoff, setEditingHandoff] = useState(null);
+  const [deleteHandoff, setDeleteHandoff] = useState(null);
+  const requestCount = useCaregiverRequestCount();
 
-  const factorRows = useMemo(() => {
-    const factors = predictionFactors(selectedStats?.latestPrediction || selectedStats?.latest_prediction);
-    if (!factors) return [];
-    return [
-      ['Chronotype', factors.chronotype],
-      ['Age', factors.age],
-      ['Sleeptime', factors.sleep_time],
-      ['Waketime', factors.wake_time],
-      ['BMI', factors.bmi],
-      ['Ethnicity', factors.ethnicity],
-    ];
-  }, [selectedStats]);
+  const selected = patients.find(item => item.id === selectedId);
+  const isPrimary = selected?.my_role === 'primary';
+  const tonightEvents = useMemo(() => {
+    const { start, end } = tonightWindow();
+    return events.filter(item => {
+      const time = new Date(item.event_time);
+      return time >= start && time <= end;
+    }).sort((a, b) => new Date(a.event_time) - new Date(b.event_time));
+  }, [events]);
 
-  const loadCaregiverData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const [me, nextIncoming, nextOutgoing, nextConnections] = await Promise.all([
-        getMe(),
-        getIncomingCaregiverRequests(),
-        getOutgoingCaregiverRequests(),
-        getCaregiverConnections(),
-      ]);
-      setProfile(me);
-      setSearchEnabled(Boolean(me.caregiverSearchEnabled));
-      setIncoming(Array.isArray(nextIncoming) ? nextIncoming : []);
-      setOutgoing(Array.isArray(nextOutgoing) ? nextOutgoing : []);
-      setConnections(Array.isArray(nextConnections) ? nextConnections : []);
-
-      if (selectedConnection) {
-        const selectedOther = otherUserFor(selectedConnection);
-        const stillConnected = nextConnections.find((link) => otherUserFor(link)?.id === selectedOther?.id);
-        if (!stillConnected) {
-          setSelectedConnection(null);
-          setSelectedStats(null);
-          setMessages([]);
-        }
-      }
-    } catch (err) {
-      log.error('CaregiverScreen.loadCaregiverData', err);
-      Alert.alert('Could not load caregiver data', parseApiError(err));
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedConnection]);
-
-  useEffect(() => {
-    loadCaregiverData();
-  }, [loadCaregiverData]);
-
-  useFocusEffect(
-    useCallback(() => {
-      loadCaregiverData();
-    }, [loadCaregiverData])
-  );
-
-  async function refresh() {
-    setRefreshing(true);
-    await loadCaregiverData();
-    setRefreshing(false);
-  }
-
-  async function toggleSearch(value) {
-    const previous = searchEnabled;
-    setSearchEnabled(value);
-    try {
-      const updated = await updateCaregiverSearch(value);
-      setProfile(updated);
-      setSearchEnabled(Boolean(updated.caregiverSearchEnabled));
-      log.info('CaregiverScreen: search visibility changed');
-    } catch (err) {
-      setSearchEnabled(previous);
-      log.error('CaregiverScreen.toggleSearch', err);
-      Alert.alert('Could not update privacy', parseApiError(err));
-    }
-  }
-
-  async function handleSearch() {
-      const username = query.trim();
-    if (username.length < 2) {
-      Alert.alert('Search by username', 'Enter at least 2 characters.');
+  const loadPatientDetails = useCallback(async patient => {
+    if (!patient) {
+      setMembers([]); setPending([]); setEvents([]); setRoutine(null); setHandoffNotes([]); setDailySummaries(null); setWellness(null); setMedications([]); setMedicationLogs([]); setPatientName('');
       return;
     }
+    const [memberRows, eventRows, routineRow, handoffRows, summaryRows, wellnessRow, medicationRows, medicationLogRows] = await Promise.all([
+      getCarePatientMembers(patient.id), getCarePatientEvents(patient.id, { limit: 250 }),
+      getCarePatientRoutine(patient.id), getCarePatientHandoffNotes(patient.id, { limit: 250 }),
+      getCarePatientDailySummaries(patient.id, 7),
+      getCaregiverWellnessSummary(7), getCarePatientMedicationSchedules(patient.id),
+      getCarePatientMedicationLogs(patient.id, 100),
+    ]);
+    setMembers(memberRows);
+    setEvents(eventRows);
+    setRoutine(routineRow);
+    setHandoffNotes(handoffRows);
+    setDailySummaries(summaryRows);
+    setWellness(wellnessRow); setMedications(medicationRows); setMedicationLogs(medicationLogRows);
+    setRoutineForm(routineRow ? {
+      usual_bedtime: routineRow.usual_bedtime, usual_wake_time: routineRow.usual_wake_time,
+      nap_start_time: routineRow.nap_start_time || '', nap_end_time: routineRow.nap_end_time || '', notes: routineRow.notes || '',
+    } : { usual_bedtime: '22:00', usual_wake_time: '07:00', nap_start_time: '', nap_end_time: '', notes: '' });
+    setPatientName(patient.display_name);
+    setPending(patient.my_role === 'primary' ? await getCarePatientInvitations(patient.id) : []);
+  }, []);
 
+  const refresh = useCallback(async (showLoader = true, preferredId = selectedId) => {
+    if (showLoader) setLoading(true);
     try {
-      setSearching(true);
-      setSearchResults([]);
-      setSearchMessage('');
-      const result = await searchCaregivers(username);
-      const results = Array.isArray(result) ? result : [];
-      setSearchResults(results);
-      if (results.length === 0) {
-        setSearchMessage('No searchable user found with that username.');
-      }
-      log.info('CaregiverScreen: username searched');
-    } catch (err) {
-      setSearchResults([]);
-      if (err?.response?.status === 404) {
-        setSearchMessage('No searchable user found with that username.');
-      } else {
-        log.error('CaregiverScreen.handleSearch', err);
-        Alert.alert('Search failed', parseApiError(err));
-      }
-    } finally {
-      setSearching(false);
-    }
-  }
+      const [patientRows, invitationRows] = await Promise.all([getCarePatients(), getIncomingCarePatientInvitations()]);
+      setPatients(patientRows); setIncoming(invitationRows);
+      const next = patientRows.find(item => item.id === preferredId) || patientRows[0] || null;
+      setSelectedId(next?.id || null);
+      await loadPatientDetails(next);
+    } catch (error) {
+      setNotice({ type: 'error', text: messageFrom(error) });
+    } finally { setLoading(false); }
+  }, [loadPatientDetails, selectedId]);
 
-  async function handleRequest(username) {
+  useEffect(() => { refresh(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function perform(action, successText, preferredId = selectedId) {
+    setBusy(true); setNotice(null);
     try {
-      setBusy(true);
-      await sendCaregiverRequest(username);
-      setSearchResults((current) => current.map((user) => (
-        user.username === username ? { ...user, request_status: 'pending' } : user
-      )));
-      await loadCaregiverData();
-      Alert.alert('Request sent', `Your caregiver request was sent to @${username}.`);
-    } catch (err) {
-      log.error('CaregiverScreen.handleRequest', err);
-      Alert.alert('Could not send request', parseApiError(err));
-    } finally {
-      setBusy(false);
-    }
+      await action();
+      setNotice({ type: 'success', text: successText });
+      await refresh(false, preferredId);
+      return true;
+    } catch (error) {
+      setNotice({ type: 'error', text: messageFrom(error) });
+      return false;
+    } finally { setBusy(false); }
   }
 
-  async function handleRequestAction(linkId, action) {
+  async function createPatient() {
+    const name = newPatientName.trim();
+    if (!name) return setNotice({ type: 'error', text: 'Enter a name for the care record.' });
+    setBusy(true); setNotice(null);
     try {
-      setBusy(true);
-      if (action === 'accept') {
-        await acceptCaregiverRequest(linkId);
-      } else {
-        await rejectCaregiverRequest(linkId);
-      }
-      await loadCaregiverData();
-    } catch (err) {
-      log.error('CaregiverScreen.handleRequestAction', err);
-      Alert.alert('Request update failed', parseApiError(err));
-    } finally {
-      setBusy(false);
-    }
+      const patient = await createCarePatient(name);
+      setNewPatientName(''); setView('log');
+      setNotice({ type: 'success', text: 'Care record created.' });
+      await refresh(false, patient.id);
+    } catch (error) { setNotice({ type: 'error', text: messageFrom(error) }); }
+    finally { setBusy(false); }
   }
 
-  async function openConnection(link) {
-    const otherUserId = otherUserFor(link)?.id;
-    if (!otherUserId) return;
-
-    try {
-      setBusy(true);
-      setSelectedConnection(link);
-      const [stats, thread] = await Promise.all([
-        getCaregiverStats(otherUserId),
-        getCaregiverMessages(otherUserId),
-      ]);
-      setSelectedStats(stats);
-      setMessages(Array.isArray(thread) ? thread : []);
-      log.info('CaregiverScreen: connected user stats opened');
-    } catch (err) {
-      log.error('CaregiverScreen.openConnection', err);
-      Alert.alert('Could not open stats', parseApiError(err));
-    } finally {
-      setBusy(false);
-    }
+  async function selectPatient(patient) {
+    setSelectedId(patient.id); setLoading(true); setNotice(null); setView('log');
+    try { await loadPatientDetails(patient); }
+    catch (error) { setNotice({ type: 'error', text: messageFrom(error) }); }
+    finally { setLoading(false); }
   }
 
-  async function handleSendMessage(messageKey) {
-    const otherUserId = otherUserFor(selectedConnection)?.id;
-    if (!otherUserId) return;
-
-    try {
-      setBusy(true);
-      await sendCaregiverMessage(otherUserId, messageKey);
-      const thread = await getCaregiverMessages(otherUserId);
-      setMessages(Array.isArray(thread) ? thread : []);
-      log.info('CaregiverScreen: prebuilt message sent');
-    } catch (err) {
-      log.error('CaregiverScreen.handleSendMessage', err);
-      Alert.alert('Could not send message', parseApiError(err));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  function confirmRemoveConnection(link) {
-    setConnectionToRemove(link);
-  }
-
-  async function performRemoveConnection() {
-    const link = connectionToRemove;
-    if (!link) return;
-    try {
-      setBusy(true);
-      await removeCaregiverConnection(link.id);
-      setConnectionToRemove(null);
-      if (selectedConnection?.id === link.id) {
-        setSelectedConnection(null);
-        setSelectedStats(null);
-        setMessages([]);
-      }
-      await loadCaregiverData();
-      log.info('CaregiverScreen: connection removed');
-    } catch (err) {
-      log.error('CaregiverScreen.performRemoveConnection', err);
-      Alert.alert('Could not remove connection', parseApiError(err));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  const latestPrediction = selectedStats?.latestPrediction || selectedStats?.latest_prediction;
-  const cognitiveTests = selectedStats?.cognitiveTests || selectedStats?.cognitive_tests || [];
-  const personalBests = selectedStats?.personalBests || selectedStats?.personal_bests || {};
-
-  if (loading) {
-    return (
-      <View style={[styles.root, styles.center]}>
-        <ActivityIndicator color="#7c3aed" size="large" />
-      </View>
+  async function logNow(type) {
+    const when = new Date();
+    await perform(
+      () => createCarePatientEvent(selectedId, type, when.toISOString()),
+      `${eventLabel(type)} logged at ${timeLabel(when)}.`,
     );
   }
 
-  return (
-    <>
-      <SafeAreaView style={styles.safeTop} />
-      <SafeAreaView style={styles.safeBottom}>
-        <View style={styles.root}>
-          <ScrollView
-            style={styles.scroll}
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#8a52f3" colors={['#8a52f3']} />}
-          >
-            <View style={styles.header}>
-              <TouchableOpacity
-                style={styles.backBtn}
-                onPress={() => navigation.navigate('Report')}
-                activeOpacity={0.8}
-              >
-                <Feather name="chevron-left" size={26} color="#fff" />
-              </TouchableOpacity>
-              <View style={styles.headerText}>
-                <Text style={styles.title}>Caregiver</Text>
-                <Text style={styles.subtitle}>Connect with trusted people and share progress.</Text>
-              </View>
-              {busy && <ActivityIndicator color="#7c3aed" />}
-            </View>
+  async function saveCustomEvent() {
+    if (customTime > new Date()) return setNotice({ type: 'error', text: 'Choose a time that is not in the future.' });
+    const ok = await perform(
+      () => createCarePatientEvent(selectedId, customType, customTime.toISOString(), customNote),
+      `${eventLabel(customType)} logged at ${timeLabel(customTime)}.`,
+    );
+    if (ok) { setCustomOpen(false); setCustomType('other'); setCustomTime(new Date()); setCustomNote(''); }
+  }
 
-            <View style={styles.card}>
-              <View style={styles.cardHeader}>
-                <View style={styles.iconBox}>
-                  <Feather name="eye" size={18} color="#c8b8ff" />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.cardTitle}>Appear in Search</Text>
-                  <Text style={styles.cardBody}>Allow trusted people to find your username and send a request.</Text>
-                </View>
-                <Switch
-                  value={searchEnabled}
-                  onValueChange={toggleSearch}
-                  trackColor={{ false: '#2a3060', true: '#7c3aed66' }}
-                  thumbColor={searchEnabled ? '#8a52f3' : '#6c7094'}
-                />
-              </View>
-              <Text style={styles.username}>Your username: @{profile?.username}</Text>
-            </View>
+  async function inviteHelper() {
+    const target = inviteTarget.trim();
+    if (!target) return setNotice({ type: 'error', text: 'Enter a username or email address.' });
+    const ok = await perform(() => inviteCarePatientHelper(selectedId, target), 'Helper invitation sent.');
+    if (ok) setInviteTarget('');
+  }
 
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Find Someone</Text>
-              <View style={styles.searchRow}>
-                <TextInput
-                  value={query}
-                  onChangeText={setQuery}
-                  placeholder="Search username"
-                  placeholderTextColor="#4a5270"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  returnKeyType="search"
-                  onSubmitEditing={handleSearch}
-                  style={styles.searchInput}
-                />
-                <TouchableOpacity style={styles.searchBtn} onPress={handleSearch} disabled={searching} activeOpacity={0.85}>
-                  {searching ? <ActivityIndicator color="#fff" /> : <Feather name="search" size={18} color="#fff" />}
-                </TouchableOpacity>
-              </View>
+  async function saveRoutine() {
+    const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+    if (!timePattern.test(routineForm.usual_bedtime) || !timePattern.test(routineForm.usual_wake_time)) {
+      return setNotice({ type: 'error', text: 'Enter bedtime and wake time as HH:MM, for example 22:00.' });
+    }
+    if (Boolean(routineForm.nap_start_time) !== Boolean(routineForm.nap_end_time)) {
+      return setNotice({ type: 'error', text: 'Enter both nap times, or leave both blank.' });
+    }
+    if ((routineForm.nap_start_time && !timePattern.test(routineForm.nap_start_time)) || (routineForm.nap_end_time && !timePattern.test(routineForm.nap_end_time))) {
+      return setNotice({ type: 'error', text: 'Enter nap times as HH:MM.' });
+    }
+    await perform(() => saveCarePatientRoutine(selectedId, {
+      ...routineForm,
+      nap_start_time: routineForm.nap_start_time || null,
+      nap_end_time: routineForm.nap_end_time || null,
+      notes: routineForm.notes.trim() || null,
+    }), 'Routine saved.');
+  }
 
-              {searchMessage ? <Text style={styles.searchMessage}>{searchMessage}</Text> : null}
+  function openHandoff(note = null) {
+    setEditingHandoff(note);
+    setHandoffTags(note?.tags || []);
+    setHandoffText(note?.note || '');
+    setHandoffOpen(true);
+  }
 
-              {searchResults.map((user) => {
-                const alreadyPending = user.request_status === 'pending';
-                const alreadyConnected = user.request_status === 'accepted' || user.request_status === 'active';
-                const disabled = busy || alreadyPending || alreadyConnected;
-                const buttonLabel = alreadyConnected ? 'Connected' : alreadyPending ? 'Pending' : 'Invite';
+  async function saveHandoff() {
+    if (!handoffTags.length && !handoffText.trim()) return setNotice({ type: 'error', text: 'Choose a tag or add a short note.' });
+    const action = editingHandoff
+      ? () => updateCarePatientHandoffNote(selectedId, editingHandoff.id, handoffTags, handoffText)
+      : () => createCarePatientHandoffNote(selectedId, handoffTags, handoffText);
+    const ok = await perform(action, editingHandoff ? 'Handoff note updated.' : 'Handoff note shared with the care team.');
+    if (ok) { setHandoffOpen(false); setEditingHandoff(null); setHandoffTags([]); setHandoffText(''); }
+  }
 
-                return (
-                  <View key={user.id || user.username} style={styles.personRow}>
-                    <View style={styles.avatar}><Text style={styles.avatarText}>{displayName(user).slice(0, 1).toUpperCase()}</Text></View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.personName}>{displayName(user)}</Text>
-                      <Text style={styles.personMeta}>@{user.username}</Text>
-                    </View>
-                    <TouchableOpacity
-                      style={[styles.smallBtn, disabled && styles.smallBtnDisabled]}
-                      onPress={() => handleRequest(user.username)}
-                      disabled={disabled}
-                    >
-                      <Text style={[styles.smallBtnText, disabled && styles.smallBtnTextDisabled]}>{buttonLabel}</Text>
-                    </TouchableOpacity>
-                  </View>
-                );
-              })}
-            </View>
+  async function saveWellness() {
+    const hours = wellnessForm.sleepHours.trim() === '' ? null : Number(wellnessForm.sleepHours);
+    if (hours != null && (!Number.isFinite(hours) || hours < 0 || hours > 24)) return setNotice({ type: 'error', text: 'Sleep must be between 0 and 24 hours.' });
+    const ok = await perform(() => createCaregiverWellnessCheckIn({
+      feeling: wellnessForm.feeling, sleep_minutes: hours == null ? null : Math.round(hours * 60),
+      broken_night: wellnessForm.broken_night, note: wellnessForm.note.trim() || null,
+    }), 'Your private check-in was saved.');
+    if (ok) setWellnessForm({ feeling: 'okay', sleepHours: '', broken_night: false, note: '' });
+  }
 
-            {incoming.length > 0 && (
-              <View style={styles.card}>
-                <View style={styles.sectionTitleRow}>
-                  <Text style={styles.cardTitle}>Incoming Requests</Text>
-                  <View style={styles.countBadge}>
-                    <Text style={styles.countBadgeText}>{incoming.length}</Text>
-                  </View>
-                </View>
-                {incoming.map((link) => (
-                  <View key={link.id} style={styles.requestRow}>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.personName}>{displayName(otherUserFor(link))}</Text>
-                      <Text style={styles.personMeta}>@{otherUserFor(link)?.username}</Text>
-                    </View>
-                    <TouchableOpacity style={styles.acceptBtn} onPress={() => handleRequestAction(link.id, 'accept')} disabled={busy}>
-                      <Feather name="check" size={16} color="#fff" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.rejectBtn} onPress={() => handleRequestAction(link.id, 'reject')} disabled={busy}>
-                      <Feather name="x" size={16} color="#ff5c5c" />
-                    </TouchableOpacity>
-                  </View>
-                ))}
-              </View>
-            )}
+  async function saveMedication() {
+    if (!medicationForm.name.trim()) return setNotice({ type: 'error', text: 'Enter the medication name from the clinician-set schedule.' });
+    if (!medicationForm.clinician_confirmed) return setNotice({ type: 'error', text: 'Confirm that a clinician established this schedule.' });
+    const ok = await perform(() => createCarePatientMedicationSchedule(selectedId, medicationForm), 'Medication timing added.');
+    if (ok) { setMedicationOpen(false); setMedicationForm({ name: '', instructions: '', window_start: '08:00', window_end: '09:00', clinician_confirmed: false }); }
+  }
 
-            {outgoing.length > 0 && (
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>Sent Requests</Text>
-                {outgoing.map((link) => (
-                  <View key={link.id} style={styles.personRow}>
-                    <View style={styles.avatarDim}><Feather name="clock" size={16} color="#6c7094" /></View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.personName}>{displayName(otherUserFor(link))}</Text>
-                      <Text style={styles.personMeta}>Pending request to @{otherUserFor(link)?.username}</Text>
-                    </View>
-                  </View>
-                ))}
-              </View>
-            )}
+  async function markMedication(schedule, status) {
+    await perform(() => createCarePatientMedicationLog(selectedId, schedule.id, status), `${schedule.name} marked ${status}.`);
+  }
 
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Connections</Text>
-              {connections.length === 0 ? (
-                <Text style={styles.emptyText}>Accepted caregiver connections will appear here.</Text>
-              ) : connections.map((link) => {
-                const selected = selectedConnection?.id === link.id;
-                return (
-                  <TouchableOpacity key={link.id} style={[styles.connectionRow, selected && styles.connectionRowOn]} onPress={() => openConnection(link)} activeOpacity={0.85}>
-                    <View style={styles.avatar}><Text style={styles.avatarText}>{displayName(otherUserFor(link)).slice(0, 1).toUpperCase()}</Text></View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.personName}>{displayName(otherUserFor(link))}</Text>
-                      <Text style={styles.personMeta}>@{otherUserFor(link)?.username}</Text>
-                    </View>
-                    <TouchableOpacity
-                      style={styles.removeBtn}
-                      onPress={() => confirmRemoveConnection(link)}
-                      disabled={busy}
-                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                    >
-                      <Feather name="trash-2" size={16} color="#ff5c5c" />
-                    </TouchableOpacity>
-                    <Feather name="chevron-right" size={18} color="#6c7094" />
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-            {selectedConnection && (
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>{displayName(otherUserFor(selectedConnection))}'s Shared Stats</Text>
-                <View style={styles.scoreRow}>
-                  <View style={styles.scoreBox}>
-                    <Text style={styles.metricValue}>{formatScore(latestPrediction?.prediction)}</Text>
-                    <Text style={styles.metricLabel}>Latest Score</Text>
-                  </View>
-                  <View style={styles.scoreBox}>
-                    <Text style={styles.metricValue}>{latestPrediction?.riskLevel || latestPrediction?.risk_level || '—'}</Text>
-                    <Text style={styles.metricLabel}>Level</Text>
-                  </View>
-                </View>
-
-                {factorRows.length > 0 && (
-                  <>
-                    <Text style={styles.subhead}>Factor Contributions</Text>
-                    <View style={styles.factorGrid}>
-                      {factorRows.map(([label, value]) => (
-                        <View key={label} style={styles.factorCell}>
-                          <Text style={styles.factorLabel}>{label}</Text>
-                          <Text style={styles.factorValue}>{formatContribution(value)}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  </>
-                )}
-
-                <Text style={styles.subhead}>Cognitive Test Scores</Text>
-                {cognitiveTests.length === 0 ? (
-                  <Text style={styles.emptyText}>No cognitive test results shared yet.</Text>
-                ) : cognitiveTests.slice(0, 6).map((test) => (
-                  <View key={test.id || `${test.testType}-${test.testedAt}`} style={styles.resultRow}>
-                    <View>
-                      <Text style={styles.resultName}>{test.testType || test.test_type}</Text>
-                      <Text style={styles.personMeta}>Attempt {test.attemptNumber || test.attempt_number || 1} · {formatDate(test.testedAt || test.tested_at)}</Text>
-                    </View>
-                    <Text style={styles.resultScore}>{formatTestScore(test)}</Text>
-                  </View>
-                ))}
-
-                {Object.keys(personalBests || {}).length > 0 && (
-                  <>
-                    <Text style={styles.subhead}>Personal Bests</Text>
-                    <View style={styles.factorGrid}>
-                      {Object.entries(personalBests).map(([key, test]) => (
-                        <View key={key} style={styles.factorCell}>
-                          <Text style={styles.factorLabel}>{key}</Text>
-                          <Text style={styles.factorValue}>{formatTestScore(test)}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  </>
-                )}
-
-                <Text style={styles.subhead}>Send a Message</Text>
-                <View style={styles.messageGrid}>
-                  {CAREGIVER_MESSAGES.map((message) => (
-                    <TouchableOpacity key={message.key} style={styles.messageBtn} onPress={() => handleSendMessage(message.key)} disabled={busy} activeOpacity={0.85}>
-                      <Text style={styles.messageBtnText}>{message.label}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-
-                {messages.length > 0 && (
-                  <>
-                    <Text style={styles.subhead}>Recent Messages</Text>
-                    {messages.slice(0, 5).map((message) => (
-                      <View key={message.id} style={styles.messageRow}>
-                        <Feather name="message-circle" size={14} color="#7c3aed" />
-                        <View style={{ flex: 1 }}>
-                          <Text style={styles.messageText}>{message.messageText || message.message_text}</Text>
-                          <Text style={styles.personMeta}>{formatDate(message.createdAt || message.created_at)}</Text>
-                        </View>
-                      </View>
-                    ))}
-                  </>
-                )}
-              </View>
-            )}
-
-            <View style={{ height: 100 }} />
-          </ScrollView>
-
-          <View style={styles.navWrap}>
-            <View style={styles.nav}>
-              {[
-                { label: 'Home', icon: 'home', active: false, onPress: () => navigation.navigate('Report') },
-                { label: 'Sleep', icon: 'moon', active: false, onPress: () => navigation.navigate('SleepLog') },
-                { label: 'Tips', icon: 'book-open', active: false, onPress: () => navigation.navigate('Tips') },
-                { label: 'Caregiver', icon: 'users', active: true, onPress: null, badgeCount: incoming.length },
-                { label: 'Profile', icon: 'user', active: false, onPress: () => navigation.navigate('Profile') },
-              ].map((tab) => (
-                <TouchableOpacity key={tab.label} style={styles.navItem} onPress={tab.onPress} disabled={tab.active} activeOpacity={0.7}>
-                  {tab.badgeCount > 0 && (
-                    <View style={styles.navBadge}>
-                      <Text style={styles.navBadgeText}>{tab.badgeCount > 9 ? '9+' : tab.badgeCount}</Text>
-                    </View>
-                  )}
-                  <Feather name={tab.icon} size={22} color={tab.active ? '#8a52f3' : '#6c7094'} />
-                  <Text style={[styles.navLabel, tab.active && { color: '#8a52f3' }]}>{tab.label}</Text>
-                  {tab.active && <View style={styles.activeDot} />}
-                </TouchableOpacity>
-              ))}
-            </View>
+  return <>
+    <SafeAreaView style={styles.safeTop} />
+    <SafeAreaView style={styles.safeBottom}>
+      <View style={styles.root}>
+        <LinearGradient colors={['#030827', '#030A31']} style={StyleSheet.absoluteFillObject} />
+        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+          <View style={styles.header}>
+            <TouchableOpacity accessibilityLabel="Back to home" style={styles.iconButton} onPress={() => navigation.navigate('Report')}><Feather name="chevron-left" size={26} color="#fff" /></TouchableOpacity>
+            <View style={styles.headerText}><Text style={styles.heading}>{selected?.display_name || 'Caregiver'}</Text><Text style={styles.context}>{new Date().toLocaleDateString([], { weekday: 'long' })} · {new Date().getHours() < 18 ? 'day' : 'night'}</Text></View>
+            <TouchableOpacity accessibilityLabel="Refresh caregiver data" style={styles.iconButton} onPress={() => refresh()} disabled={busy}><Feather name="refresh-cw" size={19} color="#a78bfa" /></TouchableOpacity>
           </View>
-        </View>
-      </SafeAreaView>
 
-      <ConfirmationModal
-        visible={Boolean(connectionToRemove)}
-        title="Remove connection?"
-        message={`Remove ${displayName(otherUserFor(connectionToRemove))} from your caregiver connections?`}
-        confirmLabel="Remove"
-        danger
-        busy={busy}
-        onCancel={() => setConnectionToRemove(null)}
-        onConfirm={performRemoveConnection}
-      />
-    </>
-  );
+          {notice && <View style={[styles.notice, notice.type === 'error' && styles.noticeError]}><Text style={styles.noticeText}>{notice.text}</Text></View>}
+
+          {incoming.length > 0 && <Section title="Invitations for you">{incoming.map(invite => <View key={invite.id} style={styles.rowCard}><View style={styles.grow}><Text style={styles.rowTitle}>{invite.patient_name}</Text><Text style={styles.muted}>Helper access invitation</Text></View><SmallButton label="Decline" secondary disabled={busy} onPress={() => perform(() => declineCarePatientInvitation(invite.id), 'Invitation declined.')} /><SmallButton label="Accept" disabled={busy} onPress={() => perform(() => acceptCarePatientInvitation(invite.id), 'Invitation accepted.', invite.patient_id)} /></View>)}</Section>}
+
+          {patients.length > 0 && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pills}>{patients.map(patient => <TouchableOpacity key={patient.id} style={[styles.pill, patient.id === selectedId && styles.pillActive]} onPress={() => selectPatient(patient)}><Text style={[styles.pillText, patient.id === selectedId && styles.pillTextActive]}>{patient.display_name}</Text><Text style={styles.role}>{patient.my_role}</Text></TouchableOpacity>)}</ScrollView>}
+
+          {loading ? <ActivityIndicator color="#8b5cf6" style={styles.loader} /> : !selected ? <Section title="Set up a care record"><Text style={styles.mutedBlock}>Create the patient record that caregivers will use to log events and coordinate care.</Text><View style={styles.inputRow}><TextInput value={newPatientName} onChangeText={setNewPatientName} placeholder="Patient display name" placeholderTextColor="#676c91" style={styles.input} editable={!busy} /><SmallButton label="Create" disabled={busy} onPress={createPatient} /></View></Section> : <>
+            <View style={styles.sectionTabs}>
+              <TouchableOpacity style={[styles.sectionTab, view === 'log' && styles.sectionTabActive]} onPress={() => setView('log')}><Feather name="edit-3" size={16} color={view === 'log' ? '#fff' : '#8389aa'} /><Text style={[styles.sectionTabText, view === 'log' && styles.sectionTabTextActive]}>Log</Text></TouchableOpacity>
+              <TouchableOpacity style={[styles.sectionTab, view === 'routine' && styles.sectionTabActive]} onPress={() => setView('routine')}><Feather name="moon" size={16} color={view === 'routine' ? '#fff' : '#8389aa'} /><Text style={[styles.sectionTabText, view === 'routine' && styles.sectionTabTextActive]}>Routine</Text></TouchableOpacity>
+              <TouchableOpacity style={[styles.sectionTab, view === 'shared' && styles.sectionTabActive]} onPress={() => setView('shared')}><Feather name="clipboard" size={16} color={view === 'shared' ? '#fff' : '#8389aa'} /><Text style={[styles.sectionTabText, view === 'shared' && styles.sectionTabTextActive]}>Shared</Text></TouchableOpacity>
+              <TouchableOpacity style={[styles.sectionTab, view === 'you' && styles.sectionTabActive]} onPress={() => setView('you')}><Feather name="heart" size={16} color={view === 'you' ? '#fff' : '#8389aa'} /><Text style={[styles.sectionTabText, view === 'you' && styles.sectionTabTextActive]}>You</Text></TouchableOpacity>
+              <TouchableOpacity style={[styles.sectionTab, view === 'meds' && styles.sectionTabActive]} onPress={() => setView('meds')}><Feather name="clock" size={16} color={view === 'meds' ? '#fff' : '#8389aa'} /><Text style={[styles.sectionTabText, view === 'meds' && styles.sectionTabTextActive]}>Meds</Text></TouchableOpacity>
+            </View>
+
+            {view === 'log' ? <LogView busy={busy} events={tonightEvents} onLog={logNow} onCustom={() => { setCustomTime(new Date()); setCustomOpen(true); }} /> : view === 'routine' ? <RoutineView
+              busy={busy} events={events} isPrimary={isPrimary} patientName={selected.display_name}
+              routine={routine} summaries={dailySummaries} form={routineForm} setForm={setRoutineForm} onSave={saveRoutine}
+            /> : view === 'shared' ? <SharedView
+              events={events} isPrimary={isPrimary} members={members} notes={handoffNotes}
+              userId={user?.id} onAdd={() => openHandoff()} onEdit={openHandoff} onDelete={setDeleteHandoff} onAccess={() => setView('access')}
+            /> : view === 'you' ? <YouView busy={busy} summary={wellness} form={wellnessForm} setForm={setWellnessForm} onSave={saveWellness} /> : view === 'meds' ? <MedicationView
+              busy={busy} isPrimary={isPrimary} schedules={medications} logs={medicationLogs} onAdd={() => setMedicationOpen(true)} onMark={markMedication}
+            /> : <AccessView
+              busy={busy} incoming={incoming} inviteTarget={inviteTarget} isPrimary={isPrimary} members={members}
+              newPatientName={newPatientName} patientName={patientName} patients={patients} pending={pending}
+              selected={selected} setInviteTarget={setInviteTarget} setNewPatientName={setNewPatientName}
+              setPatientName={setPatientName} createPatient={createPatient} inviteHelper={inviteHelper}
+              perform={perform} setRevokeTarget={setRevokeTarget}
+            />}
+          </>}
+          <View style={{ height: 100 }} />
+        </ScrollView>
+        <BottomNav navigation={navigation} requestCount={requestCount} />
+      </View>
+    </SafeAreaView>
+
+    <CustomEventModal visible={customOpen} busy={busy} eventType={customType} eventTime={customTime} note={customNote} onType={setCustomType} onTime={setCustomTime} onNote={setCustomNote} onCancel={() => setCustomOpen(false)} onSave={saveCustomEvent} />
+    <HandoffNoteModal visible={handoffOpen} busy={busy} tags={handoffTags} note={handoffText} editing={Boolean(editingHandoff)} onTags={setHandoffTags} onNote={setHandoffText} onCancel={() => { setHandoffOpen(false); setEditingHandoff(null); }} onSave={saveHandoff} />
+    <MedicationModal visible={medicationOpen} busy={busy} form={medicationForm} setForm={setMedicationForm} onCancel={() => setMedicationOpen(false)} onSave={saveMedication} />
+    <ConfirmationModal visible={Boolean(revokeTarget)} danger busy={busy} title="Remove helper access?" message={`This will remove @${revokeTarget?.user?.username || 'this helper'} from ${selected?.display_name || 'this care record'}.`} confirmLabel="Remove" onCancel={() => setRevokeTarget(null)} onConfirm={async () => { const ok = await perform(() => revokeCarePatientMember(selectedId, revokeTarget.id), 'Helper access removed.'); if (ok) setRevokeTarget(null); }} />
+    <ConfirmationModal visible={Boolean(deleteHandoff)} danger busy={busy} title="Delete handoff note?" message="This note will be removed from the shared care record for everyone." confirmLabel="Delete" onCancel={() => setDeleteHandoff(null)} onConfirm={async () => { const ok = await perform(() => deleteCarePatientHandoffNote(selectedId, deleteHandoff.id), 'Handoff note deleted.'); if (ok) setDeleteHandoff(null); }} />
+  </>;
 }
 
+function LogView({ busy, events, onLog, onCustom }) {
+  return <>
+    <Text style={styles.prompt}>What happened?</Text>
+    <View style={styles.eventGrid}>{EVENT_TYPES.map(item => <TouchableOpacity accessibilityLabel={`${item.label}, logs now`} disabled={busy} key={item.key} style={[styles.eventButton, busy && styles.disabled]} onPress={() => onLog(item.key)}><View style={[styles.eventIcon, { backgroundColor: `${item.tint}25` }]}><Feather name={item.icon} size={26} color={item.tint} /></View><Text style={styles.eventTitle}>{item.label}</Text><Text style={styles.eventHint}>logs now</Text></TouchableOpacity>)}</View>
+    <TouchableOpacity style={styles.customButton} disabled={busy} onPress={onCustom}><Feather name="clock" size={18} color="#b8a7ff" /><Text style={styles.customButtonText}>Something else · set a different time</Text><Feather name="chevron-right" size={18} color="#777d9e" /></TouchableOpacity>
+    <Section title="Tonight so far">
+      {events.length === 0 ? <View style={styles.emptyState}><Feather name="moon" size={25} color="#787ea2" /><Text style={styles.empty}>No entries yet tonight — tap above when something happens.</Text></View> : events.map((event, index) => <View key={event.id} style={[styles.timelineRow, index === events.length - 1 && styles.timelineLast]}><View style={styles.timelineDot} /><Text style={styles.timelineTime}>{timeLabel(event.event_time)}</Text><View style={styles.grow}><Text style={styles.timelineTitle}>{eventLabel(event.event_type)}</Text>{event.note ? <Text style={styles.muted}>{event.note}</Text> : null}</View><Text style={styles.loggedBy}>{event.logged_by?.firstName || ''}</Text></View>)}
+    </Section>
+  </>;
+}
+
+function DailySummary({ patientName, summaries, routine }) {
+  const days = summaries?.days || [];
+  const latestSleep = days.find(day => day.sleep_minutes != null);
+  const totalEvents = days.reduce((sum, day) => sum + day.event_count, 0);
+  const describeDifference = (minutes, label) => {
+    if (minutes == null) return null;
+    if (Math.abs(minutes) <= 60) return `${label} was close to the caregiver-set routine`;
+    return `${label} was ${Math.abs(minutes)} min ${minutes < 0 ? 'earlier' : 'later'} than the caregiver-set routine`;
+  };
+  const duration = minutes => `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
+
+  if (!summaries || totalEvents === 0) return <Section title="Daily summary"><View style={styles.summaryEmpty}><Feather name="bar-chart-2" size={24} color="#787ea2" /><View style={styles.grow}><Text style={styles.routineEmptyTitle}>No daily history yet</Text><Text style={styles.muted}>Log sleep, wake, nap, or agitation events to build a shared seven-day view.</Text></View></View></Section>;
+
+  return <Section title={`${patientName}’s daily summary`}>
+    <View style={styles.summaryHero}>
+      <View style={styles.grow}><Text style={styles.summaryEyebrow}>LATEST COMPLETE NIGHT</Text><Text style={styles.summaryValue}>{latestSleep ? duration(latestSleep.sleep_minutes) : 'Still learning'}</Text><Text style={styles.summaryDetail}>{latestSleep ? `${new Date(`${latestSleep.date}T12:00:00`).toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })} · calculated from logged sleep and wake times` : 'A sleep and following wake event are needed to calculate duration.'}</Text></View><Feather name="moon" size={27} color="#b8a7ff" />
+    </View>
+    {!summaries.sufficient_data && <View style={styles.learningBanner}><Feather name="info" size={16} color="#f3aa3d" /><Text style={styles.learningText}>Still learning: {summaries.learning_nights} of about 7 complete nights logged. Comparisons are descriptive, not medical advice.</Text></View>}
+    <Text style={styles.historyTitle}>Last 7 days</Text>
+    {days.map((day, index) => {
+      const date = new Date(`${day.date}T12:00:00`);
+      const comparison = day.routine_status === 'on_routine' ? 'On routine' : day.routine_status === 'outside_routine' ? 'Different from routine' : 'Not enough sleep data';
+      return <View key={day.date} style={styles.summaryDay}><View style={styles.dayDate}><Text style={styles.dayName}>{index === 0 ? 'Today' : date.toLocaleDateString([], { weekday: 'short' })}</Text><Text style={styles.dayNumber}>{date.toLocaleDateString([], { month: 'short', day: 'numeric' })}</Text></View><View style={styles.grow}><Text style={styles.dayMetrics}>{day.sleep_minutes != null ? `${duration(day.sleep_minutes)} sleep` : 'No complete night'} · {day.nap_count} nap{day.nap_count === 1 ? '' : 's'} · {day.agitation_count} agitation event{day.agitation_count === 1 ? '' : 's'}</Text><Text style={[styles.dayStatus, day.routine_status === 'on_routine' && styles.dayStatusGood]}>{routine ? comparison : 'Routine not set'}</Text>{day.routine_status === 'outside_routine' && <Text style={styles.dayComparison}>{[describeDifference(day.bedtime_difference_minutes, 'Bedtime'), describeDifference(day.wake_difference_minutes, 'Wake time')].filter(Boolean).join(' · ')}</Text>}{day.handoff_note_count > 0 && <Text style={styles.dayNotes}>{day.handoff_note_count} shared handoff note{day.handoff_note_count === 1 ? '' : 's'}</Text>}</View></View>;
+    })}
+    <Text style={styles.generalDisclaimer}>This history summarizes caregiver-entered records and does not diagnose a condition or establish cause and effect.</Text>
+  </Section>;
+}
+
+function RoutineView({ busy, events, form, isPrimary, onSave, patientName, routine, summaries, setForm }) {
+  const sleepNights = new Set(events.filter(event => ['slept', 'woke'].includes(event.event_type)).map(event => new Date(event.event_time).toLocaleDateString())).size;
+  const enoughData = sleepNights >= 7;
+  const update = (key, value) => setForm(current => ({ ...current, [key]: value }));
+  const latest = events.slice().sort((a, b) => new Date(b.event_time) - new Date(a.event_time)).slice(0, 30);
+  const comparisons = routine ? routineComparisons(latest, routine) : [];
+
+  return <>
+    <DailySummary patientName={patientName} summaries={summaries} routine={routine} />
+    {!routine && <Section title={`${patientName}’s day · still learning`}><View style={styles.routineEmpty}><Feather name="moon" size={28} color="#a78bfa" /><Text style={styles.routineEmptyTitle}>We’re still learning {patientName}’s rhythm</Text><Text style={styles.empty}>Log a few more nights and this becomes a routine tuned to them.</Text><View style={styles.progressTrack}><View style={[styles.progressFill, { width: `${Math.min(sleepNights / 7, 1) * 100}%` }]} /></View><Text style={styles.progressText}>{sleepNights} of ~7 nights in</Text></View></Section>}
+
+    {routine && <Section title={`${patientName}’s routine`}>
+      <RoutineCard icon="moon" title="Usual bedtime" detail="A consistent wind-down can support the sleep clock." time={routine.usual_bedtime} />
+      <RoutineCard icon="sunrise" title="Usual wake time" detail="Keep the target visible after a rough night." time={routine.usual_wake_time} />
+      {routine.nap_start_time && <RoutineCard icon="cloud" title="Usual nap window" detail="The planned daytime rest window." time={`${routine.nap_start_time}–${routine.nap_end_time}`} />}
+      {routine.notes ? <Text style={styles.routineNotes}>{routine.notes}</Text> : null}
+      <Text style={styles.guidanceNote}>{enoughData ? `Based on ${sleepNights} logged nights. Your logs can help the care team notice changes from this plan.` : `Still learning: ${sleepNights} of ~7 logged nights. This schedule was set by the Primary caregiver and is not an automated medical recommendation.`}</Text>
+    </Section>}
+
+    {routine && comparisons.length > 0 && <Section title="Recent changes from the routine">{comparisons.map((item, index) => <View key={`${item}-${index}`} style={styles.comparisonRow}><Feather name="info" size={16} color="#f3aa3d" /><Text style={styles.comparisonText}>{item}</Text></View>)}</Section>}
+
+    {isPrimary ? <Section title={routine ? 'Edit routine' : 'Set a starting routine'}>
+      <Text style={styles.mutedBlock}>Use 24-hour HH:MM times. This is a caregiver-set plan, not medical advice.</Text>
+      <RoutineField label="Usual bedtime" value={form.usual_bedtime} onChange={value => update('usual_bedtime', value)} />
+      <RoutineField label="Usual wake time" value={form.usual_wake_time} onChange={value => update('usual_wake_time', value)} />
+      <View style={styles.twoFields}><View style={styles.fieldHalf}><RoutineField label="Nap starts (optional)" value={form.nap_start_time} onChange={value => update('nap_start_time', value)} /></View><View style={styles.fieldHalf}><RoutineField label="Nap ends (optional)" value={form.nap_end_time} onChange={value => update('nap_end_time', value)} /></View></View>
+      <Text style={styles.fieldLabel}>Routine notes (optional)</Text><TextInput value={form.notes} onChangeText={value => update('notes', value)} maxLength={500} multiline placeholder="Comforting activities or other routine details" placeholderTextColor="#676c91" style={[styles.input, styles.noteInput]} />
+      <View style={styles.saveRoutine}><SmallButton label={routine ? 'Save changes' : 'Save routine'} disabled={busy} onPress={onSave} /></View>
+    </Section> : !routine ? <Section title="Routine not set"><Text style={styles.readOnly}>The Primary caregiver has not created a routine yet. You can continue logging events while it is being set up.</Text></Section> : null}
+
+    {!enoughData && <Section title="In the meantime · general guidance"><RoutineCard icon="sun" title="Morning light" detail="Often supports the sleep clock." time="AM" /><RoutineCard icon="clock" title="Consistent wake time" detail="Often useful even after a rough night." time="—" /><Text style={styles.generalDisclaimer}>General sleep-hygiene information—not personalized medical guidance.</Text></Section>}
+  </>;
+}
+
+function RoutineField({ label, onChange, value }) { return <View style={styles.routineField}><Text style={styles.fieldLabel}>{label}</Text><TextInput autoCapitalize="none" keyboardType="numbers-and-punctuation" maxLength={5} onChangeText={onChange} placeholder="HH:MM" placeholderTextColor="#676c91" style={styles.input} value={value} /></View>; }
+function RoutineCard({ detail, icon, time, title }) { return <View style={styles.routineCard}><View style={styles.routineIcon}><Feather name={icon} size={18} color="#b8a7ff" /></View><View style={styles.grow}><Text style={styles.rowTitle}>{title}</Text><Text style={styles.muted}>{detail}</Text></View><Text style={styles.routineTime}>{time}</Text></View>; }
+
+function routineComparisons(events, routine) {
+  const toMinutes = value => { const [hours, minutes] = value.split(':').map(Number); return hours * 60 + minutes; };
+  const clockMinutes = value => { const date = new Date(value); return date.getHours() * 60 + date.getMinutes(); };
+  const distance = (actual, target) => ((actual - target + 720) % 1440) - 720;
+  const output = [];
+  const slept = events.find(event => event.event_type === 'slept');
+  const woke = events.find(event => event.event_type === 'woke');
+  const nap = events.find(event => event.event_type === 'napped');
+  if (slept && Math.abs(distance(clockMinutes(slept.event_time), toMinutes(routine.usual_bedtime))) >= 60) output.push(`Latest sleep time was ${timeLabel(slept.event_time)}, more than one hour from the ${routine.usual_bedtime} routine.`);
+  if (woke && Math.abs(distance(clockMinutes(woke.event_time), toMinutes(routine.usual_wake_time))) >= 60) output.push(`Latest wake time was ${timeLabel(woke.event_time)}, more than one hour from the ${routine.usual_wake_time} routine.`);
+  if (nap && routine.nap_end_time && clockMinutes(nap.event_time) > toMinutes(routine.nap_end_time)) output.push(`A nap was logged at ${timeLabel(nap.event_time)}, after the planned nap window.`);
+  return output;
+}
+
+function SharedView({ events, isPrimary, members, notes, userId, onAdd, onEdit, onDelete, onAccess }) {
+  const [range, setRange] = useState('7d');
+  const [kind, setKind] = useState('all');
+  const cutoff = range === 'today' ? new Date(new Date().setHours(0, 0, 0, 0)) : range === '7d' ? new Date(Date.now() - 7 * 86400000) : null;
+  const noteItems = notes.map(note => ({ ...note, itemType: 'note', when: note.created_at }));
+  const eventItems = events.map(event => ({ ...event, itemType: 'event', when: event.event_time }));
+  const timeline = [...noteItems, ...eventItems]
+    .filter(item => !cutoff || new Date(item.when) >= cutoff)
+    .filter(item => kind === 'all' || (kind === 'notes' ? item.itemType === 'note' : item.itemType === 'event' && item.event_type === kind))
+    .sort((a, b) => new Date(b.when) - new Date(a.when));
+  const grouped = timeline.reduce((result, item) => {
+    const day = new Date(item.when).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+    (result[day] ||= []).push(item);
+    return result;
+  }, {});
+  const recentPositive = notes
+    .filter(note => new Date(note.created_at) >= new Date(Date.now() - 7 * 86400000))
+    .flatMap(note => note.tags || [])
+    .filter(tag => ['calm', 'ate well', 'slept', 'music helped'].includes(tag));
+  const counts = recentPositive.reduce((all, tag) => ({ ...all, [tag]: (all[tag] || 0) + 1 }), {});
+  const working = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([tag]) => tag);
+
+  return <>
+    <Section title={`Shared record · ${members.length} ${members.length === 1 ? 'person' : 'people'}`}>
+      <View style={styles.workingCard}><Feather name="heart" size={20} color="#77d6b5" /><View style={styles.grow}><Text style={styles.workingTitle}>What’s working now</Text><Text style={styles.workingText}>{working.length ? `Recently logged by the care team: ${working.join(' and ')}.` : 'Add handoff notes to help the care team notice what is going well.'}</Text></View></View>
+      <TouchableOpacity style={styles.leaveNoteButton} onPress={onAdd}><Feather name="plus" size={18} color="#fff" /><Text style={styles.leaveNoteText}>Leave end-of-shift note</Text></TouchableOpacity>
+      <TouchableOpacity style={styles.manageAccessButton} onPress={onAccess}><Feather name="users" size={17} color="#b8a7ff" /><Text style={styles.manageAccessText}>{isPrimary ? 'Manage caregiver access' : 'View people with access'}</Text><Feather name="chevron-right" size={17} color="#777d9e" /></TouchableOpacity>
+      <Text style={styles.generalDisclaimer}>Notes are shared with everyone who has access to this care record.</Text>
+    </Section>
+
+    <Section title="Recent handoff and activity">
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
+        {[['all', 'All'], ['notes', 'Notes'], ...EVENT_TYPES.map(item => [item.key, item.label])].map(([key, label]) => <FilterChip key={key} active={kind === key} label={label} onPress={() => setKind(key)} />)}
+      </ScrollView>
+      <View style={styles.rangeRow}>{[['today', 'Today'], ['7d', '7 days'], ['all', 'All time']].map(([key, label]) => <FilterChip key={key} active={range === key} label={label} onPress={() => setRange(key)} />)}</View>
+      {timeline.length === 0 ? <View style={styles.emptyState}><Feather name="clipboard" size={25} color="#787ea2" /><Text style={styles.empty}>No shared entries match these filters.</Text></View> : Object.entries(grouped).map(([day, items]) => <View key={day} style={styles.dayGroup}><Text style={styles.dayLabel}>{day}</Text>{items.map(item => item.itemType === 'note' ? <HandoffCard key={`note-${item.id}`} note={item} canManage={isPrimary || item.author_user_id === userId} onEdit={() => onEdit(item)} onDelete={() => onDelete(item)} /> : <SharedEventRow key={`event-${item.id}`} event={item} />)}</View>)}
+    </Section>
+  </>;
+}
+
+function YouView({ busy, summary, form, setForm, onSave }) {
+  const update = (key, value) => setForm(current => ({ ...current, [key]: value }));
+  const average = summary?.average_sleep_minutes;
+  return <>
+    <Section title="You · your sleep matters too">
+      <View style={styles.wellnessStats}><View style={styles.wellnessStat}><Text style={styles.summaryEyebrow}>LAST 7 DAYS AVG</Text><Text style={styles.summaryValue}>{average == null ? '—' : `${Math.floor(average / 60)}h ${average % 60}m`}</Text></View><View style={styles.wellnessStat}><Text style={styles.summaryEyebrow}>BROKEN NIGHTS</Text><Text style={styles.summaryValue}>{summary?.broken_nights ?? 0}</Text></View></View>
+      {summary?.hard_week && <View style={styles.hardWeek}><Feather name="heart" size={17} color="#f3aa3d" /><Text style={styles.hardWeekText}>Your recent check-ins suggest a hard week. Consider asking someone you trust for support or rest coverage.</Text></View>}
+    </Section>
+    <Section title="Private check-in">
+      <Text style={styles.mutedBlock}>This check-in is private to your account and is not shared in the patient record.</Text>
+      <View style={styles.typeWrap}>{[['okay', 'Okay'], ['tired', 'Tired'], ['overwhelmed', 'Overwhelmed']].map(([key, label]) => <FilterChip key={key} active={form.feeling === key} label={label} onPress={() => update('feeling', key)} />)}</View>
+      <Text style={styles.fieldLabel}>Hours you slept (optional)</Text><TextInput keyboardType="decimal-pad" value={form.sleepHours} onChangeText={value => update('sleepHours', value)} placeholder="For example, 6.5" placeholderTextColor="#676c91" style={styles.input} />
+      <TouchableOpacity style={styles.checkRow} onPress={() => update('broken_night', !form.broken_night)}><Feather name={form.broken_night ? 'check-square' : 'square'} size={21} color="#a78bfa" /><Text style={styles.checkText}>My sleep was interrupted</Text></TouchableOpacity>
+      <Text style={styles.fieldLabel}>Private note (optional)</Text><TextInput multiline maxLength={500} value={form.note} onChangeText={value => update('note', value)} placeholder="Anything you want to remember" placeholderTextColor="#676c91" style={[styles.input, styles.noteInput]} />
+      <View style={styles.saveRoutine}><SmallButton label="Save check-in" disabled={busy} onPress={onSave} /></View>
+    </Section>
+    <Section title="Support when you need it">
+      <RoutineCard icon="coffee" title="Plan a rest window" detail="If another caregiver is available, consider protecting a short rest period." time="Rest" />
+      <TouchableOpacity style={styles.supportLink} onPress={() => Linking.openURL('tel:18002723900')}><Text style={styles.rowTitle}>Alzheimer’s Association 24/7 Helpline</Text><Text style={styles.supportLinkText}>800-272-3900</Text></TouchableOpacity>
+      <TouchableOpacity style={styles.supportLink} onPress={() => Linking.openURL('https://www.alz.org/help-support/community/support-groups')}><Text style={styles.rowTitle}>Find a local support group</Text><Feather name="external-link" size={16} color="#a78bfa" /></TouchableOpacity>
+      <Text style={styles.generalDisclaimer}>General caregiver support information only—not medical or mental-health care. For an emergency, contact local emergency services.</Text>
+    </Section>
+  </>;
+}
+
+function MedicationView({ busy, isPrimary, schedules, logs, onAdd, onMark }) {
+  const scheduleById = Object.fromEntries(schedules.map(item => [item.id, item]));
+  return <>
+    <View style={styles.medicationLock}><Feather name="lock" size={20} color="#f3aa3d" /><View style={styles.grow}><Text style={styles.medicationLockTitle}>Medication timing · clinician-set schedules only</Text><Text style={styles.medicationLockText}>ADChronotype records timing reminders and caregiver updates. It never recommends a medication or dose.</Text></View></View>
+    <Section title="Timing schedule">
+      {isPrimary && <View style={styles.saveRoutine}><SmallButton label="Add clinician-set timing" disabled={busy} onPress={onAdd} /></View>}
+      {!schedules.length ? <Text style={styles.empty}>No clinician-set medication timing has been recorded.</Text> : schedules.map(schedule => <View key={schedule.id} style={styles.medicationCard}><View style={styles.medicationHeader}><View style={styles.grow}><Text style={styles.rowTitle}>{schedule.name}</Text><Text style={styles.muted}>{schedule.window_start}–{schedule.window_end}{schedule.instructions ? ` · ${schedule.instructions}` : ''}</Text></View><Feather name="check-circle" size={18} color="#77d6b5" /></View><Text style={styles.clinicianLabel}>Confirmed as set by a care professional</Text><View style={styles.medicationActions}><SmallButton label="Skipped" secondary disabled={busy} onPress={() => onMark(schedule, 'skipped')} /><SmallButton label="Taken" disabled={busy} onPress={() => onMark(schedule, 'taken')} /></View></View>)}
+    </Section>
+    <Section title="Recent medication updates">
+      {!logs.length ? <Text style={styles.empty}>No medication updates yet.</Text> : logs.slice(0, 20).map(log => <View key={log.id} style={styles.medicationLog}><Feather name={log.status === 'taken' ? 'check-circle' : 'minus-circle'} size={18} color={log.status === 'taken' ? '#77d6b5' : '#f3aa3d'} /><View style={styles.grow}><Text style={styles.rowTitle}>{scheduleById[log.schedule_id]?.name || 'Medication'} · {log.status}</Text><Text style={styles.muted}>{new Date(log.occurred_at).toLocaleString()} · {log.logged_by?.firstName || log.logged_by?.username || 'Caregiver'}</Text></View></View>)}
+      <Text style={styles.generalDisclaimer}>Never change a medication, dose, or clinician-set schedule without the prescribing clinician. For urgent concerns, contact the clinician, pharmacist, poison control, or emergency services as appropriate.</Text>
+    </Section>
+  </>;
+}
+
+function FilterChip({ active, label, onPress }) {
+  return <TouchableOpacity style={[styles.filterChip, active && styles.filterChipActive]} onPress={onPress}><Text style={[styles.filterChipText, active && styles.filterChipTextActive]}>{label}</Text></TouchableOpacity>;
+}
+
+function HandoffCard({ note, canManage, onEdit, onDelete }) {
+  const author = note.author?.firstName || note.author?.username || 'Caregiver';
+  return <View style={styles.handoffCard}><View style={styles.handoffHeader}><View style={styles.avatarSmall}><Feather name="user" size={14} color="#c4b5fd" /></View><View style={styles.grow}><Text style={styles.rowTitle}>{author}</Text><Text style={styles.muted}>{new Date(note.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</Text></View>{canManage && <View style={styles.noteActions}><TouchableOpacity accessibilityLabel="Edit handoff note" onPress={onEdit}><Feather name="edit-2" size={16} color="#aeb2cf" /></TouchableOpacity><TouchableOpacity accessibilityLabel="Delete handoff note" onPress={onDelete}><Feather name="trash-2" size={16} color="#ef776d" /></TouchableOpacity></View>}</View>{note.tags?.length > 0 && <View style={styles.noteTags}>{note.tags.map(tag => <View key={tag} style={styles.noteTag}><Text style={styles.noteTagText}>{tag}</Text></View>)}</View>}{note.note ? <Text style={styles.handoffText}>{note.note}</Text> : null}</View>;
+}
+
+function SharedEventRow({ event }) {
+  const author = event.logged_by?.firstName || event.logged_by?.username || 'Caregiver';
+  return <View style={styles.sharedEvent}><View style={styles.timelineDot} /><View style={styles.grow}><Text style={styles.timelineTitle}>{eventLabel(event.event_type)}</Text>{event.note ? <Text style={styles.muted}>{event.note}</Text> : null}</View><View><Text style={styles.sharedTime}>{timeLabel(event.event_time)}</Text><Text style={styles.loggedBy}>{author}</Text></View></View>;
+}
+
+function AccessView({ busy, inviteTarget, isPrimary, members, newPatientName, patientName, pending, selected, setInviteTarget, setNewPatientName, setPatientName, createPatient, inviteHelper, perform, setRevokeTarget }) {
+  return <>
+    <Section title="Care record">{isPrimary ? <View style={styles.inputRow}><TextInput value={patientName} onChangeText={setPatientName} style={styles.input} editable={!busy} /><SmallButton label="Save" disabled={busy || !patientName.trim()} onPress={() => perform(() => updateCarePatient(selected.id, patientName.trim()), 'Care record updated.')} /></View> : <Text style={styles.readOnly}>You have helper access. Only the primary caregiver can change this record or manage access.</Text>}</Section>
+    {isPrimary && <Section title="Invite a helper"><Text style={styles.mutedBlock}>Invite someone by their ADChronotype username or account email.</Text><View style={styles.inputRow}><TextInput autoCapitalize="none" value={inviteTarget} onChangeText={setInviteTarget} placeholder="Username or email" placeholderTextColor="#676c91" style={styles.input} editable={!busy} /><SmallButton label="Invite" disabled={busy} onPress={inviteHelper} /></View></Section>}
+    <Section title="People with access">{members.map(member => <View key={member.id} style={styles.rowCard}><View style={styles.avatar}><Feather name="user" size={18} color="#c4b5fd" /></View><View style={styles.grow}><Text style={styles.rowTitle}>{member.user?.firstName || member.user?.username || 'Member'}</Text><Text style={styles.muted}>@{member.user?.username} · {member.role}</Text></View>{isPrimary && member.role === 'helper' && <SmallButton label="Remove" danger onPress={() => setRevokeTarget(member)} />}</View>)}</Section>
+    {isPrimary && pending.filter(item => item.status === 'pending').length > 0 && <Section title="Pending invitations">{pending.filter(item => item.status === 'pending').map(invite => <View key={invite.id} style={styles.rowCard}><View style={styles.grow}><Text style={styles.rowTitle}>{invite.invited_email || 'Pending helper'}</Text><Text style={styles.muted}>Waiting for acceptance</Text></View><SmallButton label="Cancel" secondary disabled={busy} onPress={() => perform(() => cancelCarePatientInvitation(invite.id), 'Invitation cancelled.')} /></View>)}</Section>}
+    {isPrimary && <Section title="Create another care record"><View style={styles.inputRow}><TextInput value={newPatientName} onChangeText={setNewPatientName} placeholder="Patient display name" placeholderTextColor="#676c91" style={styles.input} editable={!busy} /><SmallButton label="Create" disabled={busy} onPress={createPatient} /></View></Section>}
+  </>;
+}
+
+function MedicationModal({ visible, busy, form, setForm, onCancel, onSave }) {
+  const update = (key, value) => setForm(current => ({ ...current, [key]: value }));
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}><View style={styles.modalOverlay}><View style={styles.modalCard}><View style={styles.modalHeader}><Text style={styles.modalTitle}>Add medication timing</Text><TouchableOpacity accessibilityLabel="Close" onPress={onCancel}><Feather name="x" size={24} color="#fff" /></TouchableOpacity></View><Text style={styles.modalSubtitle}>Record only a schedule already established by the prescribing clinician.</Text>
+    <Text style={styles.fieldLabel}>Medication name</Text><TextInput value={form.name} onChangeText={value => update('name', value)} maxLength={100} placeholder="Name from clinician instructions" placeholderTextColor="#676c91" style={styles.input} />
+    <View style={styles.twoFields}><View style={styles.fieldHalf}><RoutineField label="Window starts" value={form.window_start} onChange={value => update('window_start', value)} /></View><View style={styles.fieldHalf}><RoutineField label="Window ends" value={form.window_end} onChange={value => update('window_end', value)} /></View></View>
+    <Text style={styles.fieldLabel}>Clinician instructions (optional)</Text><TextInput value={form.instructions} onChangeText={value => update('instructions', value)} maxLength={255} placeholder="For example: with breakfast" placeholderTextColor="#676c91" style={styles.input} />
+    <TouchableOpacity style={styles.checkRow} onPress={() => update('clinician_confirmed', !form.clinician_confirmed)}><Feather name={form.clinician_confirmed ? 'check-square' : 'square'} size={21} color="#a78bfa" /><Text style={styles.checkText}>I confirm this timing was established by a clinician.</Text></TouchableOpacity>
+    <Text style={styles.generalDisclaimer}>No dose is collected. ADChronotype does not recommend medications, doses, or timing.</Text>
+    <View style={styles.modalActions}><SmallButton label="Cancel" secondary disabled={busy} onPress={onCancel} /><SmallButton label="Add timing" disabled={busy || !form.clinician_confirmed} onPress={onSave} /></View>
+  </View></View></Modal>;
+}
+
+function CustomEventModal({ visible, busy, eventType, eventTime, note, onType, onTime, onNote, onCancel, onSave }) {
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}><View style={styles.modalOverlay}><View style={styles.modalCard}><View style={styles.modalHeader}><Text style={styles.modalTitle}>Log another event</Text><TouchableOpacity accessibilityLabel="Close" style={styles.iconButton} onPress={onCancel}><Feather name="x" size={22} color="#fff" /></TouchableOpacity></View><Text style={styles.fieldLabel}>What happened?</Text><View style={styles.typeWrap}>{[...EVENT_TYPES, { key: 'other', label: 'Other' }].map(item => <TouchableOpacity key={item.key} style={[styles.typeChip, eventType === item.key && styles.typeChipActive]} onPress={() => onType(item.key)}><Text style={[styles.typeChipText, eventType === item.key && styles.typeChipTextActive]}>{item.label}</Text></TouchableOpacity>)}</View><Text style={styles.fieldLabel}>When?</Text><DateTimePicker value={eventTime} mode="datetime" display={Platform.OS === 'ios' ? 'spinner' : 'default'} maximumDate={new Date()} onChange={(_, value) => value && onTime(value)} themeVariant="dark" /><Text style={styles.fieldLabel}>Optional note</Text><TextInput value={note} onChangeText={onNote} maxLength={255} multiline placeholder="Add a short detail" placeholderTextColor="#676c91" style={[styles.input, styles.noteInput]} /><View style={styles.modalActions}><SmallButton label="Cancel" secondary disabled={busy} onPress={onCancel} /><SmallButton label="Log event" disabled={busy} onPress={onSave} /></View></View></View></Modal>;
+}
+
+function HandoffNoteModal({ visible, busy, tags, note, editing, onTags, onNote, onCancel, onSave }) {
+  const toggle = tag => onTags(tags.includes(tag) ? tags.filter(item => item !== tag) : [...tags, tag]);
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}><View style={styles.modalOverlay}><View style={styles.modalCard}><View style={styles.modalHeader}><View><Text style={styles.modalTitle}>{editing ? 'Edit handoff note' : 'End-of-shift note'}</Text><Text style={styles.modalSubtitle}>A quick update for the whole care team</Text></View><TouchableOpacity accessibilityLabel="Close" style={styles.iconButton} onPress={onCancel}><Feather name="x" size={22} color="#fff" /></TouchableOpacity></View><Text style={styles.fieldLabel}>Quick tags</Text><View style={styles.typeWrap}>{HANDOFF_TAGS.map(tag => <TouchableOpacity key={tag} style={[styles.typeChip, tags.includes(tag) && styles.typeChipActive]} onPress={() => toggle(tag)}><Text style={[styles.typeChipText, tags.includes(tag) && styles.typeChipTextActive]}>{tag}</Text></TouchableOpacity>)}</View><Text style={styles.fieldLabel}>Optional note</Text><TextInput value={note} onChangeText={onNote} maxLength={500} multiline placeholder="Anything the next caregiver should know?" placeholderTextColor="#676c91" style={[styles.input, styles.handoffInput]} /><Text style={styles.characterCount}>{note.length}/500</Text><View style={styles.modalActions}><SmallButton label="Cancel" secondary disabled={busy} onPress={onCancel} /><SmallButton label={editing ? 'Save note' : 'Share note'} disabled={busy || (!tags.length && !note.trim())} onPress={onSave} /></View></View></View></Modal>;
+}
+
+function Section({ title, children }) { return <View style={styles.section}><Text style={styles.sectionTitle}>{title}</Text>{children}</View>; }
+function SmallButton({ label, onPress, secondary, danger, disabled }) { return <TouchableOpacity disabled={disabled} onPress={onPress} style={[styles.smallButton, secondary && styles.secondaryButton, danger && styles.dangerButton, disabled && styles.disabled]}><Text style={styles.smallButtonText}>{label}</Text></TouchableOpacity>; }
+function BottomNav({ navigation, requestCount }) { const tabs = [['Home', 'home', () => navigation.navigate('Report')], ['Sleep', 'moon', () => navigation.navigate('SleepLog')], ['Tips', 'book-open', () => navigation.navigate('Tips')], ['Caregiver', 'users', null], ['Profile', 'user', () => navigation.navigate('Profile')]]; return <View style={styles.navWrap}><View style={styles.nav}>{tabs.map(([label, icon, onPress]) => <TouchableOpacity key={label} style={styles.navItem} onPress={onPress} disabled={!onPress}>{label === 'Caregiver' && requestCount > 0 && <View style={styles.badge}><Text style={styles.badgeText}>{requestCount > 9 ? '9+' : requestCount}</Text></View>}<Feather name={icon} size={22} color={label === 'Caregiver' ? '#8a52f3' : '#6c7094'} /><Text style={[styles.navLabel, label === 'Caregiver' && styles.navActive]}>{label}</Text></TouchableOpacity>)}</View></View>; }
+
 const styles = StyleSheet.create({
-  safeTop: { flex: 0, backgroundColor: '#030827', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: '#030A31' },
-  root: { flex: 1, backgroundColor: '#030A31' },
-  center: { alignItems: 'center', justifyContent: 'center' },
-  scroll: { flex: 1, paddingHorizontal: 16 },
-  scrollContent: { paddingTop: 24 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
-  backBtn: { alignItems: 'center', height: 40, justifyContent: 'center', marginRight: 8, width: 40 },
-  headerText: { flex: 1 },
-  title: { color: '#fff', fontSize: 26, fontWeight: '900' },
-  subtitle: { color: '#8c91b5', fontSize: 13, marginTop: 4 },
-  card: { backgroundColor: '#161b3d', borderRadius: 16, borderWidth: 1, borderColor: '#1f254f', padding: 14, marginBottom: 14 },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  iconBox: { width: 38, height: 38, borderRadius: 11, backgroundColor: '#7c3aed22', alignItems: 'center', justifyContent: 'center' },
-  cardTitle: { color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 6 },
-  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
-  countBadge: { minWidth: 22, height: 22, borderRadius: 11, backgroundColor: '#ff5c5c', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
-  countBadgeText: { color: '#fff', fontSize: 11, fontWeight: '900' },
-  cardBody: { color: '#8c91b5', fontSize: 12, lineHeight: 18 },
-  username: { color: '#c8b8ff', fontSize: 12, fontWeight: '700', marginTop: 12 },
-  searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 8 },
-  searchInput: { flex: 1, height: 48, borderRadius: 12, borderWidth: 1.5, borderColor: '#1f254f', backgroundColor: '#0b1030', color: '#fff', paddingHorizontal: 14, fontSize: 14 },
-  searchBtn: { width: 48, height: 48, borderRadius: 12, backgroundColor: '#7c3aed', alignItems: 'center', justifyContent: 'center' },
-  personRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, borderTopWidth: 1, borderTopColor: '#1f254f', marginTop: 10 },
-  requestRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 11, borderTopWidth: 1, borderTopColor: '#1f254f' },
-  connectionRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, borderTopWidth: 1, borderTopColor: '#1f254f' },
-  connectionRowOn: { backgroundColor: '#7c3aed14', marginHorizontal: -8, paddingHorizontal: 8, borderRadius: 12 },
-  avatar: { width: 38, height: 38, borderRadius: 19, backgroundColor: '#7c3aed', alignItems: 'center', justifyContent: 'center' },
-  avatarDim: { width: 38, height: 38, borderRadius: 19, backgroundColor: '#1f254f', alignItems: 'center', justifyContent: 'center' },
-  avatarText: { color: '#fff', fontWeight: '900', fontSize: 15 },
-  personName: { color: '#fff', fontSize: 14, fontWeight: '800' },
-  personMeta: { color: '#6c7094', fontSize: 11, marginTop: 3 },
-  smallBtn: { backgroundColor: '#7c3aed', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8 },
-  smallBtnText: { color: '#fff', fontSize: 12, fontWeight: '800' },
-  smallBtnDisabled: { backgroundColor: '#1f254f' },
-  smallBtnTextDisabled: { color: '#6c7094' },
-  searchMessage: { color: '#8c91b5', fontSize: 12, lineHeight: 18, marginTop: 12 },
-  acceptBtn: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#00c9b1', alignItems: 'center', justifyContent: 'center' },
-  rejectBtn: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#ff5c5c22', borderWidth: 1, borderColor: '#ff5c5c55', alignItems: 'center', justifyContent: 'center' },
-  removeBtn: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#ff5c5c18', borderWidth: 1, borderColor: '#ff5c5c44', alignItems: 'center', justifyContent: 'center' },
-  emptyText: { color: '#6c7094', fontSize: 12, lineHeight: 18, paddingTop: 4 },
-  scoreRow: { flexDirection: 'row', gap: 10, marginTop: 6 },
-  scoreBox: { flex: 1, backgroundColor: '#0b1030', borderRadius: 12, borderWidth: 1, borderColor: '#1f254f', padding: 12 },
-  metricValue: { color: '#00c9b1', fontSize: 18, fontWeight: '900' },
-  metricLabel: { color: '#6c7094', fontSize: 10, fontWeight: '700', marginTop: 4 },
-  subhead: { color: '#c8b8ff', fontSize: 12, fontWeight: '900', marginTop: 16, marginBottom: 8, letterSpacing: 0.3 },
-  factorGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  factorCell: { width: '48%', backgroundColor: '#0b1030', borderRadius: 10, borderWidth: 1, borderColor: '#1f254f', padding: 10 },
-  factorLabel: { color: '#8c91b5', fontSize: 10, fontWeight: '700', marginBottom: 4 },
-  factorValue: { color: '#fff', fontSize: 15, fontWeight: '900' },
-  resultRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: '#1f254f', paddingVertical: 10 },
-  resultName: { color: '#fff', fontSize: 12, fontWeight: '800', textTransform: 'capitalize' },
-  resultScore: { color: '#c8b8ff', fontSize: 12, fontWeight: '900' },
-  messageGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  messageBtn: { width: '48%', backgroundColor: '#7c3aed22', borderWidth: 1, borderColor: '#7c3aed55', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 8, alignItems: 'center' },
-  messageBtnText: { color: '#c8b8ff', fontSize: 11, fontWeight: '800', textAlign: 'center' },
-  messageRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 9, borderTopWidth: 1, borderTopColor: '#1f254f', paddingVertical: 10 },
-  messageText: { color: '#fff', fontSize: 12, lineHeight: 17 },
-  navWrap: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#030A31', borderTopWidth: 1, borderTopColor: '#1f254f' },
-  nav: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
-  navItem: { alignItems: 'center', width: 64 },
-  navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#ff5c5c', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
-  navBadgeText: { color: '#fff', fontSize: 9, fontWeight: '900' },
-  navLabel: { color: '#6c7094', fontSize: 10, marginTop: 4, fontWeight: '600' },
-  activeDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#8a52f3', position: 'absolute', bottom: -8 },
+  safeTop: { flex: 0, backgroundColor: '#030827', paddingTop: Platform.OS === 'android' ? 25 : 0 }, safeBottom: { flex: 1, backgroundColor: '#030A31' }, root: { flex: 1 }, scroll: { padding: 20, paddingTop: 24 },
+  header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 }, headerText: { alignItems: 'center', flex: 1 }, iconButton: { alignItems: 'center', height: 44, justifyContent: 'center', width: 44 }, heading: { color: '#fff', fontSize: 24, fontWeight: '800' }, context: { color: '#858bab', fontSize: 11, marginTop: 3 },
+  notice: { backgroundColor: '#123c36', borderColor: '#1f8a70', borderRadius: 12, borderWidth: 1, marginBottom: 14, padding: 12 }, noticeError: { backgroundColor: '#3c1822', borderColor: '#a33a50' }, noticeText: { color: '#f2f2f7', fontSize: 13 },
+  pills: { gap: 9, marginBottom: 15 }, pill: { backgroundColor: '#1a2147', borderColor: '#303963', borderRadius: 12, borderWidth: 1, minWidth: 112, padding: 10 }, pillActive: { backgroundColor: '#40227a', borderColor: '#8b5cf6' }, pillText: { color: '#c7cbe0', fontSize: 13, fontWeight: '700' }, pillTextActive: { color: '#fff' }, role: { color: '#9da2c1', fontSize: 10, marginTop: 3, textTransform: 'capitalize' },
+  sectionTabs: { backgroundColor: '#101631', borderRadius: 13, flexDirection: 'row', marginBottom: 16, padding: 4 }, sectionTab: { alignItems: 'center', borderRadius: 10, flex: 1, flexDirection: 'row', gap: 5, justifyContent: 'center', minHeight: 44, paddingHorizontal: 3 }, sectionTabActive: { backgroundColor: '#5b35b5' }, sectionTabText: { color: '#8389aa', fontSize: 11, fontWeight: '700' }, sectionTabTextActive: { color: '#fff' },
+  routineEmpty: { alignItems: 'center', paddingVertical: 10 }, routineEmptyTitle: { color: '#fff', fontSize: 16, fontWeight: '800', marginTop: 8 }, progressTrack: { backgroundColor: '#252c52', borderRadius: 4, height: 7, marginTop: 14, overflow: 'hidden', width: '100%' }, progressFill: { backgroundColor: '#8b5cf6', height: 7 }, progressText: { color: '#aeb2cf', fontSize: 11, marginTop: 7 }, routineCard: { alignItems: 'center', backgroundColor: '#171e41', borderRadius: 12, flexDirection: 'row', gap: 10, marginBottom: 8, padding: 12 }, routineIcon: { alignItems: 'center', backgroundColor: '#30245a', borderRadius: 18, height: 36, justifyContent: 'center', width: 36 }, routineTime: { color: '#fff', fontSize: 14, fontWeight: '800' }, routineNotes: { color: '#c7cbe0', fontSize: 12, lineHeight: 18, marginTop: 7 }, guidanceNote: { backgroundColor: '#202747', borderRadius: 10, color: '#c7cbe0', fontSize: 11, lineHeight: 17, marginTop: 6, padding: 10 }, comparisonRow: { alignItems: 'flex-start', flexDirection: 'row', gap: 9, marginBottom: 10 }, comparisonText: { color: '#d8d9e8', flex: 1, fontSize: 12, lineHeight: 18 }, routineField: { flex: 1, marginBottom: 4 }, twoFields: { flexDirection: 'row', gap: 10 }, fieldHalf: { flex: 1 }, saveRoutine: { alignItems: 'flex-end', marginTop: 14 }, generalDisclaimer: { color: '#777d9e', fontSize: 10, lineHeight: 15, marginTop: 5 },
+  summaryEmpty: { alignItems: 'center', flexDirection: 'row', gap: 12, paddingVertical: 8 }, summaryHero: { alignItems: 'center', backgroundColor: '#211a49', borderColor: '#463487', borderRadius: 13, borderWidth: 1, flexDirection: 'row', padding: 13 }, summaryEyebrow: { color: '#9f91d8', fontSize: 9, fontWeight: '800' }, summaryValue: { color: '#fff', fontSize: 22, fontWeight: '800', marginTop: 3 }, summaryDetail: { color: '#aeb2cf', fontSize: 10, lineHeight: 15, marginTop: 3 }, learningBanner: { alignItems: 'flex-start', backgroundColor: '#302916', borderColor: '#6d5823', borderRadius: 10, borderWidth: 1, flexDirection: 'row', gap: 8, marginTop: 9, padding: 10 }, learningText: { color: '#d9c990', flex: 1, fontSize: 10, lineHeight: 15 }, historyTitle: { color: '#fff', fontSize: 13, fontWeight: '800', marginBottom: 5, marginTop: 14 }, summaryDay: { alignItems: 'flex-start', borderBottomColor: '#252c52', borderBottomWidth: 1, flexDirection: 'row', paddingVertical: 10 }, dayDate: { width: 53 }, dayName: { color: '#d9daea', fontSize: 11, fontWeight: '800' }, dayNumber: { color: '#777d9e', fontSize: 9, marginTop: 2 }, dayMetrics: { color: '#e3e4ef', fontSize: 11, lineHeight: 16 }, dayStatus: { color: '#d6a957', fontSize: 9, fontWeight: '700', marginTop: 3 }, dayStatusGood: { color: '#77d6b5' }, dayComparison: { color: '#858bab', fontSize: 9, lineHeight: 14, marginTop: 3 }, dayNotes: { color: '#a78bfa', fontSize: 9, marginTop: 3 },
+  workingCard: { alignItems: 'flex-start', backgroundColor: '#17332f', borderColor: '#246b5b', borderRadius: 12, borderWidth: 1, flexDirection: 'row', gap: 10, marginBottom: 11, padding: 12 }, workingTitle: { color: '#d9fff2', fontSize: 13, fontWeight: '800' }, workingText: { color: '#a9d8c9', fontSize: 11, lineHeight: 17, marginTop: 3 }, leaveNoteButton: { alignItems: 'center', backgroundColor: '#7c3aed', borderRadius: 11, flexDirection: 'row', gap: 8, justifyContent: 'center', minHeight: 48 }, leaveNoteText: { color: '#fff', fontSize: 13, fontWeight: '800' }, filterRow: { gap: 7, paddingBottom: 10 }, rangeRow: { flexDirection: 'row', gap: 7, marginBottom: 8 }, filterChip: { backgroundColor: '#202747', borderColor: '#303963', borderRadius: 16, borderWidth: 1, justifyContent: 'center', minHeight: 32, paddingHorizontal: 11 }, filterChipActive: { backgroundColor: '#5430a7', borderColor: '#8b5cf6' }, filterChipText: { color: '#aeb2cf', fontSize: 10, fontWeight: '700' }, filterChipTextActive: { color: '#fff' }, dayGroup: { borderTopColor: '#252c52', borderTopWidth: 1, marginTop: 8, paddingTop: 10 }, dayLabel: { color: '#858bab', fontSize: 10, fontWeight: '800', marginBottom: 8, textTransform: 'uppercase' }, handoffCard: { backgroundColor: '#171e41', borderRadius: 12, marginBottom: 8, padding: 11 }, handoffHeader: { alignItems: 'center', flexDirection: 'row' }, avatarSmall: { alignItems: 'center', backgroundColor: '#30245a', borderRadius: 15, height: 30, justifyContent: 'center', marginRight: 8, width: 30 }, noteActions: { flexDirection: 'row', gap: 16, padding: 6 }, noteTags: { flexDirection: 'row', flexWrap: 'wrap', gap: 5, marginTop: 9 }, noteTag: { backgroundColor: '#30245a', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 4 }, noteTagText: { color: '#d6ccff', fontSize: 9, fontWeight: '700' }, handoffText: { color: '#e3e4ef', fontSize: 12, lineHeight: 18, marginTop: 9 }, sharedEvent: { alignItems: 'center', backgroundColor: '#151b3b', borderRadius: 11, flexDirection: 'row', marginBottom: 7, minHeight: 54, padding: 10 }, sharedTime: { color: '#aeb2cf', fontSize: 10, fontWeight: '700', textAlign: 'right' }, modalSubtitle: { color: '#858bab', fontSize: 11, marginTop: 3 }, handoffInput: { flex: 0, minHeight: 92, paddingTop: 12, textAlignVertical: 'top' }, characterCount: { color: '#777d9e', fontSize: 9, marginTop: 4, textAlign: 'right' },
+  manageAccessButton: { alignItems: 'center', backgroundColor: '#1b2144', borderRadius: 10, flexDirection: 'row', gap: 8, marginTop: 9, minHeight: 44, paddingHorizontal: 12 }, manageAccessText: { color: '#d6ccff', flex: 1, fontSize: 12, fontWeight: '700' }, wellnessStats: { flexDirection: 'row', gap: 10 }, wellnessStat: { backgroundColor: '#211a49', borderRadius: 12, flex: 1, padding: 13 }, hardWeek: { alignItems: 'flex-start', backgroundColor: '#302916', borderColor: '#6d5823', borderRadius: 10, borderWidth: 1, flexDirection: 'row', gap: 8, marginTop: 10, padding: 10 }, hardWeekText: { color: '#e6d49b', flex: 1, fontSize: 11, lineHeight: 17 }, checkRow: { alignItems: 'center', flexDirection: 'row', gap: 9, marginTop: 14 }, checkText: { color: '#d8d9e8', flex: 1, fontSize: 12, lineHeight: 18 }, supportLink: { alignItems: 'center', backgroundColor: '#171e41', borderRadius: 11, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, minHeight: 52, padding: 12 }, supportLinkText: { color: '#a78bfa', fontSize: 13, fontWeight: '800' }, medicationLock: { alignItems: 'flex-start', backgroundColor: '#302916', borderColor: '#806426', borderRadius: 14, borderWidth: 1, flexDirection: 'row', gap: 10, marginBottom: 14, padding: 14 }, medicationLockTitle: { color: '#ffe7a3', fontSize: 13, fontWeight: '800' }, medicationLockText: { color: '#d9c990', fontSize: 11, lineHeight: 17, marginTop: 4 }, medicationCard: { backgroundColor: '#171e41', borderRadius: 12, marginTop: 10, padding: 12 }, medicationHeader: { alignItems: 'center', flexDirection: 'row', gap: 8 }, clinicianLabel: { color: '#77d6b5', fontSize: 9, fontWeight: '700', marginTop: 7 }, medicationActions: { flexDirection: 'row', gap: 8, justifyContent: 'flex-end', marginTop: 10 }, medicationLog: { alignItems: 'center', borderBottomColor: '#252c52', borderBottomWidth: 1, flexDirection: 'row', gap: 10, minHeight: 58 },
+  prompt: { color: '#fff', fontSize: 20, fontWeight: '800', marginBottom: 12 }, eventGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 11, marginBottom: 12 }, eventButton: { alignItems: 'center', backgroundColor: '#151b3b', borderColor: '#262e57', borderRadius: 18, borderWidth: 1, minHeight: 132, justifyContent: 'center', padding: 15, width: '48%' }, eventIcon: { alignItems: 'center', borderRadius: 25, height: 50, justifyContent: 'center', marginBottom: 9, width: 50 }, eventTitle: { color: '#fff', fontSize: 17, fontWeight: '800' }, eventHint: { color: '#777d9e', fontSize: 11, marginTop: 3 },
+  customButton: { alignItems: 'center', backgroundColor: '#171d3d', borderColor: '#2a3260', borderRadius: 14, borderWidth: 1, flexDirection: 'row', gap: 10, marginBottom: 16, minHeight: 52, paddingHorizontal: 15 }, customButtonText: { color: '#c7cbe0', flex: 1, fontSize: 13, fontWeight: '700' },
+  section: { backgroundColor: '#111735', borderColor: '#222a55', borderRadius: 16, borderWidth: 1, marginBottom: 14, padding: 16 }, sectionTitle: { color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 12 },
+  emptyState: { alignItems: 'center', paddingVertical: 18 }, empty: { color: '#858bab', fontSize: 12, lineHeight: 18, marginTop: 9, textAlign: 'center' }, timelineRow: { alignItems: 'center', borderBottomColor: '#252c52', borderBottomWidth: 1, flexDirection: 'row', minHeight: 55 }, timelineLast: { borderBottomWidth: 0 }, timelineDot: { backgroundColor: '#8b5cf6', borderRadius: 5, height: 10, marginRight: 10, width: 10 }, timelineTime: { color: '#aeb2cf', fontSize: 12, fontWeight: '700', width: 78 }, timelineTitle: { color: '#fff', fontSize: 13, fontWeight: '700' }, loggedBy: { color: '#777d9e', fontSize: 10 },
+  inputRow: { alignItems: 'center', flexDirection: 'row', gap: 10 }, input: { backgroundColor: '#1a2147', borderColor: '#303963', borderRadius: 11, borderWidth: 1, color: '#fff', flex: 1, fontSize: 14, minHeight: 46, paddingHorizontal: 13 }, noteInput: { flex: 0, minHeight: 72, paddingTop: 12, textAlignVertical: 'top' }, smallButton: { alignItems: 'center', backgroundColor: '#7c3aed', borderRadius: 10, justifyContent: 'center', minHeight: 44, paddingHorizontal: 14 }, secondaryButton: { backgroundColor: '#2a3157' }, dangerButton: { backgroundColor: '#9f2f43' }, disabled: { opacity: 0.45 }, smallButtonText: { color: '#fff', fontSize: 12, fontWeight: '800' },
+  rowCard: { alignItems: 'center', backgroundColor: '#171e41', borderRadius: 12, flexDirection: 'row', gap: 9, marginBottom: 8, padding: 11 }, grow: { flex: 1 }, rowTitle: { color: '#f8f8fc', fontSize: 13, fontWeight: '700' }, muted: { color: '#858bab', fontSize: 11, marginTop: 3 }, mutedBlock: { color: '#858bab', fontSize: 12, lineHeight: 18, marginBottom: 11 }, avatar: { alignItems: 'center', backgroundColor: '#30245a', borderRadius: 19, height: 38, justifyContent: 'center', width: 38 }, readOnly: { color: '#aeb2cf', fontSize: 13, lineHeight: 20 }, loader: { marginVertical: 28 },
+  modalOverlay: { alignItems: 'center', backgroundColor: 'rgba(0,0,0,.78)', flex: 1, justifyContent: 'center', padding: 20 }, modalCard: { backgroundColor: '#10162f', borderColor: '#2b3460', borderRadius: 20, borderWidth: 1, maxWidth: 480, padding: 20, width: '100%' }, modalHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }, modalTitle: { color: '#fff', fontSize: 20, fontWeight: '800' }, fieldLabel: { color: '#c7cbe0', fontSize: 12, fontWeight: '700', marginBottom: 8, marginTop: 13 }, typeWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, typeChip: { backgroundColor: '#202747', borderRadius: 18, minHeight: 38, paddingHorizontal: 13, justifyContent: 'center' }, typeChipActive: { backgroundColor: '#6840c7' }, typeChipText: { color: '#aeb2cf', fontSize: 12, fontWeight: '700' }, typeChipTextActive: { color: '#fff' }, modalActions: { flexDirection: 'row', gap: 10, justifyContent: 'flex-end', marginTop: 18 },
+  navWrap: { backgroundColor: '#030A31', borderTopColor: '#1f254f', borderTopWidth: 1, bottom: 0, left: 0, position: 'absolute', right: 0 }, nav: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 }, navItem: { alignItems: 'center', minWidth: 54, position: 'relative' }, navLabel: { color: '#6c7094', fontSize: 10, marginTop: 4 }, navActive: { color: '#8a52f3' }, badge: { alignItems: 'center', backgroundColor: '#ef4444', borderRadius: 9, height: 18, justifyContent: 'center', position: 'absolute', right: 5, top: -7, width: 18, zIndex: 2 }, badgeText: { color: '#fff', fontSize: 9, fontWeight: '800' },
 });
