@@ -234,7 +234,7 @@ export default function UserInfoScreen({ navigation }) {
             scrollEnabled
           >
             <Text style={styles.title}>Tell us about you</Text>
-            <Text style={styles.sub}>This helps personalize your result.</Text>
+            <Text style={styles.sub}>Used to calculate your BMI and factors.</Text>
 
             {/* Age */}
             <Text style={styles.label}>Age</Text>

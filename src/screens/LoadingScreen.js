@@ -79,7 +79,7 @@ export default function LoadingScreen({ navigation }) {
               
               {/* Static center magic wand icon */}
               <View style={styles.centerIcon}>
-                <MaterialCommunityIcons name="auto-fix" size={40} color="#ffffff" />
+                <MaterialCommunityIcons name="auto-fix" size={40} color="#E07B3C" />
               </View>
             </View>
 
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#3D2B1F',
     marginBottom: 16,
   },
   subtitle: {

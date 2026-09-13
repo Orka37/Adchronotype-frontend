@@ -118,8 +118,11 @@ function RootNavigator() {
 
   if (loading || !splashChecked || (user && loadingSavedPrediction)) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#05082a', justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#7c3aed" />
+      <View style={styles.startupLoading}>
+        <View style={styles.startupLoadingAura}>
+          <ActivityIndicator size="large" color="#E07B3C" />
+        </View>
+        <Text style={styles.startupLoadingText}>Preparing ADChronotype…</Text>
       </View>
     );
   }
@@ -158,30 +161,30 @@ export default function App() {
 const styles = StyleSheet.create({
   errorScreen: {
     flex: 1,
-    backgroundColor: '#05082a',
+    backgroundColor: '#FDF6F0',
     justifyContent: 'center',
     padding: 24,
   },
   errorTitle: {
-    color: '#ffffff',
+    color: '#3D2B1F',
     fontSize: 24,
     fontWeight: '800',
     marginBottom: 12,
   },
   errorText: {
-    color: '#b9bad4',
+    color: '#8A6A4E',
     fontSize: 16,
     lineHeight: 24,
     marginBottom: 16,
   },
   errorDetail: {
-    color: '#ffb4b4',
+    color: '#D9694F',
     fontSize: 13,
     lineHeight: 20,
     marginBottom: 24,
   },
   errorButton: {
-    backgroundColor: '#7c3aed',
+    backgroundColor: '#E07B3C',
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
@@ -190,5 +193,27 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '800',
     fontSize: 16,
+  },
+  startupLoading: {
+    alignItems: 'center',
+    backgroundColor: '#FDF6F0',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  startupLoadingAura: {
+    alignItems: 'center',
+    backgroundColor: '#FBEADB',
+    borderColor: '#F0D9C5',
+    borderRadius: 42,
+    borderWidth: 1,
+    height: 84,
+    justifyContent: 'center',
+    width: 84,
+  },
+  startupLoadingText: {
+    color: '#8A6A4E',
+    fontSize: 15,
+    fontWeight: '600',
+    marginTop: 18,
   },
 });
