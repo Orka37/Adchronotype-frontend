@@ -11,44 +11,44 @@ import { recordPreAuthLegalConsent } from '../utils/legalConsent';
 function BrainIllustration() {
   return (
     <Svg width={260} height={260} viewBox="0 0 260 260">
-      <Circle cx="130" cy="130" r="110" fill="#1a1060" opacity="0.6" />
-      <Circle cx="130" cy="130" r="90" fill="#200e70" opacity="0.4" />
-      <G stroke="#4a3090" strokeWidth="1.5" opacity="0.7">
+      <Circle cx="130" cy="130" r="110" fill="#F4C9A8" opacity="0.6" />
+      <Circle cx="130" cy="130" r="90" fill="#F6D8BE" opacity="0.4" />
+      <G stroke="#B76334" strokeWidth="1.5" opacity="0.7">
         <Line x1="20" y1="80"  x2="60"  y2="110" />
         <Line x1="20" y1="80"  x2="30"  y2="55"  />
         <Line x1="30" y1="55"  x2="50"  y2="40"  />
         <Line x1="60" y1="110" x2="45"  y2="130" />
         <Line x1="45" y1="130" x2="25"  y2="145" />
         <Line x1="45" y1="130" x2="55"  y2="155" />
-        <Circle cx="20" cy="80"  r="4" fill="#6a3ab0" />
-        <Circle cx="30" cy="55"  r="3" fill="#5a2aa0" />
-        <Circle cx="25" cy="145" r="4" fill="#6a3ab0" />
+        <Circle cx="20" cy="80"  r="4" fill="#E07B3C" />
+        <Circle cx="30" cy="55"  r="3" fill="#C96F37" />
+        <Circle cx="25" cy="145" r="4" fill="#E07B3C" />
       </G>
-      <G stroke="#4a3090" strokeWidth="1.5" opacity="0.7">
+      <G stroke="#B76334" strokeWidth="1.5" opacity="0.7">
         <Line x1="240" y1="90"  x2="200" y2="115" />
         <Line x1="240" y1="90"  x2="245" y2="60"  />
         <Line x1="245" y1="60"  x2="230" y2="40"  />
         <Line x1="200" y1="115" x2="220" y2="140" />
         <Line x1="220" y1="140" x2="245" y2="150" />
         <Line x1="220" y1="140" x2="215" y2="165" />
-        <Circle cx="240" cy="90"  r="4" fill="#6a3ab0" />
-        <Circle cx="245" cy="60"  r="3" fill="#5a2aa0" />
-        <Circle cx="245" cy="150" r="4" fill="#6a3ab0" />
+        <Circle cx="240" cy="90"  r="4" fill="#E07B3C" />
+        <Circle cx="245" cy="60"  r="3" fill="#C96F37" />
+        <Circle cx="245" cy="150" r="4" fill="#E07B3C" />
       </G>
       <Path
         d="M130 45 C95 45, 68 68, 65 100 C62 125, 72 148, 85 162 C90 168, 92 178, 92 188 L168 188 C168 178, 170 168, 175 162 C188 148, 198 125, 195 100 C192 68, 165 45, 130 45 Z"
-        fill="#2a1480" stroke="#5a30c0" strokeWidth="2"
+        fill="#C96F37" stroke="#E07B3C" strokeWidth="2"
       />
-      <Path d="M108 188 L108 205 L152 205 L152 188 Z" fill="#2a1480" stroke="#5a30c0" strokeWidth="1.5" />
-      <Circle cx="130" cy="115" r="52" fill="#1a0a60" opacity="0.8" />
-      <Circle cx="138" cy="112" r="34" fill="#c8b8ff" opacity="0.95" />
-      <Circle cx="150" cy="105" r="28" fill="#2a1480" />
+      <Path d="M108 188 L108 205 L152 205 L152 188 Z" fill="#C96F37" stroke="#E07B3C" strokeWidth="1.5" />
+      <Circle cx="130" cy="115" r="52" fill="#EBA774" opacity="0.8" />
+      <Circle cx="138" cy="112" r="34" fill="#E07B3C" opacity="0.95" />
+      <Circle cx="150" cy="105" r="28" fill="#C96F37" />
       <Circle cx="110" cy="100" r="2.5" fill="#fff" opacity="0.9" />
       <Circle cx="155" cy="128" r="2"   fill="#fff" opacity="0.8" />
       <Circle cx="118" cy="132" r="1.5" fill="#fff" opacity="0.7" />
       <Circle cx="128" cy="92"  r="1.5" fill="#fff" opacity="0.6" />
       <Circle cx="142" cy="138" r="1.5" fill="#fff" opacity="0.7" />
-      <Circle cx="138" cy="112" r="38" fill="transparent" stroke="#a080ff" strokeWidth="1" opacity="0.4" />
+      <Circle cx="138" cy="112" r="38" fill="transparent" stroke="#F0955A" strokeWidth="1" opacity="0.4" />
       <Circle cx="55"  cy="55"  r="2"   fill="#fff" opacity="0.7" />
       <Circle cx="205" cy="70"  r="1.5" fill="#fff" opacity="0.6" />
       <Circle cx="45"  cy="175" r="1.5" fill="#fff" opacity="0.5" />
@@ -85,7 +85,7 @@ export default function SplashScreen({ navigation, route, onDone }) {
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.root}>
           <LinearGradient
-            colors={['#05082a', '#0a0d3a', '#080520']}
+            colors={['#FDF6F0', '#FDF6F0', '#FDF6F0']}
             style={StyleSheet.absoluteFillObject}
           />
           {[
@@ -168,8 +168,8 @@ export default function SplashScreen({ navigation, route, onDone }) {
 }
 
 const styles = StyleSheet.create({
-  safeTop:    { flex: 0, backgroundColor: '#05082a', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: '#05082a' },
+  safeTop:    { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom: { flex: 1, backgroundColor: '#FDF6F0' },
   root:       { flex: 1, overflow: 'hidden' },
   star:       { position: 'absolute', width: 3, height: 3, borderRadius: 1.5, backgroundColor: '#fff' },
   scroll:     { alignItems: 'center', paddingHorizontal: 22, paddingTop: 16 },
@@ -178,31 +178,31 @@ const styles = StyleSheet.create({
 
   titleRow:   { flexDirection: 'row', alignItems: 'baseline', marginBottom: 10 },
   titleBold:  { color: '#ffffff', fontSize: 38, fontWeight: '900' },
-  titleLight: { color: '#a080ff', fontSize: 38, fontWeight: '300' },
+  titleLight: { color: '#F0955A', fontSize: 38, fontWeight: '300' },
 
-  tagline:    { color: '#8080a0', fontSize: 14, textAlign: 'center', lineHeight: 22, marginBottom: 20, paddingHorizontal: 10 },
+  tagline:    { color: '#8A6A4E', fontSize: 14, textAlign: 'center', lineHeight: 22, marginBottom: 20, paddingHorizontal: 10 },
 
   purposeCard: { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: 18, marginBottom: 14, width: '100%', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
-  purposeText: { color: '#ffffff', fontSize: 14, fontWeight: '600', textAlign: 'center', lineHeight: 22 },
+  purposeText: { color: '#3D2B1F', fontSize: 14, fontWeight: '600', textAlign: 'center', lineHeight: 22 },
 
-  disclaimerCard:   { backgroundColor: 'rgba(10,8,40,0.8)', borderRadius: 14, padding: 16, marginBottom: 20, width: '100%', borderWidth: 1.5, borderColor: '#ffb83066' },
+  disclaimerCard:   { backgroundColor: '#FBEED2', borderRadius: 14, padding: 16, marginBottom: 20, width: '100%', borderWidth: 1.5, borderColor: '#E9A94A66' },
   disclaimerHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
   disclaimerIcon:   { fontSize: 16 },
-  disclaimerTitle:  { color: '#ffb830', fontSize: 13, fontWeight: '800', letterSpacing: 0.5 },
-  disclaimerBody:   { color: '#c0c0d8', fontSize: 12, lineHeight: 20 },
-  appNameHighlight: { color: '#ffb830', fontWeight: '700' },
-  notHighlight:     { color: '#ffb830', fontWeight: '800' },
+  disclaimerTitle:  { color: '#E9A94A', fontSize: 13, fontWeight: '800', letterSpacing: 0.5 },
+  disclaimerBody:   { color: '#6B5744', fontSize: 12, lineHeight: 20 },
+  appNameHighlight: { color: '#E9A94A', fontWeight: '700' },
+  notHighlight:     { color: '#E9A94A', fontWeight: '800' },
 
   termsRow:   { width: '100%', marginBottom: 10, paddingHorizontal: 4 },
-  termsText:  { color: '#8080a0', fontSize: 13, textAlign: 'center', lineHeight: 20 },
-  termsLink:  { color: '#7c3aed', fontWeight: '700', textDecorationLine: 'underline' },
+  termsText:  { color: '#8A6A4E', fontSize: 13, textAlign: 'center', lineHeight: 20 },
+  termsLink:  { color: '#E07B3C', fontWeight: '700', textDecorationLine: 'underline' },
 
-  acceptedBadge: { backgroundColor: '#00c9b122', borderRadius: 10, paddingVertical: 7, paddingHorizontal: 14, marginBottom: 10, alignSelf: 'center', borderWidth: 1, borderColor: '#00c9b144' },
-  acceptedText:  { color: '#00c9b1', fontSize: 12, fontWeight: '700' },
+  acceptedBadge: { backgroundColor: '#7EC49A22', borderRadius: 10, paddingVertical: 7, paddingHorizontal: 14, marginBottom: 10, alignSelf: 'center', borderWidth: 1, borderColor: '#7EC49A44' },
+  acceptedText:  { color: '#7EC49A', fontSize: 12, fontWeight: '700' },
 
-  readFirst:  { color: '#4a5270', fontSize: 11, textAlign: 'center', marginTop: 8 },
+  readFirst:  { color: '#B09A86', fontSize: 11, textAlign: 'center', marginTop: 8 },
 
-  btn:          { backgroundColor: '#7c3aed', borderRadius: 16, height: 54, alignItems: 'center', justifyContent: 'center', width: '100%' },
-  btnDisabled:  { backgroundColor: '#3a2070', opacity: 0.6 },
+  btn:          { backgroundColor: '#E07B3C', borderRadius: 16, height: 54, alignItems: 'center', justifyContent: 'center', width: '100%' },
+  btnDisabled:  { backgroundColor: '#C98B65', opacity: 0.6 },
   btnText:      { color: '#fff', fontSize: 17, fontWeight: '700' },
 });

@@ -91,9 +91,9 @@ const drum = StyleSheet.create({
   wrap:       { flex: 1, height: ITEM_H * 5, overflow: 'hidden', position: 'relative' },
   item:       { height: ITEM_H, alignItems: 'center', justifyContent: 'center' },
   itemSel:    { backgroundColor: 'transparent' },
-  label:      { color: '#4a5270', fontSize: 20, fontWeight: '600' },
-  labelSel:   { color: '#ffffff', fontSize: 26, fontWeight: '800' },
-  hl:         { position: 'absolute', top: ITEM_H * 2, left: 0, right: 0, height: ITEM_H, borderTopWidth: 1.5, borderBottomWidth: 1.5, borderColor: '#7c3aed55', backgroundColor: '#7c3aed0a', zIndex: 1, pointerEvents: 'none' },
+  label:      { color: '#B09A86', fontSize: 20, fontWeight: '600' },
+  labelSel:   { color: '#3D2B1F', fontSize: 26, fontWeight: '800' },
+  hl:         { position: 'absolute', top: ITEM_H * 2, left: 0, right: 0, height: ITEM_H, borderTopWidth: 1.5, borderBottomWidth: 1.5, borderColor: '#E07B3C55', backgroundColor: '#E07B3C0a', zIndex: 1, pointerEvents: 'none' },
   fadeTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: ITEM_H * 2, backgroundColor: 'transparent', zIndex: 2 },
   fadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: ITEM_H * 2, backgroundColor: 'transparent', zIndex: 2 },
 });
@@ -159,15 +159,15 @@ export default function SleepTimeScreen({ navigation }) {
       <SafeAreaView style={styles.safeAreaTop} />
       <SafeAreaView style={styles.safeAreaBottom}>
         <View style={styles.container}>
-          <LinearGradient colors={['#030827', '#030A31']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
+          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
           <View style={styles.imageContainer}>
             <Image source={require('../assets/home1.png')} style={styles.heroImage} resizeMode="cover" />
-            <LinearGradient colors={['transparent', '#030A31']} style={styles.imageOverlay} />
+            <LinearGradient colors={['transparent', '#FDF6F0']} style={styles.imageOverlay} />
           </View>
 
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-              <Feather name="chevron-left" size={28} color="#ffffff" />
+              <Feather name="chevron-left" size={28} color="#8A6A4E" />
             </TouchableOpacity>
             <StepIndicator currentStep={2} totalSteps={5} />
             <View style={{ width: 28 }} />
@@ -183,7 +183,7 @@ export default function SleepTimeScreen({ navigation }) {
               {/* Bedtime card */}
               <TouchableOpacity style={styles.timeCard} onPress={() => openPicker('bed')} activeOpacity={0.8}>
                 <View style={styles.timeCardLeft}>
-                  <Feather name="moon" size={22} color="#8a52f3" />
+                  <Feather name="moon" size={22} color="#F0955A" />
                   <View style={styles.timeCardText}>
                     <Text style={styles.timeCardLabel}>Bedtime</Text>
                     <Text style={[styles.timeCardValue, !bedTime && styles.placeholder]}>
@@ -191,7 +191,7 @@ export default function SleepTimeScreen({ navigation }) {
                     </Text>
                   </View>
                 </View>
-                <Feather name="chevron-down" size={20} color="#6c7094" />
+                <Feather name="chevron-down" size={20} color="#8A6A4E" />
               </TouchableOpacity>
 
               {/* Wake-up card */}
@@ -205,12 +205,12 @@ export default function SleepTimeScreen({ navigation }) {
                     </Text>
                   </View>
                 </View>
-                <Feather name="chevron-down" size={20} color="#6c7094" />
+                <Feather name="chevron-down" size={20} color="#8A6A4E" />
               </TouchableOpacity>
 
               {/* Duration summary */}
               <View style={styles.summaryBox}>
-                <Feather name="clock" size={22} color="#8a52f3" />
+                <Feather name="clock" size={22} color="#F0955A" />
                 <View style={{ marginLeft: 12 }}>
                   <Text style={styles.summaryLabel}>You sleep about</Text>
                   <Text style={styles.summaryValue}>
@@ -261,7 +261,7 @@ export default function SleepTimeScreen({ navigation }) {
 
             <View style={styles.clockFace}>
               <Svg width={260} height={260} style={styles.clockHandLayer} pointerEvents="none">
-                <Line x1={130} y1={130} x2={handEndX} y2={handEndY} stroke="#7c3aed" strokeWidth={4} strokeLinecap="round" />
+                <Line x1={130} y1={130} x2={handEndX} y2={handEndY} stroke="#E07B3C" strokeWidth={4} strokeLinecap="round" />
               </Svg>
               {clockItems.map((item, index) => {
                 const angle = clockAngleForValue(item, pickerStep);
@@ -311,9 +311,9 @@ export default function SleepTimeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeAreaTop:    { flex: 0, backgroundColor: '#030827', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeAreaBottom: { flex: 1, backgroundColor: '#030A31' },
-  container:      { flex: 1, backgroundColor: '#030A31', paddingHorizontal: 20 },
+  safeAreaTop:    { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeAreaBottom: { flex: 1, backgroundColor: '#FDF6F0' },
+  container:      { flex: 1, backgroundColor: '#FDF6F0', paddingHorizontal: 20 },
   imageContainer: { position: 'absolute', top: 0, left: 0, right: 0, height: '50%', zIndex: -1 },
   heroImage:      { width: '100%', height: '100%', opacity: 0.9 },
   imageOverlay:   { position: 'absolute', bottom: 0, left: 0, right: 0, height: 180 },
@@ -321,55 +321,55 @@ const styles = StyleSheet.create({
   backButton:     { padding: 4 },
   contentWrapper: { flex: 1, paddingTop: 24 },
   textContainer:  { alignItems: 'center', marginBottom: 32 },
-  title:          { fontSize: 28, fontWeight: 'bold', color: '#fff', textAlign: 'center', lineHeight: 36, marginBottom: 10 },
-  subtitle:       { fontSize: 15, color: '#e0e0e0', textAlign: 'center' },
+  title:          { fontSize: 28, fontWeight: 'bold', color: '#3D2B1F', textAlign: 'center', lineHeight: 36, marginBottom: 10 },
+  subtitle:       { fontSize: 15, color: '#8A6A4E', textAlign: 'center' },
   inputsContainer:{ gap: 14 },
 
-  timeCard:      { backgroundColor: '#161b3d', borderRadius: 16, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1.5, borderColor: '#7c3aed44' },
+  timeCard:      { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1.5, borderColor: '#E07B3C44' },
   wakeCard:      { borderColor: '#fcd53f44' },
   timeCardLeft:  { flexDirection: 'row', alignItems: 'center', gap: 14 },
   timeCardText:  {},
-  timeCardLabel: { color: '#6c7094', fontSize: 11, fontWeight: '600', marginBottom: 4 },
-  timeCardValue: { color: '#ffffff', fontSize: 24, fontWeight: '800' },
-  placeholder:   { color: '#4a5270', fontSize: 18 },
+  timeCardLabel: { color: '#8A6A4E', fontSize: 11, fontWeight: '600', marginBottom: 4 },
+  timeCardValue: { color: '#3D2B1F', fontSize: 24, fontWeight: '800' },
+  placeholder:   { color: '#B09A86', fontSize: 18 },
 
-  summaryBox:    { backgroundColor: '#161b3d', borderRadius: 14, padding: 16, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#1f254f' },
-  summaryLabel:  { color: '#6c7094', fontSize: 12 },
-  summaryValue:  { color: '#fff', fontSize: 20, fontWeight: '700' },
+  summaryBox:    { backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#F0E2D4' },
+  summaryLabel:  { color: '#8A6A4E', fontSize: 12 },
+  summaryValue:  { color: '#3D2B1F', fontSize: 20, fontWeight: '700' },
 
   bottomContainer:    { marginBottom: 20, marginTop: 16 },
-  nextButton:         { backgroundColor: '#8a52f3', paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
+  nextButton:         { backgroundColor: '#F0955A', paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
   nextButtonDisabled: { opacity: 0.5 },
   nextButtonText:     { color: '#fff', fontSize: 18, fontWeight: '600' },
 
   // Picker modal
   modalOverlay:   { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' },
-  pickerContainer:{ backgroundColor: '#161b3d', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: 30 },
-  pickerHandle:   { width: 40, height: 4, backgroundColor: '#2a3060', borderRadius: 2, alignSelf: 'center', marginTop: 10 },
-  pickerHeader:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, borderBottomWidth: 1, borderBottomColor: '#1f254f' },
-  pickerTitle:    { color: '#fff', fontSize: 15, fontWeight: '700' },
-  doneBtn:        { backgroundColor: '#7c3aed', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 7 },
+  pickerContainer:{ backgroundColor: '#FFFFFF', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: 30 },
+  pickerHandle:   { width: 40, height: 4, backgroundColor: '#D8C6B5', borderRadius: 2, alignSelf: 'center', marginTop: 10 },
+  pickerHeader:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
+  pickerTitle:    { color: '#3D2B1F', fontSize: 15, fontWeight: '700' },
+  doneBtn:        { backgroundColor: '#E07B3C', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 7 },
   doneBtnText:    { color: '#fff', fontSize: 13, fontWeight: '700' },
 
   clockHeaderRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 20, paddingTop: 14 },
-  clockTab:       { flex: 1, height: 38, borderRadius: 10, borderWidth: 1, borderColor: '#1f254f', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0d1030' },
-  clockTabOn:     { backgroundColor: '#7c3aed', borderColor: '#7c3aed' },
-  clockTabText:   { color: '#6c7094', fontSize: 13, fontWeight: '700' },
+  clockTab:       { flex: 1, height: 38, borderRadius: 10, borderWidth: 1, borderColor: '#F0E2D4', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FDF6F0' },
+  clockTabOn:     { backgroundColor: '#E07B3C', borderColor: '#E07B3C' },
+  clockTabText:   { color: '#8A6A4E', fontSize: 13, fontWeight: '700' },
   clockTabTextOn: { color: '#fff' },
-  clockFace:      { width: 260, height: 260, borderRadius: 130, backgroundColor: '#0d1030', borderWidth: 1, borderColor: '#1f254f', alignSelf: 'center', marginTop: 16 },
+  clockFace:      { width: 260, height: 260, borderRadius: 130, backgroundColor: '#FDF6F0', borderWidth: 1, borderColor: '#F0E2D4', alignSelf: 'center', marginTop: 16 },
   clockNumber:    { position: 'absolute', width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
-  clockNumberOn:  { backgroundColor: '#7c3aed' },
-  clockNumberText:{ color: '#8c91b5', fontSize: 13, fontWeight: '800' },
+  clockNumberOn:  { backgroundColor: '#E07B3C' },
+  clockNumberText:{ color: '#8A6A4E', fontSize: 13, fontWeight: '800' },
   clockNumberTextOn: { color: '#fff' },
   clockHandLayer: { position: 'absolute', left: 0, top: 0, zIndex: 1 },
-  clockCenter:    { position: 'absolute', left: 124, top: 124, width: 12, height: 12, borderRadius: 6, backgroundColor: '#7c3aed', zIndex: 3 },
+  clockCenter:    { position: 'absolute', left: 124, top: 124, width: 12, height: 12, borderRadius: 6, backgroundColor: '#E07B3C', zIndex: 3 },
 
   ampmRow:        { flexDirection: 'row', gap: 10, justifyContent: 'center', marginTop: 4 },
-  ampmBtn:        { paddingHorizontal: 12, paddingVertical: 10, borderRadius: 10, borderWidth: 1.5, borderColor: '#1f254f', backgroundColor: '#0d1030' },
-  ampmBtnActive:  { backgroundColor: '#7c3aed', borderColor: '#7c3aed' },
-  ampmText:       { color: '#6c7094', fontSize: 14, fontWeight: '700' },
+  ampmBtn:        { paddingHorizontal: 12, paddingVertical: 10, borderRadius: 10, borderWidth: 1.5, borderColor: '#F0E2D4', backgroundColor: '#FDF6F0' },
+  ampmBtnActive:  { backgroundColor: '#E07B3C', borderColor: '#E07B3C' },
+  ampmText:       { color: '#8A6A4E', fontSize: 14, fontWeight: '700' },
   ampmTextActive: { color: '#fff' },
 
-  previewRow:  { alignItems: 'center', paddingVertical: 12, borderTopWidth: 1, borderTopColor: '#1f254f', marginTop: 8, marginHorizontal: 20 },
-  previewText: { color: '#7c3aed', fontSize: 28, fontWeight: '800', letterSpacing: 2 },
+  previewRow:  { alignItems: 'center', paddingVertical: 12, borderTopWidth: 1, borderTopColor: '#F0E2D4', marginTop: 8, marginHorizontal: 20 },
+  previewText: { color: '#E07B3C', fontSize: 28, fontWeight: '800', letterSpacing: 2 },
 });

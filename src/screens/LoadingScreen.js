@@ -64,7 +64,7 @@ export default function LoadingScreen({ navigation }) {
       <SafeAreaView style={styles.safeAreaBottom}>
         <View style={styles.container}>
           {/* Base gradient matching the app palette */}
-          <LinearGradient colors={['#030827', '#030A31']} style={styles.background} />
+          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={styles.background} />
           
           <View style={styles.content}>
             
@@ -74,7 +74,7 @@ export default function LoadingScreen({ navigation }) {
               
               {/* Spinning purple dashed loading ring */}
               <Animated.View style={[styles.spinner, { transform: [{ rotate: spin }] }]}>
-                <MaterialCommunityIcons name="loading" size={100} color="#8a52f3" />
+                <MaterialCommunityIcons name="loading" size={100} color="#F0955A" />
               </Animated.View>
               
               {/* Static center magic wand icon */}
@@ -96,15 +96,15 @@ export default function LoadingScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeAreaTop: {
     flex: 0,
-    backgroundColor: '#030827',
+    backgroundColor: '#FDF6F0',
   },
   safeAreaBottom: {
     flex: 1,
-    backgroundColor: '#030A31',
+    backgroundColor: '#FDF6F0',
   },
   container: {
     flex: 1,
-    backgroundColor: '#030A31',
+    backgroundColor: '#FDF6F0',
   },
   background: {
     position: 'absolute',
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: 'rgba(138, 82, 243, 0.15)',
+    backgroundColor: 'rgba(240, 149, 90, 0.15)',
   },
   spinner: {
     position: 'absolute',
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: '#a0a3b8',
+    color: '#8A6A4E',
     fontWeight: '500',
   },
 });

@@ -87,7 +87,7 @@ export default function TipsScreen({ navigation }) {
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.root}>
           <LinearGradient
-            colors={['#030827', '#030A31']}
+            colors={['#FDF6F0', '#FDF6F0']}
             style={StyleSheet.absoluteFillObject}
           />
           <ScrollView
@@ -100,7 +100,7 @@ export default function TipsScreen({ navigation }) {
                 onPress={() => navigation.navigate('Report')}
                 activeOpacity={0.8}
               >
-                <Feather name="chevron-left" size={26} color="#fff" />
+                <Feather name="chevron-left" size={26} color="#8A6A4E" />
               </TouchableOpacity>
               <Text style={styles.heading}>Research Tips</Text>
               <View style={styles.headerSpacer} />
@@ -128,7 +128,7 @@ export default function TipsScreen({ navigation }) {
                     <Feather
                       name={open ? 'chevron-up' : 'chevron-down'}
                       size={18}
-                      color="#6c7094"
+                      color="#8A6A4E"
                     />
                   </TouchableOpacity>
 
@@ -143,7 +143,7 @@ export default function TipsScreen({ navigation }) {
                             onPress={() => openLink(lnk.url)}
                             activeOpacity={0.7}
                           >
-                            <Feather name="external-link" size={12} color="#7c3aed" style={{ marginRight: 7, marginTop: 2 }} />
+                            <Feather name="external-link" size={12} color="#E07B3C" style={{ marginRight: 7, marginTop: 2 }} />
                             <Text style={styles.linkText}>{lnk.label}</Text>
                           </TouchableOpacity>
                         ))}
@@ -179,8 +179,8 @@ export default function TipsScreen({ navigation }) {
                       <Text style={styles.navBadgeText}>{t.badgeCount > 9 ? '9+' : t.badgeCount}</Text>
                     </View>
                   )}
-                  <Feather name={t.icon} size={22} color={t.active ? '#8a52f3' : '#6c7094'} />
-                  <Text style={[styles.navLabel, t.active && { color: '#8a52f3' }]}>{t.label}</Text>
+                  <Feather name={t.icon} size={22} color={t.active ? '#F0955A' : '#8A6A4E'} />
+                  <Text style={[styles.navLabel, t.active && { color: '#F0955A' }]}>{t.label}</Text>
                   {t.active && <View style={styles.activeDot} />}
                 </TouchableOpacity>
               ))}
@@ -193,35 +193,35 @@ export default function TipsScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeTop:    { flex: 0, backgroundColor: '#030827', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: '#030A31' },
+  safeTop:    { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom: { flex: 1, backgroundColor: '#FDF6F0' },
   root:       { flex: 1 },
   scroll:     { padding: 20, paddingTop: 32 },
   headerRow:  { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
   backBtn:    { alignItems: 'center', height: 40, justifyContent: 'center', width: 40 },
   headerSpacer: { width: 40 },
-  heading:    { color: '#fff', fontSize: 26, fontWeight: '800' },
-  sub:        { color: '#6c7094', fontSize: 13, lineHeight: 20, marginBottom: 24 },
+  heading:    { color: '#3D2B1F', fontSize: 26, fontWeight: '800' },
+  sub:        { color: '#8A6A4E', fontSize: 13, lineHeight: 20, marginBottom: 24 },
 
-  card:       { backgroundColor: '#161b3d', borderRadius: 16, borderWidth: 1, borderColor: '#1f254f', marginBottom: 12, overflow: 'hidden' },
+  card:       { backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#F0E2D4', marginBottom: 12, overflow: 'hidden' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
   catRow:     { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
   catIcon:    { fontSize: 22 },
-  catLabel:   { color: '#7c3aed', fontSize: 10, fontWeight: '700', letterSpacing: 0.8, marginBottom: 2 },
+  catLabel:   { color: '#E07B3C', fontSize: 10, fontWeight: '700', letterSpacing: 0.8, marginBottom: 2 },
   catTitle:   { color: '#fff', fontSize: 13, fontWeight: '700' },
 
-  cardBody:   { borderTopWidth: 1, borderTopColor: '#1f254f', padding: 16, paddingTop: 14 },
-  bodyText:   { color: '#8c91b5', fontSize: 13, lineHeight: 20, marginBottom: 14 },
+  cardBody:   { borderTopWidth: 1, borderTopColor: '#F0E2D4', padding: 16, paddingTop: 14 },
+  bodyText:   { color: '#8A6A4E', fontSize: 13, lineHeight: 20, marginBottom: 14 },
   links:      { gap: 10 },
   linkRow:    { flexDirection: 'row', alignItems: 'flex-start' },
-  linkText:   { color: '#7c3aed', fontSize: 12, lineHeight: 18, flex: 1, textDecorationLine: 'underline' },
+  linkText:   { color: '#E07B3C', fontSize: 12, lineHeight: 18, flex: 1, textDecorationLine: 'underline' },
 
-  navWrap:    { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#030A31', borderTopWidth: 1, borderTopColor: '#1f254f' },
+  navWrap:    { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FDF6F0', borderTopWidth: 1, borderTopColor: '#F0E2D4' },
   nav:        { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
   navItem:    { alignItems: 'center', width: 64 },
-  navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#ff5c5c', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
+  navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
   navBadgeText: { color: '#fff', fontSize: 9, fontWeight: '900' },
-  navLabel:   { color: '#6c7094', fontSize: 10, marginTop: 4, fontWeight: '600' },
-  navLabelDisabled: { color: '#3a4060' },
-  activeDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: '#8a52f3', position: 'absolute', bottom: -8 },
+  navLabel:   { color: '#8A6A4E', fontSize: 10, marginTop: 4, fontWeight: '600' },
+  navLabelDisabled: { color: '#D1D5DB' },
+  activeDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: '#F0955A', position: 'absolute', bottom: -8 },
 });

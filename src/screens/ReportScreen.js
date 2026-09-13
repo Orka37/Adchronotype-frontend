@@ -76,9 +76,9 @@ const SUGGESTIONS = [
 
 function impactLabel(val) {
   const abs = Math.abs(val);
-  if (abs >= 10) return { text: 'High Impact', color: '#ff5c5c', icon: '⚠️' };
-  if (abs >= 5)  return { text: 'Moderate Impact', color: '#ffb830', icon: '⚠️' };
-  return { text: 'Low Impact', color: '#00c9b1', icon: '✅' };
+  if (abs >= 10) return { text: 'High Impact', color: '#D9694F', icon: '⚠️' };
+  if (abs >= 5)  return { text: 'Moderate Impact', color: '#E9A94A', icon: '⚠️' };
+  return { text: 'Low Impact', color: '#7EC49A', icon: '✅' };
 }
 
 export default function ReportScreen({ navigation }) {
@@ -95,7 +95,7 @@ export default function ReportScreen({ navigation }) {
 
   const score      = predictionResult?.prediction ?? 0;
   const similarityLabel = score >= 60 ? 'Higher Similarity' : score >= 30 ? 'Moderate Similarity' : 'Lower Similarity';
-  const riskColor  = score >= 60 ? '#ff5c5c' : score >= 30 ? '#ffb830' : '#00c9b1';
+  const riskColor  = score >= 60 ? '#D9694F' : score >= 30 ? '#E9A94A' : '#7EC49A';
   const getHeightCmValue = () => {
     if (unit === 'kg' && heightCm) return Number(heightCm);
     if (heightFt) return Math.round(((Number(heightFt || 0) * 12) + Number(heightIn || 0)) * 2.54);
@@ -151,9 +151,9 @@ export default function ReportScreen({ navigation }) {
   const bmiStatus = (() => {
     if (bmi == null) return null;
     if (bmi < 18.5) return { label: 'Underweight', color: '#3498db' };
-    if (bmi < 25) return { label: 'Healthy Weight', color: '#00c9b1' };
-    if (bmi < 30) return { label: 'Overweight', color: '#ffb830' };
-    return { label: 'Obese', color: '#ff5c5c' };
+    if (bmi < 25) return { label: 'Healthy Weight', color: '#7EC49A' };
+    if (bmi < 30) return { label: 'Overweight', color: '#E9A94A' };
+    return { label: 'Obese', color: '#D9694F' };
   })();
 
   return (
@@ -161,13 +161,13 @@ export default function ReportScreen({ navigation }) {
       <SafeAreaView style={styles.safeTop} />
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.root}>
-          <LinearGradient colors={['#030827', '#030A31']} style={StyleSheet.absoluteFillObject} />
+          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={StyleSheet.absoluteFillObject} />
 
           <ScrollView
             style={styles.scroll}
             showsVerticalScrollIndicator={false}
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#8a52f3" colors={['#8a52f3']} progressBackgroundColor="#161b3d" />
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F0955A" colors={['#F0955A']} progressBackgroundColor="#FFFFFF" />
             }
           >
             {/* Header */}
@@ -180,7 +180,7 @@ export default function ReportScreen({ navigation }) {
               onPress={() => navigation.navigate('CognitiveTest')}
               activeOpacity={0.85}
             >
-              <MaterialCommunityIcons name="brain" size={17} color="#c8b8ff" />
+              <MaterialCommunityIcons name="brain" size={17} color="#E07B3C" />
               <Text style={styles.cognitiveBtnText}>Take Cognitive Test</Text>
             </TouchableOpacity>
 
@@ -194,7 +194,7 @@ export default function ReportScreen({ navigation }) {
 
                 <View style={styles.ringWrap}>
                   <Svg width={100} height={100} viewBox="0 0 100 100">
-                    <Circle cx="50" cy="50" r="44" stroke="#1f254f" strokeWidth="8" fill="transparent" />
+                    <Circle cx="50" cy="50" r="44" stroke="#F0E2D4" strokeWidth="8" fill="transparent" />
                     <AnimatedCircle
                       cx="50" cy="50" r="44"
                       stroke={riskColor}
@@ -227,7 +227,7 @@ export default function ReportScreen({ navigation }) {
                     <Text style={styles.researchToggleText}>
                       View full disclaimer and research sources
                     </Text>
-                    <Feather name="info" size={12} color="#c8b8ff" />
+                    <Feather name="info" size={12} color="#E07B3C" />
                   </TouchableOpacity>
                 </View>
 
@@ -254,7 +254,7 @@ export default function ReportScreen({ navigation }) {
                   onPress={() => navigation.navigate('DoctorReport')}
                   activeOpacity={0.85}
                 >
-                  <Feather name="file-text" size={14} color="#c8b8ff" />
+                  <Feather name="file-text" size={14} color="#E07B3C" />
                   <Text style={styles.reportBtnText}>Doctor Report</Text>
                 </TouchableOpacity>
               </View>
@@ -320,8 +320,8 @@ export default function ReportScreen({ navigation }) {
                       <Text style={styles.navBadgeText}>{t.badgeCount > 9 ? '9+' : t.badgeCount}</Text>
                     </View>
                   )}
-                  <Feather name={t.icon} size={22} color={t.active ? '#8a52f3' : '#6c7094'} />
-                  <Text style={[styles.navLabel, t.active && { color: '#8a52f3' }]}>{t.label}</Text>
+                  <Feather name={t.icon} size={22} color={t.active ? '#F0955A' : '#8A6A4E'} />
+                  <Text style={[styles.navLabel, t.active && { color: '#F0955A' }]}>{t.label}</Text>
                   {t.active && <View style={styles.activeDot} />}
                 </TouchableOpacity>
               ))}
@@ -341,7 +341,7 @@ export default function ReportScreen({ navigation }) {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>About Your Research Score</Text>
               <TouchableOpacity onPress={() => setShowResearchDetails(false)} accessibilityLabel="Close">
-                <Feather name="x" size={22} color="#fff" />
+                <Feather name="x" size={22} color="#8A6A4E" />
               </TouchableOpacity>
             </View>
             <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator>
@@ -353,7 +353,7 @@ export default function ReportScreen({ navigation }) {
               {RESEARCH_SOURCES.map(source => (
                 <TouchableOpacity key={source.label} onPress={() => openLink(source.url)} style={styles.modalLinkRow}>
                   <Text style={styles.modalLink}>{source.label} — View published research</Text>
-                  <Feather name="external-link" size={13} color="#c8b8ff" />
+                  <Feather name="external-link" size={13} color="#E07B3C" />
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -368,22 +368,22 @@ export default function ReportScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeTop:    { flex: 0, backgroundColor: '#030827', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: '#030A31' },
+  safeTop:    { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom: { flex: 1, backgroundColor: '#FDF6F0' },
   root:       { flex: 1 },
   scroll:     { flex: 1, paddingHorizontal: 16 },
 
   header:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 28, marginBottom: 20 },
-  appTitle:   { color: '#fff', fontSize: 22, fontWeight: '800' },
-  headerCognitiveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#161b3d', borderWidth: 1.5, borderColor: '#7c3aed77', borderRadius: 12, paddingVertical: 13, marginBottom: 18 },
+  appTitle:   { color: '#3D2B1F', fontSize: 22, fontWeight: '800' },
+  headerCognitiveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: '#E07B3C77', borderRadius: 12, paddingVertical: 13, marginBottom: 18 },
 
   mainRow:    { flexDirection: 'row', gap: 14 },
 
   leftCol:    { flex: 1 },
   rightCol:   { flex: 1 },
-  colTitle:   { color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 6 },
+  colTitle:   { color: '#3D2B1F', fontSize: 16, fontWeight: '800', marginBottom: 6 },
 
-  scoreLabel: { color: '#6c7094', fontSize: 11, marginBottom: 14 },
+  scoreLabel: { color: '#8A6A4E', fontSize: 11, marginBottom: 14 },
   ringWrap:   { width: 100, height: 100, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
   ringCenter: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
   scoreNum:   { fontSize: 22, fontWeight: '900' },
@@ -392,71 +392,71 @@ const styles = StyleSheet.create({
   riskIcon:   { fontSize: 12 },
   riskText:   { fontSize: 12, fontWeight: '700' },
 
-  disclaimer:      { backgroundColor: '#1a2010', borderRadius: 10, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: '#3a4a20' },
-  disclaimerTitle: { color: '#c8d080', fontSize: 11, fontWeight: '700', marginBottom: 6 },
-  disclaimerBody:  { color: '#a0aa70', fontSize: 10, lineHeight: 15 },
-  researchToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4, marginTop: 7, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#3a4a20' },
-  researchToggleText: { color: '#c8b8ff', fontSize: 9, lineHeight: 13, fontWeight: '700', flex: 1 },
+  disclaimer:      { backgroundColor: '#FBEED2', borderRadius: 10, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: '#F0D9A8' },
+  disclaimerTitle: { color: '#9A3412', fontSize: 11, fontWeight: '700', marginBottom: 6 },
+  disclaimerBody:  { color: '#7C4A1E', fontSize: 10, lineHeight: 15 },
+  researchToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4, marginTop: 7, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F0D9A8' },
+  researchToggleText: { color: '#E07B3C', fontSize: 9, lineHeight: 13, fontWeight: '700', flex: 1 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 20 },
-  researchModal: { width: '100%', maxWidth: 520, maxHeight: '82%', backgroundColor: '#101533', borderRadius: 16, borderWidth: 1, borderColor: '#7c3aed66', padding: 18 },
+  researchModal: { width: '100%', maxWidth: 520, maxHeight: '82%', backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#E07B3C66', padding: 18 },
   modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 },
-  modalTitle: { color: '#fff', fontSize: 18, fontWeight: '800', flex: 1 },
+  modalTitle: { color: '#3D2B1F', fontSize: 18, fontWeight: '800', flex: 1 },
   modalScroll: { flexGrow: 0 },
-  modalSectionTitle: { color: '#d8ceff', fontSize: 13, fontWeight: '800', marginTop: 10, marginBottom: 5 },
-  modalBody: { color: '#b7bad1', fontSize: 12, lineHeight: 19 },
+  modalSectionTitle: { color: '#3D2B1F', fontSize: 13, fontWeight: '800', marginTop: 10, marginBottom: 5 },
+  modalBody: { color: '#8A6A4E', fontSize: 12, lineHeight: 19 },
   modalLinkRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, paddingVertical: 7 },
-  modalLink: { color: '#c8b8ff', fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
-  modalCloseButton: { backgroundColor: '#7c3aed', borderRadius: 10, alignItems: 'center', paddingVertical: 11, marginTop: 14 },
+  modalLink: { color: '#E07B3C', fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
+  modalCloseButton: { backgroundColor: '#E07B3C', borderRadius: 10, alignItems: 'center', paddingVertical: 11, marginTop: 14 },
   modalCloseText: { color: '#fff', fontSize: 14, fontWeight: '800' },
 
   bmiCard:    { borderWidth: 1.5, borderRadius: 10, padding: 10, marginBottom: 12 },
   bmiText:    { fontSize: 12, fontWeight: '700', textAlign: 'center' },
 
-  tipsBtn:    { backgroundColor: '#7c3aed', borderRadius: 12, paddingVertical: 12, alignItems: 'center', marginTop: 4 },
+  tipsBtn:    { backgroundColor: '#E07B3C', borderRadius: 12, paddingVertical: 12, alignItems: 'center', marginTop: 4 },
   tipsBtnText:{ color: '#fff', fontSize: 14, fontWeight: '700' },
-  reportBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#161b3d', borderRadius: 12, borderWidth: 1, borderColor: '#7c3aed55', paddingVertical: 11, marginTop: 10 },
-  reportBtnText:{ color: '#c8b8ff', fontSize: 12, fontWeight: '800' },
-  cognitiveBtnText: { color: '#c8b8ff', fontSize: 13, fontWeight: '700' },
+  reportBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#FFFFFF', borderRadius: 12, borderWidth: 1, borderColor: '#E07B3C55', paddingVertical: 11, marginTop: 10 },
+  reportBtnText:{ color: '#E07B3C', fontSize: 12, fontWeight: '800' },
+  cognitiveBtnText: { color: '#E07B3C', fontSize: 13, fontWeight: '700' },
 
-  baselineText: { color: '#6c7094', fontSize: 10, marginBottom: 12, lineHeight: 15 },
+  baselineText: { color: '#8A6A4E', fontSize: 10, marginBottom: 12, lineHeight: 15 },
   factorGrid:   { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   factorCell:   { width: '47%', gap: 2, minHeight: 84 },
-  factorLabel:  { color: '#8c91b5', fontSize: 11, fontWeight: '600' },
+  factorLabel:  { color: '#8A6A4E', fontSize: 11, fontWeight: '600' },
   factorVal:    { fontSize: 18, fontWeight: '800' },
   impactBadge:  { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 8, paddingHorizontal: 6, paddingVertical: 3, alignSelf: 'flex-start', marginTop: 2 },
   impactIcon:   { fontSize: 10 },
   impactText:   { fontSize: 10, fontWeight: '700' },
 
-  factorPlaceholder:     { padding: 12, backgroundColor: '#161b3d', borderRadius: 12, borderWidth: 1, borderColor: '#1f254f' },
-  factorPlaceholderText: { color: '#4a5270', fontSize: 11, lineHeight: 17 },
+  factorPlaceholder:     { padding: 12, backgroundColor: '#FFFFFF', borderRadius: 12, borderWidth: 1, borderColor: '#F0E2D4' },
+  factorPlaceholderText: { color: '#B09A86', fontSize: 11, lineHeight: 17 },
 
   // suggestion bubble
   sugWrap:      { position: 'absolute', bottom: 70, right: 14, zIndex: 100, alignItems: 'flex-end' },
-  sugDot:       { width: 48, height: 48, borderRadius: 24, backgroundColor: '#7c3aed', alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#7c3aed', shadowOpacity: 0.7, shadowRadius: 8 },
-  sugBadge:     { position: 'absolute', top: -4, right: -4, width: 18, height: 18, borderRadius: 9, backgroundColor: '#ef4444', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#030A31' },
+  sugDot:       { width: 48, height: 48, borderRadius: 24, backgroundColor: '#E07B3C', alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#E07B3C', shadowOpacity: 0.7, shadowRadius: 8 },
+  sugBadge:     { position: 'absolute', top: -4, right: -4, width: 18, height: 18, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#FDF6F0' },
   sugBadgeText: { color: '#fff', fontSize: 9, fontWeight: '800' },
-  sugPanel:     { position: 'absolute', bottom: 56, right: 0, width: 255, backgroundColor: '#1a1240', borderWidth: 1.5, borderColor: '#7c3aed55', borderRadius: 16, borderBottomRightRadius: 4, padding: 14 },
-  sugClose:     { position: 'absolute', top: -12, left: -12, width: 28, height: 28, borderRadius: 14, backgroundColor: '#ef4444', borderWidth: 2, borderColor: '#030A31', alignItems: 'center', justifyContent: 'center', zIndex: 10 },
+  sugPanel:     { position: 'absolute', bottom: 56, right: 0, width: 255, backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: '#E07B3C55', borderRadius: 16, borderBottomRightRadius: 4, padding: 14 },
+  sugClose:     { position: 'absolute', top: -12, left: -12, width: 28, height: 28, borderRadius: 14, backgroundColor: '#D9694F', borderWidth: 2, borderColor: '#FDF6F0', alignItems: 'center', justifyContent: 'center', zIndex: 10 },
   sugCloseText: { color: '#fff', fontSize: 13, fontWeight: '900', lineHeight: 16 },
-  sugTag:       { backgroundColor: '#7c3aed33', borderRadius: 8, paddingHorizontal: 7, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 7 },
-  sugTagText:   { color: '#c4a0ff', fontSize: 10, fontWeight: '700', letterSpacing: 0.4 },
-  sugTitle:     { color: '#fff', fontSize: 12, fontWeight: '700', marginBottom: 5, lineHeight: 17 },
-  sugBody:      { color: '#8080b0', fontSize: 10, lineHeight: 15, marginBottom: 9 },
+  sugTag:       { backgroundColor: '#E07B3C33', borderRadius: 8, paddingHorizontal: 7, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 7 },
+  sugTagText:   { color: '#E07B3C', fontSize: 10, fontWeight: '700', letterSpacing: 0.4 },
+  sugTitle:     { color: '#3D2B1F', fontSize: 12, fontWeight: '700', marginBottom: 5, lineHeight: 17 },
+  sugBody:      { color: '#8A6A4E', fontSize: 10, lineHeight: 15, marginBottom: 9 },
   linkList:     { marginBottom: 10, gap: 7 },
   linkRow:      { flexDirection: 'row', alignItems: 'flex-start' },
-  linkText:     { color: '#7c3aed', fontSize: 10, lineHeight: 14, flex: 1, textDecorationLine: 'underline' },
-  sugNav:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: '#2a1a60', paddingTop: 8 },
+  linkText:     { color: '#E07B3C', fontSize: 10, lineHeight: 14, flex: 1, textDecorationLine: 'underline' },
+  sugNav:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: '#F0E2D4', paddingTop: 8 },
   sugCount:     { color: '#555', fontSize: 9 },
-  sugArrow:     { width: 26, height: 26, borderRadius: 7, backgroundColor: '#0d0a1a', borderWidth: 1, borderColor: '#2a1a60', alignItems: 'center', justifyContent: 'center' },
+  sugArrow:     { width: 26, height: 26, borderRadius: 7, backgroundColor: '#FDF6F0', borderWidth: 1, borderColor: '#F0E2D4', alignItems: 'center', justifyContent: 'center' },
   sugArrowText: { color: '#888', fontSize: 14, lineHeight: 18 },
 
   // bottom nav
-  navWrap:   { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#030A31', borderTopWidth: 1, borderTopColor: '#1f254f' },
+  navWrap:   { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FDF6F0', borderTopWidth: 1, borderTopColor: '#F0E2D4' },
   nav:       { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
   navItem:   { alignItems: 'center', width: 64 },
-  navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#ff5c5c', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
+  navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
   navBadgeText: { color: '#fff', fontSize: 9, fontWeight: '900' },
-  navLabel:  { color: '#6c7094', fontSize: 10, marginTop: 4, fontWeight: '600' },
-  navLabelDisabled: { color: '#3a4060' },
-  activeDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#8a52f3', position: 'absolute', bottom: -8 },
+  navLabel:  { color: '#8A6A4E', fontSize: 10, marginTop: 4, fontWeight: '600' },
+  navLabelDisabled: { color: '#D1D5DB' },
+  activeDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#F0955A', position: 'absolute', bottom: -8 },
 });

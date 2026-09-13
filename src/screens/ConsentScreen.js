@@ -29,7 +29,7 @@ export default function ConsentScreen({ navigation }) {
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.root}>
           <LinearGradient
-            colors={['#030827', '#030A31']}
+            colors={['#FDF6F0', '#FDF6F0']}
             style={StyleSheet.absoluteFillObject}
           />
           <ScrollView
@@ -63,15 +63,15 @@ export default function ConsentScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeTop:    { flex: 0, backgroundColor: '#030827', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: '#030A31' },
+  safeTop:    { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom: { flex: 1, backgroundColor: '#FDF6F0' },
   root:       { flex: 1 },
   scroll:     { padding: 28, paddingTop: 48 },
-  title:      { color: '#ffffff', fontSize: 32, fontWeight: '800', fontStyle: 'italic', textAlign: 'center', marginBottom: 28 },
-  subtitle:   { color: '#ffffff', fontSize: 16, fontWeight: '700', fontStyle: 'italic', marginBottom: 28, lineHeight: 24 },
+  title:      { color: '#3D2B1F', fontSize: 32, fontWeight: '800', fontStyle: 'italic', textAlign: 'center', marginBottom: 28 },
+  subtitle:   { color: '#3D2B1F', fontSize: 16, fontWeight: '700', fontStyle: 'italic', marginBottom: 28, lineHeight: 24 },
   point:      { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 22 },
   bullet:     { width: 7, height: 7, borderRadius: 4, backgroundColor: '#fff', marginTop: 7, marginRight: 14, flexShrink: 0 },
-  pointText:  { color: '#e0e0e0', fontSize: 15, lineHeight: 24, flex: 1 },
-  btn:        { backgroundColor: '#7c3aed', borderRadius: 14, paddingVertical: 16, paddingHorizontal: 32, alignSelf: 'flex-start', marginTop: 16 },
+  pointText:  { color: '#6B5744', fontSize: 15, lineHeight: 24, flex: 1 },
+  btn:        { backgroundColor: '#E07B3C', borderRadius: 14, paddingVertical: 16, paddingHorizontal: 32, alignSelf: 'flex-start', marginTop: 16 },
   btnText:    { color: '#fff', fontSize: 16, fontWeight: '700' },
 });

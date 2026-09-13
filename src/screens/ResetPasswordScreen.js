@@ -63,11 +63,11 @@ export default function ResetPasswordScreen({ navigation, route }) {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="always" showsVerticalScrollIndicator={false}>
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.navigate('Login')} activeOpacity={0.8}>
-            <Feather name="chevron-left" size={26} color="#fff" />
+            <Feather name="chevron-left" size={26} color="#8A6A4E" />
           </TouchableOpacity>
 
           <View style={styles.iconWrap}>
-            <Feather name="key" size={28} color="#c8b8ff" />
+            <Feather name="key" size={28} color="#E07B3C" />
           </View>
 
           <Text style={styles.title}>Reset password</Text>
@@ -75,7 +75,7 @@ export default function ResetPasswordScreen({ navigation, route }) {
 
           {done ? (
             <View style={styles.doneCard}>
-              <Feather name="check-circle" size={28} color="#00c9b1" />
+              <Feather name="check-circle" size={28} color="#7EC49A" />
               <Text style={styles.doneTitle}>Password updated</Text>
               <Text style={styles.doneText}>You can now log in with your new password.</Text>
               <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate('Login')} activeOpacity={0.85}>
@@ -86,13 +86,13 @@ export default function ResetPasswordScreen({ navigation, route }) {
             <>
               <Text style={styles.label}>New Password</Text>
               <View style={styles.inputRow}>
-                <Feather name="lock" size={18} color="#6c7094" style={styles.inputIcon} />
+                <Feather name="lock" size={18} color="#8A6A4E" style={styles.inputIcon} />
                 <TextInput
                   style={[styles.input, webInputReset]}
                   value={password}
                   onChangeText={setPassword}
                   placeholder="Min 8 characters"
-                  placeholderTextColor="#4a5270"
+                  placeholderTextColor="#B09A86"
                   secureTextEntry={secure}
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -102,19 +102,19 @@ export default function ResetPasswordScreen({ navigation, route }) {
                   blurOnSubmit={false}
                 />
                 <Pressable onPress={() => setSecure(value => !value)} hitSlop={14} style={{ padding: 8 }}>
-                  <Feather name={secure ? 'eye-off' : 'eye'} size={18} color="#6c7094" />
+                  <Feather name={secure ? 'eye-off' : 'eye'} size={18} color="#8A6A4E" />
                 </Pressable>
               </View>
 
               <Text style={styles.label}>Confirm Password</Text>
               <View style={styles.inputRow}>
-                <Feather name="lock" size={18} color="#6c7094" style={styles.inputIcon} />
+                <Feather name="lock" size={18} color="#8A6A4E" style={styles.inputIcon} />
                 <TextInput
                   style={[styles.input, webInputReset]}
                   value={confirm}
                   onChangeText={setConfirm}
                   placeholder="Re-enter new password"
-                  placeholderTextColor="#4a5270"
+                  placeholderTextColor="#B09A86"
                   secureTextEntry={secure}
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -142,21 +142,21 @@ export default function ResetPasswordScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0B0F1A' },
-  safeTop: { flex: 0, backgroundColor: '#0B0F1A', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  root: { flex: 1, backgroundColor: '#FDF6F0' },
+  safeTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
   scroll: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 28, paddingBottom: 40 },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 50 },
-  iconWrap: { width: 64, height: 64, borderRadius: 18, backgroundColor: '#7c3aed22', borderWidth: 1, borderColor: '#7c3aed44', alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
-  title: { color: '#fff', fontSize: 28, fontWeight: '800', marginBottom: 10 },
-  subtitle: { color: '#8c91b5', fontSize: 15, lineHeight: 23, marginBottom: 34 },
-  label: { color: '#fff', fontSize: 14, fontWeight: '700', marginBottom: 8 },
-  inputRow: { height: 54, borderRadius: 14, borderWidth: 1.5, borderColor: '#1f254f', backgroundColor: '#161b3d', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, marginBottom: 16 },
+  iconWrap: { width: 64, height: 64, borderRadius: 18, backgroundColor: '#E07B3C22', borderWidth: 1, borderColor: '#E07B3C44', alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
+  title: { color: '#3D2B1F', fontSize: 28, fontWeight: '800', marginBottom: 10 },
+  subtitle: { color: '#8A6A4E', fontSize: 15, lineHeight: 23, marginBottom: 34 },
+  label: { color: '#3D2B1F', fontSize: 14, fontWeight: '700', marginBottom: 8 },
+  inputRow: { height: 54, borderRadius: 14, borderWidth: 1.5, borderColor: '#F0E2D4', backgroundColor: '#FFFFFF', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, marginBottom: 16 },
   inputIcon: { marginRight: 10 },
-  input: { flex: 1, color: '#fff', fontSize: 15 },
-  btn: { height: 54, borderRadius: 14, backgroundColor: '#7c3aed', alignItems: 'center', justifyContent: 'center', marginTop: 10 },
-  btnDisabled: { backgroundColor: '#3b2d6e' },
+  input: { flex: 1, color: '#3D2B1F', fontSize: 15 },
+  btn: { height: 54, borderRadius: 14, backgroundColor: '#E07B3C', alignItems: 'center', justifyContent: 'center', marginTop: 10 },
+  btnDisabled: { backgroundColor: '#C98B65' },
   btnText: { color: '#fff', fontSize: 16, fontWeight: '800' },
-  doneCard: { backgroundColor: '#161b3d', borderRadius: 16, borderWidth: 1, borderColor: '#1f254f', padding: 20, alignItems: 'center' },
-  doneTitle: { color: '#fff', fontSize: 19, fontWeight: '800', marginTop: 12 },
-  doneText: { color: '#8c91b5', fontSize: 14, textAlign: 'center', lineHeight: 21, marginTop: 8, marginBottom: 18 },
+  doneCard: { backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#F0E2D4', padding: 20, alignItems: 'center' },
+  doneTitle: { color: '#3D2B1F', fontSize: 19, fontWeight: '800', marginTop: 12 },
+  doneText: { color: '#8A6A4E', fontSize: 14, textAlign: 'center', lineHeight: 21, marginTop: 8, marginBottom: 18 },
 });

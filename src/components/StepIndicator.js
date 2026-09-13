@@ -35,15 +35,15 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: '#161b3d',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
   circleActive: {
-    backgroundColor: '#7c3aed',
+    backgroundColor: '#E07B3C',
   },
   num: {
-    color: '#6c7094',
+    color: '#8A6A4E',
     fontSize: 15,
     fontWeight: '600',
   },
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   line: {
     width: 18,
     height: 2,
-    backgroundColor: '#161b3d',
+    backgroundColor: '#FFFFFF',
     marginHorizontal: 4,
   },
 });

@@ -232,27 +232,27 @@ export default function DoctorReportScreen({ navigation }) {
     <>
       <SafeAreaView style={styles.safeTop} />
       <View style={styles.root}>
-        <LinearGradient colors={['#030827', '#030A31']} style={StyleSheet.absoluteFillObject} />
+        <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={StyleSheet.absoluteFillObject} />
 
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.75}>
-            <Feather name="chevron-left" size={28} color="#ffffff" />
+            <Feather name="chevron-left" size={28} color="#8A6A4E" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Doctor Report</Text>
           <TouchableOpacity style={styles.iconBtn} onPress={handleExport} activeOpacity={0.75}>
-            <Feather name={Platform.OS === 'web' ? 'printer' : 'share-2'} size={18} color="#c8b8ff" />
+            <Feather name={Platform.OS === 'web' ? 'printer' : 'share-2'} size={18} color="#E07B3C" />
           </TouchableOpacity>
         </View>
 
         {loading ? (
           <View style={styles.loading}>
-            <ActivityIndicator color="#8a52f3" size="large" />
+            <ActivityIndicator color="#F0955A" size="large" />
           </View>
         ) : (
           <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
             <View style={styles.heroCard}>
               <View style={styles.heroIcon}>
-                <MaterialCommunityIcons name="file-chart-outline" size={30} color="#c8b8ff" />
+                <MaterialCommunityIcons name="file-chart-outline" size={30} color="#E07B3C" />
               </View>
               <Text style={styles.title}>Monthly Summary</Text>
               <Text style={styles.subtitle}>
@@ -262,7 +262,7 @@ export default function DoctorReportScreen({ navigation }) {
             </View>
 
             <View style={styles.noticeCard}>
-              <Feather name="alert-triangle" size={18} color="#ffb830" />
+              <Feather name="alert-triangle" size={18} color="#E9A94A" />
               <View style={styles.noticeContent}>
                 <Text style={styles.noticeTitle}>Important — Research Use Only</Text>
                 <Text style={styles.noticeText}>{RESEARCH_DISCLAIMER}</Text>
@@ -312,7 +312,7 @@ export default function DoctorReportScreen({ navigation }) {
               ].map(([label, value]) => (
                 <View key={label} style={styles.factorRow}>
                   <Text style={styles.factorLabel}>{label}</Text>
-                  <Text style={[styles.factorValue, { color: Number(value) > 0 ? '#ff5c5c' : '#00c9b1' }]}>
+                  <Text style={[styles.factorValue, { color: Number(value) > 0 ? '#D9694F' : '#7EC49A' }]}>
                     {value == null ? '—' : `${Number(value) > 0 ? '+' : ''}${Number(value).toFixed(1)}%`}
                   </Text>
                 </View>
@@ -329,7 +329,7 @@ export default function DoctorReportScreen({ navigation }) {
                   activeOpacity={0.75}
                 >
                   <Text style={styles.sourceText}>{source.label} — View published research</Text>
-                  <Feather name="external-link" size={14} color="#c8b8ff" />
+                  <Feather name="external-link" size={14} color="#E07B3C" />
                 </TouchableOpacity>
               ))}
             </View>
@@ -383,8 +383,8 @@ function Metric({ label, value }) {
 }
 
 const styles = StyleSheet.create({
-  safeTop: { flex: 0, backgroundColor: '#030827', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  root: { flex: 1, backgroundColor: '#030A31' },
+  safeTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  root: { flex: 1, backgroundColor: '#FDF6F0' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -392,27 +392,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#1f254f',
+    borderBottomColor: '#F0E2D4',
   },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   iconBtn: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: '#161b3d',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#1f254f',
+    borderColor: '#F0E2D4',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+  headerTitle: { color: '#3D2B1F', fontSize: 18, fontWeight: '800' },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll: { padding: 18, paddingBottom: 42 },
   heroCard: {
-    backgroundColor: '#101538',
+    backgroundColor: '#FDF6F0',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#1f254f',
+    borderColor: '#F0E2D4',
     padding: 18,
     marginBottom: 12,
   },
@@ -420,66 +420,66 @@ const styles = StyleSheet.create({
     width: 58,
     height: 58,
     borderRadius: 18,
-    backgroundColor: '#7c3aed22',
+    backgroundColor: '#E07B3C22',
     borderWidth: 1,
-    borderColor: '#7c3aed44',
+    borderColor: '#E07B3C44',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 14,
   },
-  title: { color: '#fff', fontSize: 24, fontWeight: '900', marginBottom: 8 },
-  subtitle: { color: '#9aa0c5', fontSize: 13, lineHeight: 20, marginBottom: 12 },
-  generated: { color: '#6c7094', fontSize: 11, fontWeight: '700' },
+  title: { color: '#3D2B1F', fontSize: 24, fontWeight: '900', marginBottom: 8 },
+  subtitle: { color: '#8A6A4E', fontSize: 13, lineHeight: 20, marginBottom: 12 },
+  generated: { color: '#8A6A4E', fontSize: 11, fontWeight: '700' },
   noticeCard: {
     flexDirection: 'row',
     gap: 10,
-    backgroundColor: '#1f1a10',
+    backgroundColor: '#FBEED2',
     borderWidth: 1,
-    borderColor: '#ffb83066',
+    borderColor: '#E9A94A66',
     borderRadius: 14,
     padding: 14,
     marginBottom: 12,
   },
   noticeContent: { flex: 1 },
   noticeTitle: { color: '#ffcf66', fontSize: 12, lineHeight: 18, fontWeight: '800', marginBottom: 4 },
-  noticeText: { color: '#f8e7a6', fontSize: 11, lineHeight: 17, marginBottom: 5 },
+  noticeText: { color: '#9A6A1E', fontSize: 11, lineHeight: 17, marginBottom: 5 },
   section: {
-    backgroundColor: '#101538',
+    backgroundColor: '#FDF6F0',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#1f254f',
+    borderColor: '#F0E2D4',
     padding: 15,
     marginBottom: 12,
   },
-  sectionTitle: { color: '#fff', fontSize: 15, fontWeight: '800', marginBottom: 12 },
+  sectionTitle: { color: '#3D2B1F', fontSize: 15, fontWeight: '800', marginBottom: 12 },
   scoreRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
-  scoreValue: { color: '#00c9b1', fontSize: 36, fontWeight: '900' },
-  scoreBadge: { backgroundColor: '#00c9b122', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6 },
-  scoreBadgeText: { color: '#00c9b1', fontSize: 12, fontWeight: '800' },
-  muted: { color: '#6c7094', fontSize: 11, lineHeight: 16 },
-  explainText: { color: '#8c91b5', fontSize: 11, lineHeight: 17, marginTop: 10 },
-  inputRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#1f254f' },
-  inputLabel: { color: '#9aa0c5', fontSize: 12, fontWeight: '700' },
-  inputValue: { color: '#fff', fontSize: 12, fontWeight: '800', textAlign: 'right', flexShrink: 1 },
-  factorRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#1f254f' },
-  factorLabel: { color: '#9aa0c5', fontSize: 13, fontWeight: '700' },
+  scoreValue: { color: '#7EC49A', fontSize: 36, fontWeight: '900' },
+  scoreBadge: { backgroundColor: '#7EC49A22', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6 },
+  scoreBadgeText: { color: '#7EC49A', fontSize: 12, fontWeight: '800' },
+  muted: { color: '#8A6A4E', fontSize: 11, lineHeight: 16 },
+  explainText: { color: '#8A6A4E', fontSize: 11, lineHeight: 17, marginTop: 10 },
+  inputRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
+  inputLabel: { color: '#8A6A4E', fontSize: 12, fontWeight: '700' },
+  inputValue: { color: '#3D2B1F', fontSize: 12, fontWeight: '800', textAlign: 'right', flexShrink: 1 },
+  factorRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
+  factorLabel: { color: '#8A6A4E', fontSize: 13, fontWeight: '700' },
   factorValue: { fontSize: 17, fontWeight: '900' },
-  sourceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: '#1f254f' },
-  sourceText: { color: '#c8b8ff', fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
+  sourceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
+  sourceText: { color: '#E07B3C', fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
   metricRow: { flexDirection: 'row', gap: 8 },
-  metricCard: { flex: 1, backgroundColor: '#0d1030', borderRadius: 12, borderWidth: 1, borderColor: '#1f254f', padding: 12 },
-  metricValue: { color: '#c8b8ff', fontSize: 18, fontWeight: '900', marginBottom: 4 },
-  metricLabel: { color: '#6c7094', fontSize: 10, fontWeight: '700' },
-  resultRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#1f254f' },
-  resultTitle: { color: '#fff', fontSize: 13, fontWeight: '800', textTransform: 'capitalize' },
-  resultScore: { color: '#c8b8ff', fontSize: 13, fontWeight: '900' },
-  emptyText: { color: '#6c7094', fontSize: 12, lineHeight: 18 },
+  metricCard: { flex: 1, backgroundColor: '#FDF6F0', borderRadius: 12, borderWidth: 1, borderColor: '#F0E2D4', padding: 12 },
+  metricValue: { color: '#E07B3C', fontSize: 18, fontWeight: '900', marginBottom: 4 },
+  metricLabel: { color: '#8A6A4E', fontSize: 10, fontWeight: '700' },
+  resultRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
+  resultTitle: { color: '#3D2B1F', fontSize: 13, fontWeight: '800', textTransform: 'capitalize' },
+  resultScore: { color: '#E07B3C', fontSize: 13, fontWeight: '900' },
+  emptyText: { color: '#8A6A4E', fontSize: 12, lineHeight: 18 },
   exportBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#7c3aed',
+    backgroundColor: '#E07B3C',
     borderRadius: 14,
     paddingVertical: 15,
     paddingHorizontal: 14,

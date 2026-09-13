@@ -126,7 +126,7 @@ export default function ProfileScreen({ navigation }) {
   if (loading) {
     return (
       <View style={[styles.root, { alignItems: 'center', justifyContent: 'center' }]}>
-        <ActivityIndicator color="#7c3aed" size="large" />
+        <ActivityIndicator color="#E07B3C" size="large" />
       </View>
     );
   }
@@ -142,13 +142,13 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.headerTitle}>Profile</Text>
             {!editing
               ? <TouchableOpacity onPress={() => setEditing(true)} style={styles.editBtn}>
-                  <Feather name="edit-2" size={16} color="#7c3aed" />
+                  <Feather name="edit-2" size={16} color="#E07B3C" />
                   <Text style={styles.editBtnText}>Edit</Text>
                 </TouchableOpacity>
-              : <TouchableOpacity onPress={handleSave} disabled={saving} style={[styles.editBtn, { backgroundColor: '#7c3aed33' }]}>
+              : <TouchableOpacity onPress={handleSave} disabled={saving} style={[styles.editBtn, { backgroundColor: '#E07B3C33' }]}>
                   {saving
-                    ? <ActivityIndicator size="small" color="#7c3aed" />
-                    : <><Feather name="check" size={16} color="#7c3aed" /><Text style={styles.editBtnText}>Save</Text></>
+                    ? <ActivityIndicator size="small" color="#E07B3C" />
+                    : <><Feather name="check" size={16} color="#E07B3C" /><Text style={styles.editBtnText}>Save</Text></>
                   }
                 </TouchableOpacity>
             }
@@ -163,8 +163,8 @@ export default function ProfileScreen({ navigation }) {
             </View>
             {editing ? (
               <View style={styles.nameEditRow}>
-                <TextInput style={[styles.nameInput, { marginRight: 8 }]} value={firstName} onChangeText={setFirstName} placeholder="First name" placeholderTextColor="#4a5270" autoCapitalize="words" />
-                <TextInput style={styles.nameInput} value={lastName} onChangeText={setLastName} placeholder="Last name" placeholderTextColor="#4a5270" autoCapitalize="words" />
+                <TextInput style={[styles.nameInput, { marginRight: 8 }]} value={firstName} onChangeText={setFirstName} placeholder="First name" placeholderTextColor="#B09A86" autoCapitalize="words" />
+                <TextInput style={styles.nameInput} value={lastName} onChangeText={setLastName} placeholder="Last name" placeholderTextColor="#B09A86" autoCapitalize="words" />
               </View>
             ) : (
               <Text style={styles.displayName}>{profile?.firstName} {profile?.lastName}</Text>
@@ -204,7 +204,7 @@ export default function ProfileScreen({ navigation }) {
               </View>
             </View>
             <TouchableOpacity style={styles.meqBtn} onPress={() => setShowMEQ(true)} activeOpacity={0.85}>
-              <Feather name="external-link" size={14} color="#7c3aed" />
+              <Feather name="external-link" size={14} color="#E07B3C" />
               <Text style={styles.meqBtnText}>Take the Chronotype Quiz (MEQ)</Text>
             </TouchableOpacity>
             <View style={styles.divider} />
@@ -220,14 +220,14 @@ export default function ProfileScreen({ navigation }) {
           {/* Account */}
           <Text style={styles.sectionLabel}>ACCOUNT</Text>
           <View style={styles.card}>
-            <MenuItem icon={<Feather name="lock" size={18} color="#7c3aed" />} label="Change Password" onPress={() => navigation.navigate('ChangePassword')} />
+            <MenuItem icon={<Feather name="lock" size={18} color="#E07B3C" />} label="Change Password" onPress={() => navigation.navigate('ChangePassword')} />
             <View style={styles.divider} />
-            <MenuItem icon={<Feather name="shield" size={18} color="#7c3aed" />} label="Privacy Policy" onPress={() => navigation.navigate('PrivacyPolicy')} />
+            <MenuItem icon={<Feather name="shield" size={18} color="#E07B3C" />} label="Privacy Policy" onPress={() => navigation.navigate('PrivacyPolicy')} />
             <View style={styles.divider} />
-            <MenuItem icon={<Feather name="file-text" size={18} color="#7c3aed" />} label="Terms of Service" onPress={() => navigation.navigate('Terms')} />
+            <MenuItem icon={<Feather name="file-text" size={18} color="#E07B3C" />} label="Terms of Service" onPress={() => navigation.navigate('Terms')} />
             <View style={styles.divider} />
             <MenuItem
-              icon={<Feather name="trash-2" size={18} color="#ef4444" />}
+              icon={<Feather name="trash-2" size={18} color="#D9694F" />}
               label={deletingAccount ? 'Deleting Account...' : 'Delete Account'}
               onPress={deletingAccount ? null : handleDeleteAccount}
               danger
@@ -237,16 +237,16 @@ export default function ProfileScreen({ navigation }) {
           {/* App */}
           <Text style={styles.sectionLabel}>APP</Text>
           <View style={styles.card}>
-            <MenuItem icon={<MaterialCommunityIcons name="brain" size={18} color="#7c3aed" />} label="Project Info" onPress={() => navigation.navigate('ProjectInfo')} />
+            <MenuItem icon={<MaterialCommunityIcons name="brain" size={18} color="#E07B3C" />} label="Project Info" onPress={() => navigation.navigate('ProjectInfo')} />
             <View style={styles.divider} />
-            <MenuItem icon={<Feather name="file-text" size={18} color="#7c3aed" />} label="Doctor Report" onPress={() => navigation.navigate('DoctorReport')} />
+            <MenuItem icon={<Feather name="file-text" size={18} color="#E07B3C" />} label="Doctor Report" onPress={() => navigation.navigate('DoctorReport')} />
             <View style={styles.divider} />
-            <MenuItem icon={<Feather name="help-circle" size={18} color="#7c3aed" />} label="Help & Support" onPress={() => setShowSupport(true)} />
+            <MenuItem icon={<Feather name="help-circle" size={18} color="#E07B3C" />} label="Help & Support" onPress={() => setShowSupport(true)} />
           </View>
 
           {/* Logout */}
           <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.8}>
-            <Feather name="log-out" size={17} color="#ef4444" />
+            <Feather name="log-out" size={17} color="#D9694F" />
             <Text style={styles.logoutText}>Log Out</Text>
           </TouchableOpacity>
 
@@ -270,8 +270,8 @@ export default function ProfileScreen({ navigation }) {
                     <Text style={styles.navBadgeText}>{t.badgeCount > 9 ? '9+' : t.badgeCount}</Text>
                   </View>
                 )}
-                <Feather name={t.icon} size={22} color={t.active ? '#8a52f3' : '#6c7094'} />
-                <Text style={[styles.navLabel, t.active && { color: '#8a52f3' }]}>{t.label}</Text>
+                <Feather name={t.icon} size={22} color={t.active ? '#F0955A' : '#8A6A4E'} />
+                <Text style={[styles.navLabel, t.active && { color: '#F0955A' }]}>{t.label}</Text>
                 {t.active && <View style={styles.activeDot} />}
               </TouchableOpacity>
             ))}
@@ -319,7 +319,7 @@ export default function ProfileScreen({ navigation }) {
               <Text style={styles.popupCloseText}>×</Text>
             </TouchableOpacity>
             <View style={styles.supportIcon}>
-              <Feather name="help-circle" size={24} color="#c8b8ff" />
+              <Feather name="help-circle" size={24} color="#E07B3C" />
             </View>
             <Text style={styles.popupTitle}>Help & Support</Text>
             <Text style={styles.popupBody}>For any questions, email:</Text>
@@ -363,82 +363,82 @@ function MenuItem({ icon, label, onPress, badge, disabled = false, danger = fals
       <Text style={[styles.menuLabel, danger && styles.menuLabelDanger, disabled && styles.menuLabelDisabled]}>{label}</Text>
       {badge
         ? <View style={styles.badgeWrap}><Text style={styles.badgeText}>{badge}</Text></View>
-        : onPress ? <Feather name="chevron-right" size={16} color="#4a5270" /> : null
+        : onPress ? <Feather name="chevron-right" size={16} color="#B09A86" /> : null
       }
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  root:        { flex: 1, backgroundColor: '#0B0F1A' },
-  safeTop:     { flex: 0, backgroundColor: '#0B0F1A', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  root:        { flex: 1, backgroundColor: '#FDF6F0' },
+  safeTop:     { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
   headerRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 20, paddingBottom: 8 },
-  headerTitle: { color: '#fff', fontSize: 22, fontWeight: '800' },
-  editBtn:     { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, backgroundColor: '#7c3aed22', borderRadius: 20, borderWidth: 1, borderColor: '#7c3aed44' },
-  editBtnText: { color: '#7c3aed', fontSize: 13, fontWeight: '600' },
+  headerTitle: { color: '#3D2B1F', fontSize: 22, fontWeight: '800' },
+  editBtn:     { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, backgroundColor: '#E07B3C22', borderRadius: 20, borderWidth: 1, borderColor: '#E07B3C44' },
+  editBtnText: { color: '#E07B3C', fontSize: 13, fontWeight: '600' },
   avatarSection: { alignItems: 'center', paddingVertical: 20 },
-  avatarRing:  { width: 82, height: 82, borderRadius: 41, borderWidth: 3, borderColor: '#7c3aed', padding: 3, marginBottom: 12 },
-  avatar:      { flex: 1, borderRadius: 38, backgroundColor: '#161b3d', alignItems: 'center', justifyContent: 'center' },
-  initials:    { color: '#7c3aed', fontSize: 26, fontWeight: '800' },
-  displayName: { color: '#fff', fontSize: 19, fontWeight: '700', marginBottom: 3 },
+  avatarRing:  { width: 82, height: 82, borderRadius: 41, borderWidth: 3, borderColor: '#E07B3C', padding: 3, marginBottom: 12 },
+  avatar:      { flex: 1, borderRadius: 38, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
+  initials:    { color: '#E07B3C', fontSize: 26, fontWeight: '800' },
+  displayName: { color: '#3D2B1F', fontSize: 19, fontWeight: '700', marginBottom: 3 },
   nameEditRow: { flexDirection: 'row', marginBottom: 4, paddingHorizontal: 24 },
-  nameInput:   { flex: 1, color: '#fff', fontSize: 15, fontWeight: '600', backgroundColor: '#161b3d', borderRadius: 10, borderWidth: 1.5, borderColor: '#7c3aed', paddingHorizontal: 12, paddingVertical: 8 },
-  username:    { color: '#6c7094', fontSize: 13, marginBottom: 2 },
-  email:       { color: '#4a5270', fontSize: 12 },
+  nameInput:   { flex: 1, color: '#3D2B1F', fontSize: 15, fontWeight: '600', backgroundColor: '#FFFFFF', borderRadius: 10, borderWidth: 1.5, borderColor: '#E07B3C', paddingHorizontal: 12, paddingVertical: 8 },
+  username:    { color: '#8A6A4E', fontSize: 13, marginBottom: 2 },
+  email:       { color: '#B09A86', fontSize: 12 },
   statsRow:    { flexDirection: 'row', gap: 8, marginHorizontal: 18, marginBottom: 20 },
-  statCard:    { flex: 1, minHeight: 76, backgroundColor: '#161b3d', borderRadius: 13, paddingVertical: 11, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#1f254f' },
-  statVal:     { color: '#7c3aed', fontSize: 17, fontWeight: '800', marginBottom: 2 },
-  statLevelVal:{ color: '#ffb830', fontSize: 13, lineHeight: 17, minHeight: 34, textAlign: 'center', textAlignVertical: 'center' },
-  statKey:     { color: '#6c7094', fontSize: 9, fontWeight: '600', letterSpacing: 0.3 },
-  sectionLabel:{ color: '#4a5270', fontSize: 10, fontWeight: '700', letterSpacing: 1, marginHorizontal: 20, marginBottom: 7, marginTop: 4 },
-  card:        { marginHorizontal: 18, backgroundColor: '#161b3d', borderRadius: 16, borderWidth: 1, borderColor: '#1f254f', marginBottom: 16, overflow: 'hidden' },
-  divider:     { height: 1, backgroundColor: '#1f254f', marginLeft: 48 },
+  statCard:    { flex: 1, minHeight: 76, backgroundColor: '#FFFFFF', borderRadius: 13, paddingVertical: 11, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#F0E2D4' },
+  statVal:     { color: '#E07B3C', fontSize: 17, fontWeight: '800', marginBottom: 2 },
+  statLevelVal:{ color: '#E9A94A', fontSize: 13, lineHeight: 17, minHeight: 34, textAlign: 'center', textAlignVertical: 'center' },
+  statKey:     { color: '#8A6A4E', fontSize: 9, fontWeight: '600', letterSpacing: 0.3 },
+  sectionLabel:{ color: '#B09A86', fontSize: 10, fontWeight: '700', letterSpacing: 1, marginHorizontal: 20, marginBottom: 7, marginTop: 4 },
+  card:        { marginHorizontal: 18, backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#F0E2D4', marginBottom: 16, overflow: 'hidden' },
+  divider:     { height: 1, backgroundColor: '#F0E2D4', marginLeft: 48 },
   menuItem:    { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 14 },
   menuItemDisabled: { opacity: 0.8 },
   menuIcon:    { width: 34, alignItems: 'center' },
-  menuLabel:   { flex: 1, color: '#e0e0e0', fontSize: 14, fontWeight: '500' },
-  menuLabelDanger: { color: '#ef4444', fontWeight: '700' },
-  menuLabelDisabled: { color: '#6c7094' },
-  badgeWrap:   { backgroundColor: '#1f254f', borderRadius: 9, paddingHorizontal: 7, paddingVertical: 2 },
-  badgeText:   { color: '#4a5270', fontSize: 10, fontWeight: '600' },
+  menuLabel:   { flex: 1, color: '#3D2B1F', fontSize: 14, fontWeight: '500' },
+  menuLabelDanger: { color: '#D9694F', fontWeight: '700' },
+  menuLabelDisabled: { color: '#8A6A4E' },
+  badgeWrap:   { backgroundColor: '#F0E2D4', borderRadius: 9, paddingHorizontal: 7, paddingVertical: 2 },
+  badgeText:   { color: '#B09A86', fontSize: 10, fontWeight: '600' },
 
   // Chronotype section
   chronoRow:     { flexDirection: 'row', alignItems: 'flex-start', gap: 12, padding: 14, paddingBottom: 10 },
-  chronoIconWrap:{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#7c3aed22', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  chronoTitle:   { color: '#fff', fontSize: 14, fontWeight: '700', marginBottom: 4 },
-  chronoSub:     { color: '#6c7094', fontSize: 11, lineHeight: 16 },
-  meqBtn:        { flexDirection: 'row', alignItems: 'center', gap: 7, marginHorizontal: 14, marginBottom: 12, backgroundColor: '#7c3aed15', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, borderWidth: 1, borderColor: '#7c3aed33' },
-  meqBtnText:    { color: '#7c3aed', fontSize: 12, fontWeight: '600', flex: 1 },
-  updateBtn:     { flexDirection: 'row', alignItems: 'center', margin: 14, marginTop: 12, backgroundColor: '#7c3aed', borderRadius: 12, paddingVertical: 13, paddingHorizontal: 14, justifyContent: 'center' },
+  chronoIconWrap:{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#E07B3C22', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  chronoTitle:   { color: '#3D2B1F', fontSize: 14, fontWeight: '700', marginBottom: 4 },
+  chronoSub:     { color: '#8A6A4E', fontSize: 11, lineHeight: 16 },
+  meqBtn:        { flexDirection: 'row', alignItems: 'center', gap: 7, marginHorizontal: 14, marginBottom: 12, backgroundColor: '#E07B3C15', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, borderWidth: 1, borderColor: '#E07B3C33' },
+  meqBtnText:    { color: '#E07B3C', fontSize: 12, fontWeight: '600', flex: 1 },
+  updateBtn:     { flexDirection: 'row', alignItems: 'center', margin: 14, marginTop: 12, backgroundColor: '#E07B3C', borderRadius: 12, paddingVertical: 13, paddingHorizontal: 14, justifyContent: 'center' },
   updateBtnText: { color: '#fff', fontSize: 13, fontWeight: '700', textAlign: 'center', flex: 1 },
-  updateHint:    { color: '#4a5270', fontSize: 10, lineHeight: 15, marginHorizontal: 14, marginBottom: 12, textAlign: 'center' },
+  updateHint:    { color: '#B09A86', fontSize: 10, lineHeight: 15, marginHorizontal: 14, marginBottom: 12, textAlign: 'center' },
 
-  logoutBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginHorizontal: 18, borderRadius: 14, borderWidth: 1.5, borderColor: '#ef444444', paddingVertical: 14, backgroundColor: '#ef444411', marginBottom: 14 },
-  logoutText:  { color: '#ef4444', fontSize: 14, fontWeight: '600' },
-  version:     { color: '#2a3060', fontSize: 11, textAlign: 'center', marginBottom: 8 },
+  logoutBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginHorizontal: 18, borderRadius: 14, borderWidth: 1.5, borderColor: '#D9694F44', paddingVertical: 14, backgroundColor: '#D9694F11', marginBottom: 14 },
+  logoutText:  { color: '#D9694F', fontSize: 14, fontWeight: '600' },
+  version:     { color: '#B09A86', fontSize: 11, textAlign: 'center', marginBottom: 8 },
 
   // nav
-  navWrap:    { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#0B0F1A', borderTopWidth: 1, borderTopColor: '#1f254f' },
+  navWrap:    { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FDF6F0', borderTopWidth: 1, borderTopColor: '#F0E2D4' },
   nav:        { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
   navItem:    { alignItems: 'center', width: 64 },
-  navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#ff5c5c', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
+  navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
   navBadgeText: { color: '#fff', fontSize: 9, fontWeight: '900' },
-  navLabel:   { color: '#6c7094', fontSize: 10, marginTop: 4, fontWeight: '600' },
-  navLabelDisabled: { color: '#3a4060' },
-  activeDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: '#8a52f3', position: 'absolute', bottom: -8 },
+  navLabel:   { color: '#8A6A4E', fontSize: 10, marginTop: 4, fontWeight: '600' },
+  navLabelDisabled: { color: '#D1D5DB' },
+  activeDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: '#F0955A', position: 'absolute', bottom: -8 },
 
   // MEQ modal
   overlay:        { flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  popup:          { backgroundColor: '#0e1228', borderRadius: 18, padding: 22, width: '100%', borderWidth: 1, borderColor: '#1f254f', position: 'relative' },
+  popup:          { backgroundColor: '#FFFFFF', borderRadius: 18, padding: 22, width: '100%', borderWidth: 1, borderColor: '#F0E2D4', position: 'relative' },
   popupClose:     { position: 'absolute', top: 14, right: 18, zIndex: 10 },
-  popupCloseText: { color: '#6c7094', fontSize: 22 },
-  popupTitle:     { color: '#fff', fontSize: 18, fontWeight: '800', marginBottom: 12, paddingRight: 20 },
-  popupBody:      { color: '#a0a3b8', fontSize: 13, lineHeight: 20 },
-  popupBtn:       { backgroundColor: '#7c3aed', borderRadius: 12, paddingVertical: 11, paddingHorizontal: 20 },
+  popupCloseText: { color: '#8A6A4E', fontSize: 22 },
+  popupTitle:     { color: '#3D2B1F', fontSize: 18, fontWeight: '800', marginBottom: 12, paddingRight: 20 },
+  popupBody:      { color: '#8A6A4E', fontSize: 13, lineHeight: 20 },
+  popupBtn:       { backgroundColor: '#E07B3C', borderRadius: 12, paddingVertical: 11, paddingHorizontal: 20 },
   popupBtnText:   { color: '#fff', fontSize: 14, fontWeight: '700' },
-  popupBtnSecondary:     { borderRadius: 12, paddingVertical: 11, paddingHorizontal: 16, borderWidth: 1, borderColor: '#1f254f' },
-  popupBtnSecondaryText: { color: '#6c7094', fontSize: 14, fontWeight: '600' },
-  supportIcon: { width: 46, height: 46, borderRadius: 14, backgroundColor: '#7c3aed22', borderWidth: 1, borderColor: '#7c3aed44', alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
-  supportEmail: { color: '#c8b8ff', fontSize: 14, lineHeight: 20, fontWeight: '800', marginTop: 6 },
-  supportCloseBtn: { backgroundColor: '#7c3aed', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20, alignItems: 'center', marginTop: 20 },
+  popupBtnSecondary:     { borderRadius: 12, paddingVertical: 11, paddingHorizontal: 16, borderWidth: 1, borderColor: '#F0E2D4' },
+  popupBtnSecondaryText: { color: '#8A6A4E', fontSize: 14, fontWeight: '600' },
+  supportIcon: { width: 46, height: 46, borderRadius: 14, backgroundColor: '#E07B3C22', borderWidth: 1, borderColor: '#E07B3C44', alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
+  supportEmail: { color: '#E07B3C', fontSize: 14, lineHeight: 20, fontWeight: '800', marginTop: 6 },
+  supportCloseBtn: { backgroundColor: '#E07B3C', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20, alignItems: 'center', marginTop: 20 },
 });

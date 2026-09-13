@@ -83,11 +83,11 @@ export default function LoginScreen({ navigation }) {
             {/* Email / username */}
             <Text style={styles.label}>Email or Username</Text>
             <View style={[styles.inputRow, focused === 'id' && styles.inputFocused, hasErr('id') && styles.inputErr]}>
-              <Feather name="mail" size={18} color={focused === 'id' ? '#7c3aed' : '#6c7094'} style={styles.icon} />
+              <Feather name="mail" size={18} color={focused === 'id' ? '#E07B3C' : '#8A6A4E'} style={styles.icon} />
               <TextInput
                 style={[styles.input, webInputReset]}
                 placeholder="Enter email or username"
-                placeholderTextColor="#4a5270"
+                placeholderTextColor="#B09A86"
                 value={emailOrUsername}
                 onChangeText={v => { setEmailOrUsername(v); clearErr('id'); }}
                 autoCapitalize="none"
@@ -107,11 +107,11 @@ export default function LoginScreen({ navigation }) {
             {/* Password */}
             <Text style={[styles.label, { marginTop: 18 }]}>Password</Text>
             <View style={[styles.inputRow, focused === 'pw' && styles.inputFocused, hasErr('pw') && styles.inputErr]}>
-              <Feather name="lock" size={18} color={focused === 'pw' ? '#7c3aed' : '#6c7094'} style={styles.icon} />
+              <Feather name="lock" size={18} color={focused === 'pw' ? '#E07B3C' : '#8A6A4E'} style={styles.icon} />
               <TextInput
                 style={[styles.input, webInputReset]}
                 placeholder="Enter password"
-                placeholderTextColor="#4a5270"
+                placeholderTextColor="#B09A86"
                 value={password}
                 onChangeText={v => { setPassword(v); clearErr('pw'); }}
                 secureTextEntry={secureText}
@@ -130,7 +130,7 @@ export default function LoginScreen({ navigation }) {
                 hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
                 style={{ padding: 8 }}
               >
-                <Feather name={secureText ? 'eye-off' : 'eye'} size={18} color="#6c7094" />
+                <Feather name={secureText ? 'eye-off' : 'eye'} size={18} color="#8A6A4E" />
               </Pressable>
             </View>
             {hasErr('pw') && <Text style={styles.errText}>{fieldErrors.pw}</Text>}
@@ -169,37 +169,37 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0B0F1A' },
-  safeTop: { flex: 0, backgroundColor: '#0B0F1A', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  root: { flex: 1, backgroundColor: '#FDF6F0' },
+  safeTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
   scroll: { flexGrow: 1, paddingHorizontal: 24, paddingTop: height * 0.14, paddingBottom: 40 },
   logoWrap: { flexDirection: 'row', alignItems: 'center', marginBottom: 28 },
-  logoBold: { fontSize: 32, fontWeight: '800', color: '#fff', letterSpacing: -0.5 },
-  logoLight: { fontSize: 32, fontWeight: '600', color: '#7c3aed', letterSpacing: -0.5 },
-  title: { fontSize: 26, fontWeight: '700', color: '#fff', marginBottom: 8 },
-  subtitle: { fontSize: 15, color: '#6c7094', lineHeight: 22, marginBottom: 36 },
-  label: { color: '#fff', fontSize: 14, fontWeight: '600', marginBottom: 8 },
+  logoBold: { fontSize: 32, fontWeight: '800', color: '#3D2B1F', letterSpacing: -0.5 },
+  logoLight: { fontSize: 32, fontWeight: '600', color: '#E07B3C', letterSpacing: -0.5 },
+  title: { fontSize: 26, fontWeight: '700', color: '#3D2B1F', marginBottom: 8 },
+  subtitle: { fontSize: 15, color: '#8A6A4E', lineHeight: 22, marginBottom: 36 },
+  label: { color: '#3D2B1F', fontSize: 14, fontWeight: '600', marginBottom: 8 },
   inputRow: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#161b3d', borderRadius: 14,
+    backgroundColor: '#FFFFFF', borderRadius: 14,
     borderWidth: 1.5, borderColor: 'transparent',
     paddingHorizontal: 14, height: 54,
     marginBottom: 4,
   },
-  inputFocused: { borderColor: '#7c3aed' },
-  inputErr: { borderColor: '#ef4444' },
-  errText: { color: '#ef4444', fontSize: 12, marginBottom: 4, marginLeft: 4 },
+  inputFocused: { borderColor: '#E07B3C' },
+  inputErr: { borderColor: '#D9694F' },
+  errText: { color: '#D9694F', fontSize: 12, marginBottom: 4, marginLeft: 4 },
   formErrText: { color: '#ff6b6b', fontSize: 13, fontWeight: '700', marginTop: 8, lineHeight: 18 },
   icon: { marginRight: 10 },
-  input: { flex: 1, color: '#fff', fontSize: 15 },
+  input: { flex: 1, color: '#3D2B1F', fontSize: 15 },
   forgotLink: { alignSelf: 'flex-end', paddingVertical: 8 },
-  forgotText: { color: '#7c3aed', fontSize: 13, fontWeight: '700' },
+  forgotText: { color: '#E07B3C', fontSize: 13, fontWeight: '700' },
   btn: {
-    backgroundColor: '#7c3aed', borderRadius: 14,
+    backgroundColor: '#E07B3C', borderRadius: 14,
     height: 54, alignItems: 'center', justifyContent: 'center', marginTop: 28,
   },
-  btnDisabled: { backgroundColor: '#3b2d6e' },
+  btnDisabled: { backgroundColor: '#C98B65' },
   btnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   linkRow: { marginTop: 24, alignItems: 'center' },
-  linkText: { color: '#6c7094', fontSize: 14 },
-  linkAccent: { color: '#7c3aed', fontWeight: '700' },
+  linkText: { color: '#8A6A4E', fontSize: 14 },
+  linkAccent: { color: '#E07B3C', fontWeight: '700' },
 });

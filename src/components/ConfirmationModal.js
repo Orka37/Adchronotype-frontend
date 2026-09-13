@@ -22,7 +22,7 @@ export default function ConfirmationModal({
       <View style={styles.overlay}>
         <View style={styles.card}>
           <View style={[styles.iconWrap, danger && styles.iconWrapDanger]}>
-            <Feather name={danger ? 'alert-triangle' : 'log-out'} size={24} color={danger ? '#ef4444' : '#a78bfa'} />
+            <Feather name={danger ? 'alert-triangle' : 'log-out'} size={24} color={danger ? '#D9694F' : '#F0955A'} />
           </View>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.message}>{message}</Text>
@@ -54,16 +54,16 @@ export default function ConfirmationModal({
 
 const styles = StyleSheet.create({
   overlay: { alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.72)', flex: 1, justifyContent: 'center', padding: 24 },
-  card: { backgroundColor: '#11162a', borderColor: '#292f50', borderRadius: 20, borderWidth: 1, maxWidth: 440, padding: 24, width: '100%' },
-  iconWrap: { alignItems: 'center', alignSelf: 'center', backgroundColor: '#7c3aed22', borderRadius: 24, height: 48, justifyContent: 'center', marginBottom: 16, width: 48 },
-  iconWrapDanger: { backgroundColor: '#ef444422' },
-  title: { color: '#fff', fontSize: 21, fontWeight: '800', marginBottom: 10, textAlign: 'center' },
-  message: { color: '#aeb2cf', fontSize: 14, lineHeight: 22, textAlign: 'center' },
+  card: { backgroundColor: '#FFFFFF', borderColor: '#F0E2D4', borderRadius: 20, borderWidth: 1, maxWidth: 440, padding: 24, width: '100%' },
+  iconWrap: { alignItems: 'center', alignSelf: 'center', backgroundColor: '#E07B3C22', borderRadius: 24, height: 48, justifyContent: 'center', marginBottom: 16, width: 48 },
+  iconWrapDanger: { backgroundColor: '#D9694F22' },
+  title: { color: '#3D2B1F', fontSize: 21, fontWeight: '800', marginBottom: 10, textAlign: 'center' },
+  message: { color: '#8A6A4E', fontSize: 14, lineHeight: 22, textAlign: 'center' },
   actions: { flexDirection: 'row', gap: 12, marginTop: 24 },
   button: { alignItems: 'center', borderRadius: 12, flex: 1, height: 48, justifyContent: 'center' },
-  cancelButton: { backgroundColor: '#202641', borderColor: '#353c61', borderWidth: 1 },
-  confirmButton: { backgroundColor: '#7c3aed' },
+  cancelButton: { backgroundColor: '#FDF6F0', borderColor: '#F0E2D4', borderWidth: 1 },
+  confirmButton: { backgroundColor: '#E07B3C' },
   dangerButton: { backgroundColor: '#dc2626' },
-  cancelText: { color: '#d5d7e8', fontSize: 14, fontWeight: '700' },
+  cancelText: { color: '#4B5563', fontSize: 14, fontWeight: '700' },
   confirmText: { color: '#fff', fontSize: 14, fontWeight: '800' },
 });

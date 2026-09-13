@@ -20,11 +20,11 @@ function SignupField({ id, label, value, onChange, icon, opts = {}, focused, set
     <View style={{ marginBottom: 4 }}>
       <Text style={styles.label}>{label}</Text>
       <View style={[styles.inputRow, focused === id && styles.inputFocused, error && styles.inputErr]}>
-        <Feather name={icon} size={18} color={focused === id ? '#7c3aed' : '#6c7094'} style={styles.icon} />
+        <Feather name={icon} size={18} color={focused === id ? '#E07B3C' : '#8A6A4E'} style={styles.icon} />
         <TextInput
           style={[styles.input, webInputReset]}
           placeholder={opts.ph || `Enter ${label.toLowerCase()}`}
-          placeholderTextColor="#4a5270"
+          placeholderTextColor="#B09A86"
           value={value}
           onChangeText={v => { onChange(v); clearErr(id); }}
           autoCapitalize={opts.cap || 'words'}
@@ -129,11 +129,11 @@ export default function SignupScreen({ navigation }) {
             {/* Password — manual because of eye toggle */}
             <Text style={[styles.label, { marginTop: 4 }]}>Password</Text>
             <View style={[styles.inputRow, focused === 'pw' && styles.inputFocused, hasErr('pw') && styles.inputErr]}>
-              <Feather name="lock" size={18} color={focused === 'pw' ? '#7c3aed' : '#6c7094'} style={styles.icon} />
+              <Feather name="lock" size={18} color={focused === 'pw' ? '#E07B3C' : '#8A6A4E'} style={styles.icon} />
               <TextInput
                 style={[styles.input, webInputReset]}
                 placeholder="Min 8 characters"
-                placeholderTextColor="#4a5270"
+                placeholderTextColor="#B09A86"
                 value={password}
                 onChangeText={v => { setPassword(v); clearErr('pw'); }}
                 secureTextEntry={secureText}
@@ -151,7 +151,7 @@ export default function SignupScreen({ navigation }) {
                 hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
                 style={{ padding: 8 }}
               >
-                <Feather name={secureText ? 'eye-off' : 'eye'} size={18} color="#6c7094" />
+                <Feather name={secureText ? 'eye-off' : 'eye'} size={18} color="#8A6A4E" />
               </Pressable>
             </View>
             {hasErr('pw') && <Text style={styles.errText}>{errs.pw}</Text>}
@@ -190,28 +190,28 @@ export default function SignupScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0B0F1A' },
-  safeTop: { flex: 0, backgroundColor: '#0B0F1A', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  root: { flex: 1, backgroundColor: '#FDF6F0' },
+  safeTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
   scroll: { flexGrow: 1, paddingHorizontal: 24, paddingTop: height * 0.08, paddingBottom: 40 },
   logoWrap: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
-  logoBold: { fontSize: 30, fontWeight: '800', color: '#fff', letterSpacing: -0.5 },
-  logoLight: { fontSize: 30, fontWeight: '600', color: '#7c3aed', letterSpacing: -0.5 },
-  title: { fontSize: 24, fontWeight: '700', color: '#fff', marginBottom: 6 },
-  subtitle: { fontSize: 14, color: '#6c7094', lineHeight: 21, marginBottom: 28 },
-  label: { color: '#fff', fontSize: 13, fontWeight: '600', marginBottom: 7, marginTop: 14 },
+  logoBold: { fontSize: 30, fontWeight: '800', color: '#3D2B1F', letterSpacing: -0.5 },
+  logoLight: { fontSize: 30, fontWeight: '600', color: '#E07B3C', letterSpacing: -0.5 },
+  title: { fontSize: 24, fontWeight: '700', color: '#3D2B1F', marginBottom: 6 },
+  subtitle: { fontSize: 14, color: '#8A6A4E', lineHeight: 21, marginBottom: 28 },
+  label: { color: '#3D2B1F', fontSize: 13, fontWeight: '600', marginBottom: 7, marginTop: 14 },
   inputRow: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#161b3d', borderRadius: 14,
+    backgroundColor: '#FFFFFF', borderRadius: 14,
     borderWidth: 1.5, borderColor: 'transparent',
     paddingHorizontal: 14, height: 52, marginBottom: 2,
   },
-  inputFocused: { borderColor: '#7c3aed' },
-  inputErr: { borderColor: '#ef4444' },
-  errText: { color: '#ef4444', fontSize: 11, marginBottom: 2, marginLeft: 2 },
+  inputFocused: { borderColor: '#E07B3C' },
+  inputErr: { borderColor: '#D9694F' },
+  errText: { color: '#D9694F', fontSize: 11, marginBottom: 2, marginLeft: 2 },
   submitErrorBox: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: '#231a31',
+    backgroundColor: '#FFF1F2',
     borderColor: '#7f1d1d',
     borderWidth: 1,
     borderRadius: 14,
@@ -223,14 +223,14 @@ const styles = StyleSheet.create({
   submitErrorTitle: { color: '#fff', fontSize: 13, fontWeight: '700', marginBottom: 3 },
   submitErrorText: { color: '#fca5a5', fontSize: 12, lineHeight: 17 },
   icon: { marginRight: 10 },
-  input: { flex: 1, color: '#fff', fontSize: 15 },
+  input: { flex: 1, color: '#3D2B1F', fontSize: 15 },
   btn: {
-    backgroundColor: '#7c3aed', borderRadius: 14,
+    backgroundColor: '#E07B3C', borderRadius: 14,
     height: 54, alignItems: 'center', justifyContent: 'center', marginTop: 28,
   },
-  btnDisabled: { backgroundColor: '#3b2d6e' },
+  btnDisabled: { backgroundColor: '#C98B65' },
   btnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   linkRow: { marginTop: 22, alignItems: 'center' },
-  linkText: { color: '#6c7094', fontSize: 14 },
-  linkAccent: { color: '#7c3aed', fontWeight: '700' },
+  linkText: { color: '#8A6A4E', fontSize: 14 },
+  linkAccent: { color: '#E07B3C', fontWeight: '700' },
 });

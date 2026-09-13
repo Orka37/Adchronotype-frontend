@@ -135,7 +135,7 @@ export default function ReviewScreen({ navigation }) {
       <SafeAreaView style={styles.safeAreaBottom}>
         <View style={styles.container}>
           <LinearGradient
-            colors={['#030827', '#030A31']}
+            colors={['#FDF6F0', '#FDF6F0']}
             style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }}
           />
 
@@ -145,12 +145,12 @@ export default function ReviewScreen({ navigation }) {
               style={styles.heroImage}
               resizeMode="cover"
             />
-            <LinearGradient colors={['transparent', '#030A31']} style={styles.imageOverlay} />
+            <LinearGradient colors={['transparent', '#FDF6F0']} style={styles.imageOverlay} />
           </View>
 
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-              <Feather name="chevron-left" size={28} color="#ffffff" />
+              <Feather name="chevron-left" size={28} color="#8A6A4E" />
             </TouchableOpacity>
             <StepIndicator currentStep={5} totalSteps={5} />
             <View style={{ width: 28 }} />
@@ -168,15 +168,15 @@ export default function ReviewScreen({ navigation }) {
             >
               <View style={styles.summaryCard}>
                 {[
-                  { icon: <Ionicons name="person" size={20} color="#8a52f3" />, label: 'Sleep type', value: sleepType || 'Not set' },
-                  { icon: <Feather name="moon" size={20} color="#8a52f3" />, label: 'Bedtime', value: formatTime(bedTime) },
+                  { icon: <Ionicons name="person" size={20} color="#F0955A" />, label: 'Sleep type', value: sleepType || 'Not set' },
+                  { icon: <Feather name="moon" size={20} color="#F0955A" />, label: 'Bedtime', value: formatTime(bedTime) },
                   { icon: <Feather name="sun" size={20} color="#fcd53f" />, label: 'Wake-up time', value: formatTime(wakeTime) },
-                  { icon: <Ionicons name="person" size={20} color="#8a52f3" />, label: 'Age', value: age || 'Not set' },
-                  { icon: <MaterialCommunityIcons name="human-male-height" size={20} color="#8a52f3" />, label: 'Height', value: getHeightDisplay() },
-                  { icon: <MaterialCommunityIcons name="weight" size={20} color="#8a52f3" />, label: 'Weight', value: `${weight || '0'} ${unit}` },
-                  { icon: <Feather name="globe" size={20} color="#8a52f3" />, label: 'Ethnicity', value: ethnicity || 'Not set' },
-                  { icon: <Ionicons name="people" size={20} color="#8a52f3" />, label: 'Sex', value: gender || 'Not set' },
-                  { icon: <Feather name="heart" size={20} color="#8a52f3" />, label: 'Family history', value: familyHistory || 'Not set' },
+                  { icon: <Ionicons name="person" size={20} color="#F0955A" />, label: 'Age', value: age || 'Not set' },
+                  { icon: <MaterialCommunityIcons name="human-male-height" size={20} color="#F0955A" />, label: 'Height', value: getHeightDisplay() },
+                  { icon: <MaterialCommunityIcons name="weight" size={20} color="#F0955A" />, label: 'Weight', value: `${weight || '0'} ${unit}` },
+                  { icon: <Feather name="globe" size={20} color="#F0955A" />, label: 'Ethnicity', value: ethnicity || 'Not set' },
+                  { icon: <Ionicons name="people" size={20} color="#F0955A" />, label: 'Sex', value: gender || 'Not set' },
+                  { icon: <Feather name="heart" size={20} color="#F0955A" />, label: 'Family history', value: familyHistory || 'Not set' },
                 ].map((row, i, arr) => (
                   <View key={row.label}>
                     <View style={styles.row}>
@@ -195,7 +195,7 @@ export default function ReviewScreen({ navigation }) {
               <Text style={styles.consentBody}>{RESEARCH_DISCLAIMER_SHORT}</Text>
               <TouchableOpacity onPress={() => setShowSources(true)} style={styles.sourcesToggle}>
                 <Text style={styles.sourcesToggleText}>View full disclaimer and research sources</Text>
-                <Feather name="info" size={15} color="#c8b8ff" />
+                <Feather name="info" size={15} color="#E07B3C" />
               </TouchableOpacity>
               <TouchableOpacity style={styles.ackRow} onPress={() => setAcknowledged(value => !value)} activeOpacity={0.8}>
                 <View style={[styles.checkbox, acknowledged && styles.checkboxChecked]}>
@@ -247,7 +247,7 @@ export default function ReviewScreen({ navigation }) {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>About Your Research Score</Text>
               <TouchableOpacity onPress={() => setShowSources(false)} accessibilityLabel="Close">
-                <Feather name="x" size={22} color="#ffffff" />
+                <Feather name="x" size={22} color="#8A6A4E" />
               </TouchableOpacity>
             </View>
             <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator>
@@ -259,7 +259,7 @@ export default function ReviewScreen({ navigation }) {
               {RESEARCH_SOURCES.map(source => (
                 <TouchableOpacity key={source.label} onPress={() => Linking.openURL(source.url)} style={styles.modalLinkRow}>
                   <Text style={styles.modalLink}>{source.label} — View published research</Text>
-                  <Feather name="external-link" size={13} color="#c8b8ff" />
+                  <Feather name="external-link" size={13} color="#E07B3C" />
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -274,9 +274,9 @@ export default function ReviewScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeAreaTop: { flex: 0, backgroundColor: '#030827', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeAreaBottom: { flex: 1, backgroundColor: '#030A31' },
-  container: { flex: 1, backgroundColor: '#030A31', paddingHorizontal: 20 },
+  safeAreaTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeAreaBottom: { flex: 1, backgroundColor: '#FDF6F0' },
+  container: { flex: 1, backgroundColor: '#FDF6F0', paddingHorizontal: 20 },
   imageContainer: { position: 'absolute', top: 0, left: 0, right: 0, height: '50%', zIndex: -1 },
   heroImage: { width: '100%', height: '100%', opacity: 0.9 },
   imageOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 180 },
@@ -284,41 +284,41 @@ const styles = StyleSheet.create({
   backButton: { padding: 4 },
   contentWrapper: { flex: 1, justifyContent: 'flex-start', paddingTop: 40 },
   textContainer: { alignItems: 'center', marginBottom: 24, paddingHorizontal: 10 },
-  title: { fontSize: 30, fontWeight: 'bold', color: '#ffffff', textAlign: 'center', lineHeight: 38, marginBottom: 12 },
-  consentCard: { backgroundColor: '#10142e', borderRadius: 12, borderWidth: 1, borderColor: '#ffb83066', padding: 12, marginBottom: 10 },
-  consentTitle: { color: '#ffb830', fontSize: 12, fontWeight: '800', marginBottom: 6 },
-  consentBody: { color: '#b9bdd2', fontSize: 10, lineHeight: 15, marginBottom: 6 },
+  title: { fontSize: 30, fontWeight: 'bold', color: '#3D2B1F', textAlign: 'center', lineHeight: 38, marginBottom: 12 },
+  consentCard: { backgroundColor: '#FBEED2', borderRadius: 12, borderWidth: 1, borderColor: '#F0D9A8', padding: 12, marginBottom: 10 },
+  consentTitle: { color: '#9A3412', fontSize: 12, fontWeight: '800', marginBottom: 6 },
+  consentBody: { color: '#7C4A1E', fontSize: 10, lineHeight: 15, marginBottom: 6 },
   sourcesToggle: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 5 },
-  sourcesToggleText: { color: '#c8b8ff', fontSize: 11, fontWeight: '700' },
+  sourcesToggleText: { color: '#E07B3C', fontSize: 11, fontWeight: '700' },
   ackRow: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 8, gap: 9 },
-  checkbox: { width: 20, height: 20, borderRadius: 4, borderWidth: 1.5, borderColor: '#8a52f3', alignItems: 'center', justifyContent: 'center' },
-  checkboxChecked: { backgroundColor: '#7c3aed' },
-  ackText: { flex: 1, color: '#ffffff', fontSize: 11, lineHeight: 16, fontWeight: '600' },
+  checkbox: { width: 20, height: 20, borderRadius: 4, borderWidth: 1.5, borderColor: '#F0955A', alignItems: 'center', justifyContent: 'center' },
+  checkboxChecked: { backgroundColor: '#E07B3C' },
+  ackText: { flex: 1, color: '#3D2B1F', fontSize: 11, lineHeight: 16, fontWeight: '600' },
   cardScrollView: { flex: 1 },
   cardScrollContent: { paddingBottom: 18 },
-  summaryCard: { backgroundColor: '#161b3d', borderRadius: 16, paddingVertical: 8, paddingHorizontal: 20, borderWidth: 1.5, borderColor: 'transparent' },
+  summaryCard: { backgroundColor: '#FFFFFF', borderRadius: 16, paddingVertical: 8, paddingHorizontal: 20, borderWidth: 1.5, borderColor: 'transparent' },
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 16 },
   icon: { marginRight: 16, width: 24, textAlign: 'center' },
-  label: { color: '#e0e0e0', fontSize: 16, fontWeight: '500', flex: 1 },
-  value: { color: '#ffffff', fontSize: 16, fontWeight: '600', textAlign: 'right', flexShrink: 1 },
-  divider: { height: 1, backgroundColor: '#1f254f', width: '100%' },
+  label: { color: '#4B5563', fontSize: 16, fontWeight: '500', flex: 1 },
+  value: { color: '#3D2B1F', fontSize: 16, fontWeight: '600', textAlign: 'right', flexShrink: 1 },
+  divider: { height: 1, backgroundColor: '#F0E2D4', width: '100%' },
   bottomButtons: { flexDirection: 'row', marginBottom: 20, marginTop: 12, gap: 12 },
-  editButton: { flex: 1, backgroundColor: 'transparent', borderWidth: 1.5, borderColor: '#4d4178', paddingVertical: 18, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  editButtonText: { color: '#ffffff', fontSize: 18, fontWeight: '600' },
-  generateButton: { flex: 2, backgroundColor: '#8a52f3', paddingVertical: 18, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  editButton: { flex: 1, backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: '#E07B3C', paddingVertical: 18, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  editButtonText: { color: '#E07B3C', fontSize: 18, fontWeight: '600' },
+  generateButton: { flex: 2, backgroundColor: '#F0955A', paddingVertical: 18, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   generateButtonDisabled: { opacity: 0.75 },
   buttonDisabled: { opacity: 0.55 },
   generateLoading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
   generateButtonText: { color: '#ffffff', fontSize: 18, fontWeight: '600' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 20 },
-  researchModal: { width: '100%', maxWidth: 520, maxHeight: '82%', backgroundColor: '#101533', borderRadius: 16, borderWidth: 1, borderColor: '#7c3aed66', padding: 18 },
+  researchModal: { width: '100%', maxWidth: 520, maxHeight: '82%', backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#E07B3C66', padding: 18 },
   modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 },
-  modalTitle: { color: '#ffffff', fontSize: 18, fontWeight: '800', flex: 1 },
+  modalTitle: { color: '#3D2B1F', fontSize: 18, fontWeight: '800', flex: 1 },
   modalScroll: { flexGrow: 0 },
-  modalSectionTitle: { color: '#d8ceff', fontSize: 13, fontWeight: '800', marginTop: 10, marginBottom: 5 },
-  modalBody: { color: '#b7bad1', fontSize: 12, lineHeight: 19 },
+  modalSectionTitle: { color: '#3D2B1F', fontSize: 13, fontWeight: '800', marginTop: 10, marginBottom: 5 },
+  modalBody: { color: '#8A6A4E', fontSize: 12, lineHeight: 19 },
   modalLinkRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, paddingVertical: 7 },
-  modalLink: { color: '#c8b8ff', fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
-  modalCloseButton: { backgroundColor: '#7c3aed', borderRadius: 10, alignItems: 'center', paddingVertical: 11, marginTop: 14 },
+  modalLink: { color: '#E07B3C', fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
+  modalCloseButton: { backgroundColor: '#E07B3C', borderRadius: 10, alignItems: 'center', paddingVertical: 11, marginTop: 14 },
   modalCloseText: { color: '#ffffff', fontSize: 14, fontWeight: '800' },
 });

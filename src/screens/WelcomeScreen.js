@@ -12,7 +12,7 @@ export default function WelcomeScreen({ navigation }) {
       <SafeAreaView style={styles.safeAreaBottom}>
         <View style={styles.container}>
         <LinearGradient
-          colors={['#030827', '#030A31']}
+          colors={['#FDF6F0', '#FDF6F0']}
           style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }}
         />
         
@@ -25,7 +25,7 @@ export default function WelcomeScreen({ navigation }) {
           />
           {/* An overlay to fade the bottom of the image into the background */}
           <LinearGradient
-            colors={['transparent', '#030A31']}
+            colors={['transparent', '#FDF6F0']}
             style={styles.imageOverlay}
           />
         </View>
@@ -49,7 +49,7 @@ export default function WelcomeScreen({ navigation }) {
               onPress={() => navigation.navigate('SleepType')}
             >
               <LinearGradient
-                colors={['#8a52f3', '#6a3be0']}
+                colors={['#F0955A', '#E07B3C']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.primaryButton}
@@ -67,7 +67,7 @@ export default function WelcomeScreen({ navigation }) {
             >
               <Text style={styles.secondaryButtonText}>About the Project</Text>
               <View style={styles.iconCircle}>
-                <Feather name="info" size={14} color="#9a73ef" />
+                <Feather name="info" size={14} color="#E07B3C" />
               </View>
             </TouchableOpacity>
           </View>
@@ -81,16 +81,16 @@ export default function WelcomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeAreaTop: {
     flex: 0,
-    backgroundColor: '#030827',
+    backgroundColor: '#FDF6F0',
     paddingTop: Platform.OS === 'android' ? 25 : 0,
   },
   safeAreaBottom: {
     flex: 1,
-    backgroundColor: '#030A31',
+    backgroundColor: '#FDF6F0',
   },
   container: {
     flex: 1,
-    backgroundColor: '#030A31',
+    backgroundColor: '#FDF6F0',
   },
   imageContainer: {
     height: '50%',
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   heroImage: {
     width: '100%',
     height: '100%',
-    opacity: 0.9,
+    opacity: 0.28,
   },
   imageOverlay: {
     position: 'absolute',
@@ -124,18 +124,18 @@ const styles = StyleSheet.create({
   titleBold: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#3D2B1F',
     letterSpacing: -0.5,
   },
   titleRegular: {
     fontSize: 36,
     fontWeight: '600',
-    color: '#9a73ef',
+    color: '#E07B3C',
     letterSpacing: -0.5,
   },
   subtitle: {
     fontSize: 17,
-    color: '#e0e0e0',
+    color: '#8A6A4E',
     textAlign: 'center',
     lineHeight: 26,
     marginBottom: 40,
@@ -171,11 +171,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: '#4d3b82',
-    backgroundColor: 'transparent',
+    borderColor: '#E2C2AA',
+    backgroundColor: '#FFFFFF',
   },
   secondaryButtonText: {
-    color: '#e0e0e0',
+    color: '#3D2B1F',
     fontSize: 18,
     fontWeight: '500',
     marginRight: 8,
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 11,
     borderWidth: 1.5,
-    borderColor: '#9a73ef',
+    borderColor: '#E07B3C',
     alignItems: 'center',
     justifyContent: 'center',
   }

@@ -20,10 +20,10 @@ import { deleteStoredItem, getStoredItem, setStoredItem } from '../utils/storage
 import { log } from '../utils/logger';
 
 const TESTS = [
-  { key: 'memory', label: 'Memory Match', icon: 'brain', color: '#7c3aed', desc: '3 rounds of word-pair recall' },
-  { key: 'stroop', label: 'Stroop Test', icon: 'palette', color: '#00c9b1', desc: 'Timed congruent and incongruent phases' },
-  { key: 'digit_span', label: 'Digit Span Sequencing', icon: 'numeric', color: '#ffb830', desc: 'Sort digit sequences in ascending order' },
-  { key: 'reaction', label: 'Reaction Time', icon: 'lightning-bolt', color: '#ff5c5c', desc: '20 target-response trials' },
+  { key: 'memory', label: 'Memory Match', icon: 'brain', color: '#E07B3C', desc: 'Match the pairs from memory' },
+  { key: 'stroop', label: 'Stroop Test', icon: 'palette', color: '#7EC49A', desc: 'Name the color, not the word' },
+  { key: 'digit_span', label: 'Digit Span', icon: 'numeric', color: '#E9A94A', desc: 'Recall the sequence of digits' },
+  { key: 'reaction', label: 'Reaction Time', icon: 'lightning-bolt', color: '#D9694F', desc: 'Tap as fast as you can' },
 ];
 
 const TEST_INSTRUCTIONS = {
@@ -95,10 +95,10 @@ const WORDSETS = [
 ];
 
 const STROOP_COLORS = {
-  red: '#ff5c5c',
+  red: '#D9694F',
   blue: '#5a8dee',
-  green: '#00c9b1',
-  yellow: '#ffb830',
+  green: '#7EC49A',
+  yellow: '#E9A94A',
 };
 
 const STROOP_COLOR_NAMES = Object.keys(STROOP_COLORS);
@@ -363,11 +363,11 @@ export default function CognitiveTestScreen({ navigation }) {
       <SafeAreaView style={styles.safeTop} />
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.root}>
-          <LinearGradient colors={['#030827', '#030A31']} style={StyleSheet.absoluteFillObject} />
+          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={StyleSheet.absoluteFillObject} />
 
           <View style={styles.header}>
             <TouchableOpacity onPress={handleBackPress} style={styles.backBtn} activeOpacity={0.7}>
-              <Feather name="arrow-left" size={22} color="#c8b8ff" />
+              <Feather name="arrow-left" size={22} color="#8A6A4E" />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Cognitive Test</Text>
             <View style={styles.headerSpacer} />
@@ -416,7 +416,7 @@ function Intro({ locked, nextAvailableAt, onStart, onViewResults, onBack }) {
   return (
     <ScrollView contentContainerStyle={styles.introScroll}>
       <View style={styles.brainCircle}>
-        <MaterialCommunityIcons name="brain" size={40} color="#c8b8ff" />
+        <MaterialCommunityIcons name="brain" size={40} color="#E07B3C" />
       </View>
       <Text style={styles.introTitle}>Cognitive Test Battery</Text>
 
@@ -437,7 +437,7 @@ function Intro({ locked, nextAvailableAt, onStart, onViewResults, onBack }) {
       <Text style={styles.introSub}>You will complete 4 tests. Plan for about 20 minutes in a quiet place.</Text>
       {locked ? (
         <View style={styles.lockCard}>
-          <Feather name="lock" size={20} color="#ffb830" />
+          <Feather name="lock" size={20} color="#E9A94A" />
           <Text style={styles.lockTitle}>Retake available after one week</Text>
           <Text style={styles.lockText}>You can take the full battery again on {formatAvailableDate(nextAvailableAt)}.</Text>
           <TouchableOpacity style={styles.secondaryFullBtn} onPress={onViewResults} activeOpacity={0.85}>
@@ -475,6 +475,9 @@ function TestHub({
 
   return (
     <ScrollView contentContainerStyle={styles.hubScroll}>
+      {!resultsOnly && (
+        <Text style={styles.hubSubtitle}>Complete each task. Your results feed your score.</Text>
+      )}
       {resultsOnly ? (
         <Text style={styles.hubProgress}>Saved cognitive test results</Text>
       ) : (
@@ -485,28 +488,6 @@ function TestHub({
           </View>
         </>
       )}
-
-      <View style={styles.summaryCard}>
-        <View style={styles.summaryHeader}>
-          <Text style={styles.summaryTitle}>Personal Bests</Text>
-          <TouchableOpacity onPress={onRefreshSummary} disabled={summaryLoading} activeOpacity={0.7}>
-            {summaryLoading
-              ? <ActivityIndicator color="#7c3aed" size="small" />
-              : <Feather name="refresh-cw" size={16} color="#8a52f3" />
-            }
-          </TouchableOpacity>
-        </View>
-        {summaryError ? <Text style={styles.summaryError}>{summaryError}</Text> : null}
-        <View style={styles.bestGrid}>
-          {TESTS.map((test) => (
-            <View key={test.key} style={styles.bestTile}>
-              <MaterialCommunityIcons name={test.icon} size={18} color={test.color} />
-              <Text style={styles.bestLabel}>{test.label.replace(' Sequencing', '')}</Text>
-              <Text style={styles.bestValue}>{formatScore(test.key, personalBests[test.key])}</Text>
-            </View>
-          ))}
-        </View>
-      </View>
 
       {!resultsOnly && TESTS.map((test) => {
         const done = !!results[test.key];
@@ -529,9 +510,9 @@ function TestHub({
               </Text>
             </View>
             {done ? (
-              <Feather name="check-circle" size={22} color="#00c9b1" />
+              <Feather name="check-circle" size={22} color="#7EC49A" />
             ) : (
-              <Feather name="chevron-right" size={22} color="#6c7094" />
+              <Feather name="chevron-right" size={22} color="#8A6A4E" />
             )}
           </TouchableOpacity>
         );
@@ -553,10 +534,32 @@ function TestHub({
       )}
 
       <View style={styles.summaryCard}>
+        <View style={styles.summaryHeader}>
+          <Text style={styles.summaryTitle}>Personal Bests</Text>
+          <TouchableOpacity onPress={onRefreshSummary} disabled={summaryLoading} activeOpacity={0.7}>
+            {summaryLoading
+              ? <ActivityIndicator color="#E07B3C" size="small" />
+              : <Feather name="refresh-cw" size={16} color="#F0955A" />
+            }
+          </TouchableOpacity>
+        </View>
+        {summaryError ? <Text style={styles.summaryError}>{summaryError}</Text> : null}
+        <View style={styles.bestGrid}>
+          {TESTS.map((test) => (
+            <View key={test.key} style={styles.bestTile}>
+              <MaterialCommunityIcons name={test.icon} size={18} color={test.color} />
+              <Text style={styles.bestLabel}>{test.label}</Text>
+              <Text style={styles.bestValue}>{formatScore(test.key, personalBests[test.key])}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.summaryCard}>
         <Text style={styles.summaryTitle}>Recent Saved Results</Text>
         {summaryLoading && !recentResults.length ? (
           <View style={styles.emptyResultsRow}>
-            <ActivityIndicator color="#7c3aed" size="small" />
+            <ActivityIndicator color="#E07B3C" size="small" />
             <Text style={styles.emptyResultsText}>Loading saved results</Text>
           </View>
         ) : recentResults.length ? (
@@ -564,8 +567,8 @@ function TestHub({
             const meta = TEST_META[item.test_type] || {};
             return (
               <View key={item.id || `${item.test_type}-${item.tested_at}`} style={styles.resultRow}>
-                <View style={[styles.resultIcon, { backgroundColor: `${meta.color || '#7c3aed'}22` }]}>
-                  <MaterialCommunityIcons name={meta.icon || 'brain'} size={16} color={meta.color || '#7c3aed'} />
+                <View style={[styles.resultIcon, { backgroundColor: `${meta.color || '#E07B3C'}22` }]}>
+                  <MaterialCommunityIcons name={meta.icon || 'brain'} size={16} color={meta.color || '#E07B3C'} />
                 </View>
                 <View style={styles.resultTextWrap}>
                   <Text style={styles.resultLabel}>{meta.label || item.test_type}</Text>
@@ -590,8 +593,8 @@ function TestInstruction({ testKey, onBegin, onBack }) {
 
   return (
     <ScrollView contentContainerStyle={styles.introScroll}>
-      <View style={[styles.brainCircle, { backgroundColor: `${meta.color || '#7c3aed'}22` }]}> 
-        <MaterialCommunityIcons name={meta.icon || 'brain'} size={40} color={meta.color || '#c8b8ff'} />
+      <View style={[styles.brainCircle, { backgroundColor: `${meta.color || '#E07B3C'}22` }]}> 
+        <MaterialCommunityIcons name={meta.icon || 'brain'} size={40} color={meta.color || '#E07B3C'} />
       </View>
       <Text style={styles.introTitle}>{meta.label}</Text>
       <Text style={styles.introSub}>{meta.desc}</Text>
@@ -727,7 +730,7 @@ function MemoryTest({ onDone, onCancel }) {
         </View>
         <View style={styles.pairBox}>
           <Text style={styles.pairWord}>{pairs[studyIdx][0]}</Text>
-          <Feather name="arrow-right" size={24} color="#6c7094" />
+          <Feather name="arrow-right" size={24} color="#8A6A4E" />
           <Text style={styles.pairWord}>{pairs[studyIdx][1]}</Text>
         </View>
         <Text style={styles.helperText}>Each pair appears for 3 seconds.</Text>
@@ -746,7 +749,7 @@ function MemoryTest({ onDone, onCancel }) {
         value={answer}
         onChangeText={setAnswer}
         placeholder="Type the matching word"
-        placeholderTextColor="#4a5270"
+        placeholderTextColor="#B09A86"
         autoCapitalize="none"
         autoCorrect={false}
         onSubmitEditing={() => canSubmitAnswer && finishCue(answer)}
@@ -988,7 +991,7 @@ function DigitSpanTest({ onDone, onCancel }) {
             value={answer}
             onChangeText={setAnswer}
             placeholder="Smallest to largest, e.g. 138"
-            placeholderTextColor="#4a5270"
+            placeholderTextColor="#B09A86"
             keyboardType="number-pad"
             onSubmitEditing={() => submitDigitAnswer(answer)}
             returnKeyType="done"
@@ -1117,7 +1120,7 @@ function ReactionTest({ onDone, onCancel }) {
 function BackToTestsButton({ onPress }) {
   return (
     <TouchableOpacity style={styles.secondaryBtn} onPress={onPress} activeOpacity={0.7}>
-      <Feather name="grid" size={15} color="#c8b8ff" />
+      <Feather name="grid" size={15} color="#E07B3C" />
       <Text style={styles.secondaryBtnText}>Back to Tests</Text>
     </TouchableOpacity>
   );
@@ -1127,7 +1130,7 @@ function Done({ onHome }) {
   return (
     <View style={styles.testBody}>
       <View style={styles.brainCircle}>
-        <Feather name="check" size={40} color="#00c9b1" />
+        <Feather name="check" size={40} color="#7EC49A" />
       </View>
       <Text style={styles.introTitle}>All Tests Complete</Text>
       <Text style={styles.introSub}>Your results have been saved securely.</Text>
@@ -1139,8 +1142,8 @@ function Done({ onHome }) {
 }
 
 const styles = StyleSheet.create({
-  safeTop: { flex: 0, backgroundColor: '#030827', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: '#030A31' },
+  safeTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom: { flex: 1, backgroundColor: '#FDF6F0' },
   root: { flex: 1 },
   header: {
     flexDirection: 'row',
@@ -1149,135 +1152,136 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#1a1a40',
+    borderBottomColor: '#F0E2D4',
   },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { color: '#fff', fontSize: 17, fontWeight: '800' },
+  headerTitle: { color: '#3D2B1F', fontSize: 17, fontWeight: '800' },
   headerSpacer: { width: 40 },
   introScroll: { padding: 20, alignItems: 'center', paddingBottom: 36 },
   brainCircle: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#1a1060',
+    backgroundColor: '#FBEADB',
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 20,
   },
-  introTitle: { color: '#fff', fontSize: 20, fontWeight: '800', marginBottom: 16, textAlign: 'center' },
-  introSub: { color: '#8c91b5', fontSize: 13, textAlign: 'center', marginVertical: 16, lineHeight: 20 },
+  introTitle: { color: '#3D2B1F', fontSize: 20, fontWeight: '800', marginBottom: 16, textAlign: 'center' },
+  introSub: { color: '#8A6A4E', fontSize: 13, textAlign: 'center', marginVertical: 16, lineHeight: 20 },
   infoCard: {
-    backgroundColor: 'rgba(124,58,237,0.10)',
+    backgroundColor: 'rgba(224, 123, 60,0.10)',
     borderWidth: 1,
-    borderColor: 'rgba(124,58,237,0.35)',
+    borderColor: 'rgba(224, 123, 60,0.35)',
     borderRadius: 12,
     padding: 14,
     width: '100%',
     marginBottom: 12,
   },
-  infoLabel: { color: '#a78bfa', fontSize: 11, fontWeight: '700', marginBottom: 6 },
-  infoBody: { color: '#c4b5fd', fontSize: 13, lineHeight: 20 },
-  instructionLine: { color: '#c4b5fd', fontSize: 13, lineHeight: 21, marginBottom: 8 },
-  lockCard: { backgroundColor: '#1f1a10', borderWidth: 1, borderColor: '#ffb83066', borderRadius: 14, padding: 16, width: '100%', alignItems: 'center', marginVertical: 12 },
-  lockTitle: { color: '#ffb830', fontSize: 15, fontWeight: '800', marginTop: 8, textAlign: 'center' },
-  lockText: { color: '#c9bdd9', fontSize: 13, lineHeight: 19, marginTop: 6, textAlign: 'center' },
-  secondaryFullBtn: { width: '100%', minHeight: 46, borderRadius: 12, borderWidth: 1, borderColor: '#7c3aed77', backgroundColor: '#7c3aed22', alignItems: 'center', justifyContent: 'center', marginTop: 14 },
-  secondaryFullBtnText: { color: '#c8b8ff', fontSize: 14, fontWeight: '800' },
+  infoLabel: { color: '#E07B3C', fontSize: 11, fontWeight: '700', marginBottom: 6 },
+  infoBody: { color: '#6B5744', fontSize: 13, lineHeight: 20 },
+  instructionLine: { color: '#6B5744', fontSize: 13, lineHeight: 21, marginBottom: 8 },
+  lockCard: { backgroundColor: '#FBEED2', borderWidth: 1, borderColor: '#F0D9A8', borderRadius: 14, padding: 16, width: '100%', alignItems: 'center', marginVertical: 12 },
+  lockTitle: { color: '#9A6A1E', fontSize: 15, fontWeight: '800', marginTop: 8, textAlign: 'center' },
+  lockText: { color: '#7C4A1E', fontSize: 13, lineHeight: 19, marginTop: 6, textAlign: 'center' },
+  secondaryFullBtn: { width: '100%', minHeight: 46, borderRadius: 12, borderWidth: 1, borderColor: '#E07B3C77', backgroundColor: '#E07B3C22', alignItems: 'center', justifyContent: 'center', marginTop: 14 },
+  secondaryFullBtnText: { color: '#E07B3C', fontSize: 14, fontWeight: '800' },
   warnCard: {
-    backgroundColor: '#0d1030',
+    backgroundColor: '#FDF6F0',
     borderWidth: 1,
-    borderColor: '#1f254f',
+    borderColor: '#F0E2D4',
     borderRadius: 12,
     padding: 14,
     width: '100%',
     marginBottom: 8,
   },
-  warnLabel: { color: '#ffb830', fontSize: 11, fontWeight: '700', marginBottom: 6 },
-  warnBody: { color: '#8c91b5', fontSize: 12, lineHeight: 18 },
+  warnLabel: { color: '#E9A94A', fontSize: 11, fontWeight: '700', marginBottom: 6 },
+  warnBody: { color: '#8A6A4E', fontSize: 12, lineHeight: 18 },
   hubScroll: { padding: 20, paddingBottom: 36 },
-  hubProgress: { color: '#c8b8ff', fontSize: 14, fontWeight: '700', marginBottom: 8 },
-  progressBar: { height: 6, backgroundColor: '#1a1a40', borderRadius: 3, marginBottom: 20, overflow: 'hidden' },
-  progressBarWide: { width: '100%', height: 6, backgroundColor: '#1a1a40', borderRadius: 3, marginBottom: 24, overflow: 'hidden' },
-  progressFill: { height: 6, backgroundColor: '#7c3aed', borderRadius: 3 },
+  hubSubtitle: { color: '#8A6A4E', fontSize: 13, lineHeight: 19, marginBottom: 16 },
+  hubProgress: { color: '#9A6A1E', fontSize: 14, fontWeight: '700', marginBottom: 8 },
+  progressBar: { height: 6, backgroundColor: '#F0E2D4', borderRadius: 3, marginBottom: 20, overflow: 'hidden' },
+  progressBarWide: { width: '100%', height: 6, backgroundColor: '#F0E2D4', borderRadius: 3, marginBottom: 24, overflow: 'hidden' },
+  progressFill: { height: 6, backgroundColor: '#E07B3C', borderRadius: 3 },
   summaryCard: {
-    backgroundColor: '#101538',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#1f254f',
+    borderColor: '#F0E2D4',
     padding: 14,
     marginBottom: 16,
   },
   summaryHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  summaryTitle: { color: '#fff', fontSize: 15, fontWeight: '800', marginBottom: 12 },
-  summaryError: { color: '#ffb830', fontSize: 12, marginBottom: 10, lineHeight: 17 },
+  summaryTitle: { color: '#3D2B1F', fontSize: 15, fontWeight: '800', marginBottom: 12 },
+  summaryError: { color: '#E9A94A', fontSize: 12, marginBottom: 10, lineHeight: 17 },
   bestGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   bestTile: {
     width: '48%',
     minHeight: 90,
     borderRadius: 12,
-    backgroundColor: '#0d1030',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#1f254f',
+    borderColor: '#F0E2D4',
     padding: 10,
   },
-  bestLabel: { color: '#8c91b5', fontSize: 10, fontWeight: '700', marginTop: 8, minHeight: 28 },
-  bestValue: { color: '#fff', fontSize: 15, fontWeight: '800', marginTop: 4 },
+  bestLabel: { color: '#8A6A4E', fontSize: 10, fontWeight: '700', marginTop: 8, minHeight: 28 },
+  bestValue: { color: '#3D2B1F', fontSize: 15, fontWeight: '800', marginTop: 4 },
   resultRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: '#1f254f',
+    borderTopColor: '#F0E2D4',
   },
   resultIcon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   resultTextWrap: { flex: 1 },
-  resultLabel: { color: '#e5e7ff', fontSize: 13, fontWeight: '700' },
-  resultDate: { color: '#6c7094', fontSize: 11, marginTop: 2 },
-  resultScore: { color: '#c8b8ff', fontSize: 13, fontWeight: '800' },
+  resultLabel: { color: '#6B5744', fontSize: 13, fontWeight: '700' },
+  resultDate: { color: '#8A6A4E', fontSize: 11, marginTop: 2 },
+  resultScore: { color: '#E07B3C', fontSize: 13, fontWeight: '800' },
   emptyResultsRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  emptyResultsText: { color: '#6c7094', fontSize: 12, lineHeight: 18 },
+  emptyResultsText: { color: '#8A6A4E', fontSize: 12, lineHeight: 18 },
   testCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: '#161b3d',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#1f254f',
+    borderColor: '#F0E2D4',
   },
-  testCardDone: { opacity: 0.7, borderColor: '#00c9b1' },
+  testCardDone: { opacity: 0.7, borderColor: '#7EC49A' },
   testIcon: { width: 46, height: 46, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   testCardContent: { flex: 1 },
-  testLabel: { color: '#fff', fontSize: 15, fontWeight: '700' },
-  testDesc: { color: '#6c7094', fontSize: 12, marginTop: 2 },
+  testLabel: { color: '#3D2B1F', fontSize: 15, fontWeight: '700' },
+  testDesc: { color: '#8A6A4E', fontSize: 12, marginTop: 2 },
   testBody: { flex: 1, padding: 20, alignItems: 'center', justifyContent: 'center' },
-  testStage: { color: '#fff', fontSize: 18, fontWeight: '800', textAlign: 'center', marginBottom: 6 },
-  testCounter: { color: '#6c7094', fontSize: 13, marginBottom: 30 },
-  helperText: { color: '#8c91b5', fontSize: 12, lineHeight: 18, textAlign: 'center', marginTop: 8, marginBottom: 6 },
+  testStage: { color: '#3D2B1F', fontSize: 18, fontWeight: '800', textAlign: 'center', marginBottom: 6 },
+  testCounter: { color: '#8A6A4E', fontSize: 13, marginBottom: 30 },
+  helperText: { color: '#8A6A4E', fontSize: 12, lineHeight: 18, textAlign: 'center', marginTop: 8, marginBottom: 6 },
   pairBox: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
-    backgroundColor: '#161b3d',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     paddingVertical: 30,
     paddingHorizontal: 24,
     marginBottom: 30,
   },
-  pairWord: { color: '#c8b8ff', fontSize: 26, fontWeight: '800' },
-  cueWord: { color: '#fff', fontSize: 30, fontWeight: '900', marginBottom: 24, textAlign: 'center' },
+  pairWord: { color: '#E07B3C', fontSize: 26, fontWeight: '800' },
+  cueWord: { color: '#3D2B1F', fontSize: 30, fontWeight: '900', marginBottom: 24, textAlign: 'center' },
   input: {
     width: '100%',
-    backgroundColor: '#0d1030',
+    backgroundColor: '#FDF6F0',
     borderWidth: 1.5,
-    borderColor: '#7c3aed',
+    borderColor: '#E07B3C',
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 16,
-    color: '#fff',
+    color: '#3D2B1F',
     fontSize: 16,
     marginBottom: 16,
     textAlign: 'center',
@@ -1287,7 +1291,7 @@ const styles = StyleSheet.create({
   stroopBtn: { paddingVertical: 14, paddingHorizontal: 24, borderRadius: 12, minWidth: 100, alignItems: 'center' },
   stroopBtnText: { color: '#fff', fontSize: 15, fontWeight: '800' },
   digitBox: { alignItems: 'center', marginBottom: 30 },
-  digitBig: { color: '#7c3aed', fontSize: 80, fontWeight: '900', marginBottom: 12 },
+  digitBig: { color: '#E07B3C', fontSize: 80, fontWeight: '900', marginBottom: 12 },
   reactionArea: {
     width: '100%',
     height: 260,
@@ -1297,9 +1301,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     backgroundColor: '#f8fafc',
     borderWidth: 2,
-    borderColor: '#d8ddf0',
+    borderColor: '#F0E2D4',
   },
-  reactionText: { color: '#161b3d', fontSize: 24, fontWeight: '900', textAlign: 'center' },
+  reactionText: { color: '#3D2B1F', fontSize: 24, fontWeight: '900', textAlign: 'center' },
   reactionBall: {
     width: 84,
     height: 84,
@@ -1311,7 +1315,7 @@ const styles = StyleSheet.create({
   reactionBallText: { color: '#fff', fontSize: 16, fontWeight: '900' },
   primaryBtn: {
     width: '100%',
-    backgroundColor: '#7c3aed',
+    backgroundColor: '#E07B3C',
     borderRadius: 12,
     height: 50,
     alignItems: 'center',
@@ -1319,7 +1323,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 12,
   },
-  primaryBtnDisabled: { backgroundColor: '#3a2070', opacity: 0.6 },
+  primaryBtnDisabled: { backgroundColor: '#C98B65', opacity: 0.6 },
   primaryBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   secondaryBtn: {
     flexDirection: 'row',
@@ -1330,10 +1334,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#7c3aed55',
-    backgroundColor: '#161b3d',
+    borderColor: '#E07B3C55',
+    backgroundColor: '#FFFFFF',
     marginTop: 8,
   },
-  secondaryBtnText: { color: '#c8b8ff', fontSize: 13, fontWeight: '700' },
-  linkText: { color: '#6c7094', fontSize: 13, textAlign: 'center', marginTop: 8 },
+  secondaryBtnText: { color: '#E07B3C', fontSize: 13, fontWeight: '700' },
+  linkText: { color: '#8A6A4E', fontSize: 13, textAlign: 'center', marginTop: 8 },
 });

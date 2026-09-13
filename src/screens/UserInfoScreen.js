@@ -43,7 +43,7 @@ function DrumWheel({ items, selected, onSelect, labelFn }) {
 
   return (
     <View style={{ flex: 1, height: ITEM_H * 5, overflow: 'hidden', position: 'relative' }}>
-      <View style={{ position: 'absolute', top: ITEM_H * 2, left: 0, right: 0, height: ITEM_H, borderTopWidth: 1.5, borderBottomWidth: 1.5, borderColor: '#7c3aed55', backgroundColor: '#7c3aed0a', zIndex: 1, pointerEvents: 'none' }} />
+      <View style={{ position: 'absolute', top: ITEM_H * 2, left: 0, right: 0, height: ITEM_H, borderTopWidth: 1.5, borderBottomWidth: 1.5, borderColor: '#E07B3C55', backgroundColor: '#E07B3C0a', zIndex: 1, pointerEvents: 'none' }} />
       <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: ITEM_H * 2, zIndex: 2, pointerEvents: 'none' }} />
       <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: ITEM_H * 2, zIndex: 2, pointerEvents: 'none' }} />
       <ScrollView
@@ -69,7 +69,7 @@ function DrumWheel({ items, selected, onSelect, labelFn }) {
               onPress={() => onSelect(v)}
               activeOpacity={0.7}
             >
-              <Text style={{ color: isSel ? '#fff' : '#4a5270', fontSize: isSel ? 20 : 16, fontWeight: isSel ? '800' : '500' }}>
+              <Text style={{ color: isSel ? '#3D2B1F' : '#B09A86', fontSize: isSel ? 20 : 16, fontWeight: isSel ? '800' : '500' }}>
                 {label(v)}
               </Text>
             </TouchableOpacity>
@@ -211,15 +211,15 @@ export default function UserInfoScreen({ navigation }) {
       <SafeAreaView style={styles.safeTop} />
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.container}>
-          <LinearGradient colors={['#030827', '#030A31']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
+          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
           <View style={styles.imgWrap}>
             <Image source={require('../assets/home1.png')} style={styles.heroImg} resizeMode="cover" />
-            <LinearGradient colors={['transparent', '#030A31']} style={styles.imgOverlay} />
+            <LinearGradient colors={['transparent', '#FDF6F0']} style={styles.imgOverlay} />
           </View>
 
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-              <Feather name="chevron-left" size={28} color="#fff" />
+              <Feather name="chevron-left" size={28} color="#8A6A4E" />
             </TouchableOpacity>
             <StepIndicator currentStep={3} totalSteps={5} />
             <View style={{ width: 28 }} />
@@ -233,14 +233,14 @@ export default function UserInfoScreen({ navigation }) {
             nestedScrollEnabled
             scrollEnabled
           >
-            <Text style={styles.title}>Physical profile</Text>
-            <Text style={styles.sub}>Tap any field to change.</Text>
+            <Text style={styles.title}>Tell us about you</Text>
+            <Text style={styles.sub}>This helps personalize your result.</Text>
 
             {/* Age */}
             <Text style={styles.label}>Age</Text>
             <TouchableOpacity style={styles.field} onPress={() => openPicker('age')} activeOpacity={0.8}>
               <Text style={[styles.fieldVal, !age && styles.placeholder]}>{displayAge}</Text>
-              <Feather name="chevron-down" size={18} color="#6c7094" />
+              <Feather name="chevron-down" size={18} color="#8A6A4E" />
             </TouchableOpacity>
             {renderInlinePicker('age')}
 
@@ -261,7 +261,7 @@ export default function UserInfoScreen({ navigation }) {
             <Text style={styles.label}>Height</Text>
             <TouchableOpacity style={styles.field} onPress={() => openPicker('height')} activeOpacity={0.8}>
               <Text style={[styles.fieldVal, !heightCm && !heightFt && styles.placeholder]}>{displayHeight}</Text>
-              <Feather name="chevron-down" size={18} color="#6c7094" />
+              <Feather name="chevron-down" size={18} color="#8A6A4E" />
             </TouchableOpacity>
             {renderInlinePicker('height')}
 
@@ -269,7 +269,7 @@ export default function UserInfoScreen({ navigation }) {
             <Text style={styles.label}>Weight</Text>
             <TouchableOpacity style={styles.field} onPress={() => openPicker('weight')} activeOpacity={0.8}>
               <Text style={[styles.fieldVal, !weight && styles.placeholder]}>{displayWeight}</Text>
-              <Feather name="chevron-down" size={18} color="#6c7094" />
+              <Feather name="chevron-down" size={18} color="#8A6A4E" />
             </TouchableOpacity>
             {renderInlinePicker('weight')}
           </ScrollView>
@@ -292,9 +292,9 @@ export default function UserInfoScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeTop:   { flex: 0, backgroundColor: '#030827', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom:{ flex: 1, backgroundColor: '#030A31' },
-  container: { flex: 1, backgroundColor: '#030A31', paddingHorizontal: 20 },
+  safeTop:   { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom:{ flex: 1, backgroundColor: '#FDF6F0' },
+  container: { flex: 1, backgroundColor: '#FDF6F0', paddingHorizontal: 20 },
   imgWrap:   { position: 'absolute', top: 0, left: 0, right: 0, height: '50%', zIndex: -1 },
   heroImg:   { width: '100%', height: '100%', opacity: 0.9 },
   imgOverlay:{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 180 },
@@ -302,27 +302,27 @@ const styles = StyleSheet.create({
   backBtn:   { padding: 4 },
   content:   { flex: 1 },
   contentInner: { paddingTop: 20, paddingBottom: 140 },
-  title:     { color: '#fff', fontSize: 26, fontWeight: '800', marginBottom: 4 },
-  sub:       { color: '#6c7094', fontSize: 13, marginBottom: 20 },
-  label:     { color: '#fff', fontSize: 13, fontWeight: '600', marginBottom: 8 },
-  field:     { backgroundColor: '#161b3d', borderRadius: 14, height: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 16, borderWidth: 1.5, borderColor: '#1f254f' },
-  fieldVal:  { color: '#fff', fontSize: 18, fontWeight: '700' },
-  placeholder:{ color: '#4a5270', fontSize: 16 },
-  toggle:    { flexDirection: 'row', backgroundColor: '#1a1f40', borderRadius: 14, padding: 4, marginBottom: 16, gap: 4 },
+  title:     { color: '#3D2B1F', fontSize: 26, fontWeight: '800', marginBottom: 4 },
+  sub:       { color: '#8A6A4E', fontSize: 13, marginBottom: 20 },
+  label:     { color: '#3D2B1F', fontSize: 13, fontWeight: '600', marginBottom: 8 },
+  field:     { backgroundColor: '#FFFFFF', borderRadius: 14, height: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 16, borderWidth: 1.5, borderColor: '#F0E2D4' },
+  fieldVal:  { color: '#3D2B1F', fontSize: 18, fontWeight: '700' },
+  placeholder:{ color: '#B09A86', fontSize: 16 },
+  toggle:    { flexDirection: 'row', backgroundColor: '#FBEADB', borderRadius: 14, padding: 4, marginBottom: 16, gap: 4 },
   toggleBtn: { flex: 1, minHeight: 54, borderRadius: 11, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
-  toggleBtnOn: { backgroundColor: '#7c3aed' },
-  toggleText:  { color: '#6c7094', fontSize: 13, fontWeight: '800', textAlign: 'center' },
+  toggleBtnOn: { backgroundColor: '#E07B3C' },
+  toggleText:  { color: '#8A6A4E', fontSize: 13, fontWeight: '800', textAlign: 'center' },
   toggleTextOn:{ color: '#fff' },
-  toggleSubText: { color: '#4a5270', fontSize: 10, fontWeight: '700', marginTop: 3, textAlign: 'center' },
-  toggleSubTextOn: { color: '#d8ccff' },
+  toggleSubText: { color: '#B09A86', fontSize: 10, fontWeight: '700', marginTop: 3, textAlign: 'center' },
+  toggleSubTextOn: { color: '#FFF7F0' },
   bottom:    { marginBottom: 20, marginTop: 12 },
-  nextBtn:   { backgroundColor: '#8a52f3', paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
+  nextBtn:   { backgroundColor: '#F0955A', paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
   nextBtnOff:{ opacity: 0.5 },
   nextBtnText:{ color: '#fff', fontSize: 18, fontWeight: '600' },
-  inlinePicker:{ backgroundColor: '#101638', borderRadius: 14, borderWidth: 1, borderColor: '#7c3aed44', marginTop: -8, marginBottom: 14, overflow: 'hidden', maxHeight: 300 },
-  inlinePickerHeader:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderBottomWidth: 1, borderBottomColor: '#1f254f' },
-  pickerTitle: { color: '#fff', fontSize: 14, fontWeight: '700' },
-  doneBtn:     { backgroundColor: '#7c3aed', borderRadius: 9, paddingHorizontal: 14, paddingVertical: 7 },
+  inlinePicker:{ backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E07B3C44', marginTop: -8, marginBottom: 14, overflow: 'hidden', maxHeight: 300 },
+  inlinePickerHeader:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
+  pickerTitle: { color: '#3D2B1F', fontSize: 14, fontWeight: '700' },
+  doneBtn:     { backgroundColor: '#E07B3C', borderRadius: 9, paddingHorizontal: 14, paddingVertical: 7 },
   doneBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
   pickerBody:  { flexDirection: 'row', paddingHorizontal: 20, paddingTop: 8 },
   drumSep:     { width: 20, alignItems: 'center', justifyContent: 'center' },

@@ -21,14 +21,14 @@ function PasswordField({ id, label, value, onChange, show, onToggle, placeholder
         focused === id && styles.focused,
         error && styles.errBorder,
       ]}>
-        <Feather name="lock" size={17} color={focused === id ? '#7c3aed' : '#6c7094'} style={styles.icon} />
+        <Feather name="lock" size={17} color={focused === id ? '#E07B3C' : '#8A6A4E'} style={styles.icon} />
         <TextInput
           style={[styles.input, webInputReset]}
           value={value}
           onChangeText={v => { onChange(v); clear(id); }}
           secureTextEntry={!show}
           placeholder={placeholder}
-          placeholderTextColor="#4a5270"
+          placeholderTextColor="#B09A86"
           autoCapitalize="none"
           autoCorrect={false}
           autoComplete={id === 'cur' ? 'current-password' : 'new-password'}
@@ -43,7 +43,7 @@ function PasswordField({ id, label, value, onChange, show, onToggle, placeholder
           hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
           style={{ padding: 8 }}
         >
-          <Feather name={show ? 'eye' : 'eye-off'} size={17} color="#6c7094" />
+          <Feather name={show ? 'eye' : 'eye-off'} size={17} color="#8A6A4E" />
         </Pressable>
       </View>
       {error && <Text style={styles.errText}>{error}</Text>}
@@ -102,7 +102,7 @@ export default function ChangePasswordScreen({ navigation }) {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-            <Feather name="chevron-left" size={26} color="#fff" />
+            <Feather name="chevron-left" size={26} color="#8A6A4E" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Change Password</Text>
           <View style={{ width: 36 }} />
@@ -203,26 +203,26 @@ export default function ChangePasswordScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  root:        { flex: 1, backgroundColor: '#0B0F1A' },
-  safeTop:     { flex: 0, backgroundColor: '#0B0F1A', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#1f254f' },
+  root:        { flex: 1, backgroundColor: '#FDF6F0' },
+  safeTop:     { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
   backBtn:     { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { color: '#fff', fontSize: 17, fontWeight: '700' },
+  headerTitle: { color: '#3D2B1F', fontSize: 17, fontWeight: '700' },
   scroll:      { padding: 24, paddingTop: 28 },
-  hint:        { color: '#6c7094', fontSize: 13, lineHeight: 20, marginBottom: 28 },
+  hint:        { color: '#8A6A4E', fontSize: 13, lineHeight: 20, marginBottom: 28 },
   lbl:         { color: '#fff', fontSize: 13, fontWeight: '600', marginBottom: 7, marginTop: 14 },
-  inputRow:    { flexDirection: 'row', alignItems: 'center', backgroundColor: '#161b3d', borderRadius: 13, borderWidth: 1.5, borderColor: 'transparent', paddingHorizontal: 13, height: 52, marginBottom: 2 },
-  focused:     { borderColor: '#7c3aed' },
-  errBorder:   { borderColor: '#ef4444' },
-  errText:     { color: '#ef4444', fontSize: 11, marginTop: 2, marginLeft: 2 },
+  inputRow:    { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 13, borderWidth: 1.5, borderColor: 'transparent', paddingHorizontal: 13, height: 52, marginBottom: 2 },
+  focused:     { borderColor: '#E07B3C' },
+  errBorder:   { borderColor: '#D9694F' },
+  errText:     { color: '#D9694F', fontSize: 11, marginTop: 2, marginLeft: 2 },
   icon:        { marginRight: 9 },
-  input:       { flex: 1, color: '#fff', fontSize: 14 },
+  input:       { flex: 1, color: '#3D2B1F', fontSize: 14 },
   strengthRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8, marginBottom: 4 },
-  strengthBar: { flex: 1, height: 4, backgroundColor: '#1f254f', borderRadius: 2 },
-  strengthFill:{ backgroundColor: '#ffb830' },
-  strengthStrong: { backgroundColor: '#00c9b1' },
-  strengthLabel:  { color: '#6c7094', fontSize: 11, fontWeight: '600', minWidth: 48 },
-  btn:         { backgroundColor: '#7c3aed', borderRadius: 13, height: 52, alignItems: 'center', justifyContent: 'center', marginTop: 32 },
-  btnLoading:  { backgroundColor: '#3b2d6e' },
+  strengthBar: { flex: 1, height: 4, backgroundColor: '#F0E2D4', borderRadius: 2 },
+  strengthFill:{ backgroundColor: '#E9A94A' },
+  strengthStrong: { backgroundColor: '#7EC49A' },
+  strengthLabel:  { color: '#8A6A4E', fontSize: 11, fontWeight: '600', minWidth: 48 },
+  btn:         { backgroundColor: '#E07B3C', borderRadius: 13, height: 52, alignItems: 'center', justifyContent: 'center', marginTop: 32 },
+  btnLoading:  { backgroundColor: '#C98B65' },
   btnText:     { color: '#fff', fontSize: 15, fontWeight: '700' },
 });

@@ -56,11 +56,11 @@ export default function ProjectInfoScreen({ navigation }) {
     <>
       <SafeAreaView style={styles.safeTop} />
       <View style={styles.root}>
-        <LinearGradient colors={['#030827', '#030A31']} style={StyleSheet.absoluteFillObject} />
+        <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={StyleSheet.absoluteFillObject} />
 
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={handleBack} activeOpacity={0.75}>
-            <Feather name="chevron-left" size={28} color="#ffffff" />
+            <Feather name="chevron-left" size={28} color="#8A6A4E" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Project Info</Text>
           <View style={styles.headerSpacer} />
@@ -68,7 +68,7 @@ export default function ProjectInfoScreen({ navigation }) {
 
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <View style={styles.heroIcon}>
-            <MaterialCommunityIcons name="brain" size={34} color="#c8b8ff" />
+            <MaterialCommunityIcons name="brain" size={34} color="#E07B3C" />
           </View>
           <Text style={styles.title}>ADChronotype</Text>
           <Text style={styles.subtitle}>
@@ -76,7 +76,7 @@ export default function ProjectInfoScreen({ navigation }) {
           </Text>
 
           <View style={styles.noticeCard}>
-            <Feather name="alert-triangle" size={18} color="#ffb830" />
+            <Feather name="alert-triangle" size={18} color="#E9A94A" />
             <Text style={styles.noticeText}>
               This app is for research and awareness only. It is not a clinical diagnosis.
             </Text>
@@ -86,7 +86,7 @@ export default function ProjectInfoScreen({ navigation }) {
             <View key={item.title} style={styles.card}>
               <View style={styles.cardHeader}>
                 <View style={styles.cardIcon}>
-                  <Feather name={item.icon} size={18} color="#8a52f3" />
+                  <Feather name={item.icon} size={18} color="#F0955A" />
                 </View>
                 <Text style={styles.cardTitle}>{item.title}</Text>
               </View>
@@ -116,8 +116,8 @@ export default function ProjectInfoScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeTop: { flex: 0, backgroundColor: '#030827', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  root: { flex: 1, backgroundColor: '#030A31' },
+  safeTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  root: { flex: 1, backgroundColor: '#FDF6F0' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -125,41 +125,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#1f254f',
+    borderBottomColor: '#F0E2D4',
   },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+  headerTitle: { color: '#3D2B1F', fontSize: 18, fontWeight: '800' },
   headerSpacer: { width: 40 },
   scroll: { padding: 20, paddingBottom: 42 },
   heroIcon: {
     width: 76,
     height: 76,
     borderRadius: 24,
-    backgroundColor: '#7c3aed22',
+    backgroundColor: '#E07B3C22',
     borderWidth: 1,
-    borderColor: '#7c3aed44',
+    borderColor: '#E07B3C44',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 18,
   },
-  title: { color: '#fff', fontSize: 28, fontWeight: '900', marginBottom: 8 },
-  subtitle: { color: '#8c91b5', fontSize: 15, lineHeight: 23, marginBottom: 18 },
+  title: { color: '#3D2B1F', fontSize: 28, fontWeight: '900', marginBottom: 8 },
+  subtitle: { color: '#8A6A4E', fontSize: 15, lineHeight: 23, marginBottom: 18 },
   noticeCard: {
     flexDirection: 'row',
     gap: 10,
-    backgroundColor: '#1f1a10',
+    backgroundColor: '#FBEED2',
     borderWidth: 1,
-    borderColor: '#ffb83066',
+    borderColor: '#E9A94A66',
     borderRadius: 14,
     padding: 14,
     marginBottom: 16,
   },
-  noticeText: { flex: 1, color: '#f8e7a6', fontSize: 13, lineHeight: 20, fontWeight: '700' },
+  noticeText: { flex: 1, color: '#9A6A1E', fontSize: 13, lineHeight: 20, fontWeight: '700' },
   card: {
-    backgroundColor: '#101538',
+    backgroundColor: '#FDF6F0',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#1f254f',
+    borderColor: '#F0E2D4',
     padding: 15,
     marginBottom: 12,
   },
@@ -168,16 +168,16 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 10,
-    backgroundColor: '#7c3aed22',
+    backgroundColor: '#E07B3C22',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardTitle: { flex: 1, color: '#fff', fontSize: 15, fontWeight: '800' },
-  cardBody: { color: '#9aa0c5', fontSize: 13, lineHeight: 21 },
+  cardTitle: { flex: 1, color: '#3D2B1F', fontSize: 15, fontWeight: '800' },
+  cardBody: { color: '#8A6A4E', fontSize: 13, lineHeight: 21 },
   startBtn: {
     marginTop: 4,
     marginBottom: 12,
-    backgroundColor: '#7c3aed',
+    backgroundColor: '#E07B3C',
     borderRadius: 14,
     paddingVertical: 16,
     paddingHorizontal: 18,
@@ -188,13 +188,13 @@ const styles = StyleSheet.create({
   },
   startBtnText: { color: '#fff', fontSize: 16, fontWeight: '900' },
   versionCard: {
-    backgroundColor: '#0d1030',
+    backgroundColor: '#FDF6F0',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#1f254f',
+    borderColor: '#F0E2D4',
     padding: 15,
     marginTop: 4,
   },
-  versionLabel: { color: '#4a5270', fontSize: 11, fontWeight: '800', letterSpacing: 1, marginBottom: 4 },
-  versionValue: { color: '#c8b8ff', fontSize: 14, fontWeight: '800' },
+  versionLabel: { color: '#B09A86', fontSize: 11, fontWeight: '800', letterSpacing: 1, marginBottom: 4 },
+  versionValue: { color: '#E07B3C', fontSize: 14, fontWeight: '800' },
 });

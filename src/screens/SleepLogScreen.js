@@ -55,7 +55,7 @@ function DrumWheel({ items, selected, onSelect }) {
 
   return (
     <View style={{ flex: 1, height: ITEM_H * 5, overflow: 'hidden', position: 'relative' }}>
-      <View style={{ position: 'absolute', top: ITEM_H * 2, left: 0, right: 0, height: ITEM_H, borderTopWidth: 1.5, borderBottomWidth: 1.5, borderColor: '#7c3aed55', backgroundColor: '#7c3aed0a', zIndex: 1 }} pointerEvents="none" />
+      <View style={{ position: 'absolute', top: ITEM_H * 2, left: 0, right: 0, height: ITEM_H, borderTopWidth: 1.5, borderBottomWidth: 1.5, borderColor: '#E07B3C55', backgroundColor: '#E07B3C0a', zIndex: 1 }} pointerEvents="none" />
       <ScrollView
         ref={scrollRef}
         showsVerticalScrollIndicator={false}
@@ -74,7 +74,7 @@ function DrumWheel({ items, selected, onSelect }) {
               onPress={() => onSelect(v)}
               activeOpacity={0.7}
             >
-              <Text style={{ color: isSel ? '#fff' : '#4a5270', fontSize: isSel ? 22 : 17, fontWeight: isSel ? '800' : '500' }}>
+              <Text style={{ color: isSel ? '#fff' : '#B09A86', fontSize: isSel ? 22 : 17, fontWeight: isSel ? '800' : '500' }}>
                 {String(v).padStart(2, '0')}
               </Text>
             </TouchableOpacity>
@@ -367,7 +367,7 @@ export default function SleepLogScreen({ navigation }) {
       <SafeAreaView style={styles.safeTop} />
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.root}>
-          <LinearGradient colors={['#030827', '#030A31']} style={StyleSheet.absoluteFillObject} />
+          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={StyleSheet.absoluteFillObject} />
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
 
@@ -392,8 +392,8 @@ export default function SleepLogScreen({ navigation }) {
                   <View key={i} style={styles.barCol}>
                     <View style={styles.barTrack}>
                       {d.logged
-                        ? <View style={[styles.barFill, { height: `${(d.hours / maxH) * 100}%`, backgroundColor: d.hours >= 7 ? '#7c3aed' : '#ffb830' }]} />
-                        : <View style={[styles.barFill, { height: '8%', backgroundColor: '#1f254f' }]} />
+                        ? <View style={[styles.barFill, { height: `${(d.hours / maxH) * 100}%`, backgroundColor: d.hours >= 7 ? '#E07B3C' : '#E9A94A' }]} />
+                        : <View style={[styles.barFill, { height: '8%', backgroundColor: '#F0E2D4' }]} />
                       }
                     </View>
                     <Text style={styles.barLabel}>{d.day}</Text>
@@ -403,17 +403,17 @@ export default function SleepLogScreen({ navigation }) {
 
               {loadingLogs ? (
                 <View style={styles.statPill}>
-                  <ActivityIndicator color="#7c3aed" />
+                  <ActivityIndicator color="#E07B3C" />
                 </View>
               ) : loggedDays.length === 0 ? (
                 <View style={styles.statPill}>
                   <Text style={styles.statPillText}>Save tonight's sleep to start building your weekly chart.</Text>
                 </View>
               ) : sleepChangePct != null ? (
-                <View style={[styles.statPill, { backgroundColor: sleepChangePct >= 0 ? '#00c9b111' : '#ff5c5c11', borderColor: sleepChangePct >= 0 ? '#00c9b133' : '#ff5c5c33' }]}>
+                <View style={[styles.statPill, { backgroundColor: sleepChangePct >= 0 ? '#7EC49A11' : '#D9694F11', borderColor: sleepChangePct >= 0 ? '#7EC49A33' : '#D9694F33' }]}>
                   <Text style={styles.statPillText}>
                     Sleep duration{' '}
-                    <Text style={{ color: sleepChangePct >= 0 ? '#00c9b1' : '#ff5c5c', fontWeight: '700' }}>
+                    <Text style={{ color: sleepChangePct >= 0 ? '#7EC49A' : '#D9694F', fontWeight: '700' }}>
                       {sleepChangePct >= 0 ? `+${sleepChangePct}%` : `${sleepChangePct}%`}
                     </Text>
                     {' '}compared to yesterday
@@ -431,7 +431,7 @@ export default function SleepLogScreen({ navigation }) {
                     ? (
                       <>
                         Weekly average{' '}
-                        <Text style={{ color: weekChangePct >= 0 ? '#00c9b1' : '#ff5c5c', fontWeight: '700' }}>
+                        <Text style={{ color: weekChangePct >= 0 ? '#7EC49A' : '#D9694F', fontWeight: '700' }}>
                           {weekChangePct >= 0 ? `+${weekChangePct}%` : `${weekChangePct}%`}
                         </Text>
                         {' '}vs last week
@@ -455,7 +455,7 @@ export default function SleepLogScreen({ navigation }) {
                     onPress={editTodayLog}
                     activeOpacity={0.8}
                   >
-                    <Feather name="edit-2" size={13} color="#c8b8ff" />
+                    <Feather name="edit-2" size={13} color="#E07B3C" />
                     <Text style={styles.editLogText}>Edit</Text>
                   </TouchableOpacity>
                 )}
@@ -479,14 +479,14 @@ export default function SleepLogScreen({ navigation }) {
                   <Text style={styles.fieldLabel}>🌙  Bedtime</Text>
                   <TouchableOpacity style={styles.timeCard} onPress={() => openPicker('bed')} activeOpacity={0.8}>
                     <Text style={styles.timeCardVal}>{fmt(bedH, bedM, bedAP)}</Text>
-                    <Feather name="chevron-down" size={16} color="#6c7094" />
+                    <Feather name="chevron-down" size={16} color="#8A6A4E" />
                   </TouchableOpacity>
 
                   {/* Wake time tap card */}
                   <Text style={[styles.fieldLabel, { marginTop: 12 }]}>☀️  Wake-up Time</Text>
                   <TouchableOpacity style={[styles.timeCard, styles.wakeTimeCard]} onPress={() => openPicker('wake')} activeOpacity={0.8}>
                     <Text style={styles.timeCardVal}>{fmt(wakeH, wakeM, wakeAP)}</Text>
-                    <Feather name="chevron-down" size={16} color="#6c7094" />
+                    <Feather name="chevron-down" size={16} color="#8A6A4E" />
                   </TouchableOpacity>
 
                   {/* Duration */}
@@ -502,7 +502,7 @@ export default function SleepLogScreen({ navigation }) {
                       onPress={() => setQualityScore(value => Math.max(0, value - 1))}
                       activeOpacity={0.8}
                     >
-                      <Feather name="minus" size={16} color="#c8b8ff" />
+                      <Feather name="minus" size={16} color="#E07B3C" />
                     </TouchableOpacity>
                     <View style={styles.qualityValueWrap}>
                       <Text style={styles.qualityValue}>{qualityScore}</Text>
@@ -513,7 +513,7 @@ export default function SleepLogScreen({ navigation }) {
                       onPress={() => setQualityScore(value => Math.min(21, value + 1))}
                       activeOpacity={0.8}
                     >
-                      <Feather name="plus" size={16} color="#c8b8ff" />
+                      <Feather name="plus" size={16} color="#E07B3C" />
                     </TouchableOpacity>
                   </View>
 
@@ -524,7 +524,7 @@ export default function SleepLogScreen({ navigation }) {
                       onPress={() => setAwakenings(value => Math.max(0, value - 1))}
                       activeOpacity={0.8}
                     >
-                      <Feather name="minus" size={16} color="#c8b8ff" />
+                      <Feather name="minus" size={16} color="#E07B3C" />
                     </TouchableOpacity>
                     <Text style={styles.stepperVal}>{awakenings}</Text>
                     <TouchableOpacity
@@ -532,7 +532,7 @@ export default function SleepLogScreen({ navigation }) {
                       onPress={() => setAwakenings(value => Math.min(20, value + 1))}
                       activeOpacity={0.8}
                     >
-                      <Feather name="plus" size={16} color="#c8b8ff" />
+                      <Feather name="plus" size={16} color="#E07B3C" />
                     </TouchableOpacity>
                   </View>
 
@@ -573,8 +573,8 @@ export default function SleepLogScreen({ navigation }) {
                       <Text style={styles.navBadgeText}>{t.badgeCount > 9 ? '9+' : t.badgeCount}</Text>
                     </View>
                   )}
-                  <Feather name={t.icon} size={22} color={t.active ? '#8a52f3' : '#6c7094'} />
-                  <Text style={[styles.navLabel, t.active && { color: '#8a52f3' }]}>{t.label}</Text>
+                  <Feather name={t.icon} size={22} color={t.active ? '#F0955A' : '#8A6A4E'} />
+                  <Text style={[styles.navLabel, t.active && { color: '#F0955A' }]}>{t.label}</Text>
                   {t.active && <View style={styles.activeDot} />}
                 </TouchableOpacity>
               ))}
@@ -609,7 +609,7 @@ export default function SleepLogScreen({ navigation }) {
 
             <View style={styles.clockFace}>
               <Svg width={260} height={260} style={styles.clockHandLayer} pointerEvents="none">
-                <Line x1={130} y1={130} x2={handEndX} y2={handEndY} stroke="#7c3aed" strokeWidth={4} strokeLinecap="round" />
+                <Line x1={130} y1={130} x2={handEndX} y2={handEndY} stroke="#E07B3C" strokeWidth={4} strokeLinecap="round" />
               </Svg>
               {clockItems.map(item => {
                 const angle = clockAngleForValue(item, pickerStep);
@@ -656,103 +656,103 @@ export default function SleepLogScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeTop:    { flex: 0, backgroundColor: '#030827', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: '#030A31' },
+  safeTop:    { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom: { flex: 1, backgroundColor: '#FDF6F0' },
   root:       { flex: 1 },
   scroll:     { padding: 18, paddingTop: 28 },
 
   header:  { marginBottom: 18 },
-  heading: { color: '#fff', fontSize: 24, fontWeight: '800' },
-  date:    { color: '#6c7094', fontSize: 12, marginTop: 2 },
+  heading: { color: '#3D2B1F', fontSize: 24, fontWeight: '800' },
+  date:    { color: '#8A6A4E', fontSize: 12, marginTop: 2 },
 
-  card:     { backgroundColor: '#161b3d', borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#1f254f' },
+  card:     { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#F0E2D4' },
   cardRow:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
-  cardTitle:{ color: '#fff', fontSize: 14, fontWeight: '700' },
-  avgBadge: { backgroundColor: '#7c3aed22', borderRadius: 9, paddingHorizontal: 9, paddingVertical: 3, borderWidth: 1, borderColor: '#7c3aed44' },
-  avgText:  { color: '#7c3aed', fontSize: 10, fontWeight: '700' },
+  cardTitle:{ color: '#3D2B1F', fontSize: 14, fontWeight: '700' },
+  avgBadge: { backgroundColor: '#E07B3C22', borderRadius: 9, paddingHorizontal: 9, paddingVertical: 3, borderWidth: 1, borderColor: '#E07B3C44' },
+  avgText:  { color: '#E07B3C', fontSize: 10, fontWeight: '700' },
   logHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  editLogBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 10, borderWidth: 1, borderColor: '#7c3aed44', backgroundColor: '#7c3aed22', paddingHorizontal: 10, paddingVertical: 7 },
-  editLogText: { color: '#c8b8ff', fontSize: 12, fontWeight: '800' },
-  collapsedLog: { backgroundColor: '#0d1030', borderRadius: 13, borderWidth: 1, borderColor: '#1f254f', overflow: 'hidden' },
+  editLogBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 10, borderWidth: 1, borderColor: '#E07B3C44', backgroundColor: '#E07B3C22', paddingHorizontal: 10, paddingVertical: 7 },
+  editLogText: { color: '#E07B3C', fontSize: 12, fontWeight: '800' },
+  collapsedLog: { backgroundColor: '#FDF6F0', borderRadius: 13, borderWidth: 1, borderColor: '#F0E2D4', overflow: 'hidden' },
   collapsedItem: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 14 },
-  collapsedLabel: { color: '#8c91b5', fontSize: 12, fontWeight: '700' },
-  collapsedValue: { color: '#fff', fontSize: 16, fontWeight: '800' },
-  collapsedDivider: { height: 1, backgroundColor: '#1f254f' },
+  collapsedLabel: { color: '#8A6A4E', fontSize: 12, fontWeight: '700' },
+  collapsedValue: { color: '#3D2B1F', fontSize: 16, fontWeight: '800' },
+  collapsedDivider: { height: 1, backgroundColor: '#F0E2D4' },
 
   bars:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 90, marginBottom: 12 },
   barCol:   { alignItems: 'center', flex: 1 },
-  barTrack: { width: '65%', height: 76, justifyContent: 'flex-end', borderRadius: 4, overflow: 'hidden', backgroundColor: '#0d1030' },
+  barTrack: { width: '65%', height: 76, justifyContent: 'flex-end', borderRadius: 4, overflow: 'hidden', backgroundColor: '#FDF6F0' },
   barFill:  { width: '100%', borderRadius: 4, position: 'absolute', bottom: 0 },
-  barLabel: { color: '#4a5270', fontSize: 8, marginTop: 4, fontWeight: '600' },
+  barLabel: { color: '#B09A86', fontSize: 8, marginTop: 4, fontWeight: '600' },
 
   statsRow:    { gap: 6 },
-  statPill:    { backgroundColor: '#00c9b111', borderRadius: 9, paddingVertical: 7, paddingHorizontal: 11, borderWidth: 1, borderColor: '#00c9b133' },
-  statPillText:{ color: '#6c7094', fontSize: 11, textAlign: 'center' },
-  weekPill:    { marginTop: 8, backgroundColor: '#7c3aed11', borderColor: '#7c3aed33' },
-  sourceHint:  { color: '#ffb830', fontSize: 9, lineHeight: 14, textAlign: 'center', marginTop: 8 },
+  statPill:    { backgroundColor: '#7EC49A11', borderRadius: 9, paddingVertical: 7, paddingHorizontal: 11, borderWidth: 1, borderColor: '#7EC49A33' },
+  statPillText:{ color: '#8A6A4E', fontSize: 11, textAlign: 'center' },
+  weekPill:    { marginTop: 8, backgroundColor: '#E07B3C11', borderColor: '#E07B3C33' },
+  sourceHint:  { color: '#E9A94A', fontSize: 9, lineHeight: 14, textAlign: 'center', marginTop: 8 },
 
-  fieldLabel:  { color: '#8c91b5', fontSize: 11, fontWeight: '600', marginBottom: 7 },
-  timeCard:    { backgroundColor: '#0d1030', borderRadius: 12, borderWidth: 1.5, borderColor: '#7c3aed44', paddingVertical: 14, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  fieldLabel:  { color: '#8A6A4E', fontSize: 11, fontWeight: '600', marginBottom: 7 },
+  timeCard:    { backgroundColor: '#FDF6F0', borderRadius: 12, borderWidth: 1.5, borderColor: '#E07B3C44', paddingVertical: 14, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   wakeTimeCard:{ borderColor: '#fcd53f44' },
-  timeCardVal: { color: '#fff', fontSize: 22, fontWeight: '800' },
+  timeCardVal: { color: '#3D2B1F', fontSize: 22, fontWeight: '800' },
 
-  durRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, backgroundColor: '#0d1030', borderRadius: 10, padding: 10 },
-  durLabel:{ color: '#6c7094', fontSize: 11 },
-  durVal:  { color: '#7c3aed', fontSize: 14, fontWeight: '800' },
+  durRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, backgroundColor: '#FDF6F0', borderRadius: 10, padding: 10 },
+  durLabel:{ color: '#8A6A4E', fontSize: 11 },
+  durVal:  { color: '#E07B3C', fontSize: 14, fontWeight: '800' },
 
-  qualityScale: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#0d1030', borderRadius: 12, borderWidth: 1, borderColor: '#1f254f', padding: 8 },
+  qualityScale: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#FDF6F0', borderRadius: 12, borderWidth: 1, borderColor: '#F0E2D4', padding: 8 },
   qualityValueWrap: { alignItems: 'center' },
-  qualityValue: { color: '#fff', fontSize: 22, fontWeight: '900' },
-  qualityRange: { color: '#6c7094', fontSize: 10, fontWeight: '700', marginTop: 2 },
-  stepperRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#0d1030', borderRadius: 12, borderWidth: 1, borderColor: '#1f254f', padding: 8 },
-  stepperBtn: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#7c3aed22', borderWidth: 1, borderColor: '#7c3aed44', alignItems: 'center', justifyContent: 'center' },
-  stepperVal: { color: '#fff', fontSize: 20, fontWeight: '800' },
+  qualityValue: { color: '#3D2B1F', fontSize: 22, fontWeight: '900' },
+  qualityRange: { color: '#8A6A4E', fontSize: 10, fontWeight: '700', marginTop: 2 },
+  stepperRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#FDF6F0', borderRadius: 12, borderWidth: 1, borderColor: '#F0E2D4', padding: 8 },
+  stepperBtn: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#E07B3C22', borderWidth: 1, borderColor: '#E07B3C44', alignItems: 'center', justifyContent: 'center' },
+  stepperVal: { color: '#3D2B1F', fontSize: 20, fontWeight: '800' },
 
-  saveBtn:    { backgroundColor: '#7c3aed', borderRadius: 12, height: 46, alignItems: 'center', justifyContent: 'center', marginTop: 14, marginBottom: 10 },
-  saveBtnOk:  { backgroundColor: '#00c9b1' },
+  saveBtn:    { backgroundColor: '#E07B3C', borderRadius: 12, height: 46, alignItems: 'center', justifyContent: 'center', marginTop: 14, marginBottom: 10 },
+  saveBtnOk:  { backgroundColor: '#7EC49A' },
   saveBtnText:{ color: '#fff', fontSize: 14, fontWeight: '700' },
-  hint:       { color: '#4a5270', fontSize: 10, textAlign: 'center', lineHeight: 16 },
+  hint:       { color: '#B09A86', fontSize: 10, textAlign: 'center', lineHeight: 16 },
 
 
-  navWrap:   { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#030A31', borderTopWidth: 1, borderTopColor: '#1f254f' },
+  navWrap:   { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FDF6F0', borderTopWidth: 1, borderTopColor: '#F0E2D4' },
   nav:       { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
   navItem:   { alignItems: 'center', width: 64 },
-  navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#ff5c5c', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
+  navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
   navBadgeText: { color: '#fff', fontSize: 9, fontWeight: '900' },
-  navLabel:  { color: '#6c7094', fontSize: 10, marginTop: 4, fontWeight: '600' },
-  navLabelDisabled: { color: '#3a4060' },
-  activeDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#8a52f3', position: 'absolute', bottom: -8 },
+  navLabel:  { color: '#8A6A4E', fontSize: 10, marginTop: 4, fontWeight: '600' },
+  navLabelDisabled: { color: '#D1D5DB' },
+  activeDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#F0955A', position: 'absolute', bottom: -8 },
 
   // Time picker modal
   modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' },
-  pickerBox:    { backgroundColor: '#161b3d', borderTopLeftRadius: 22, borderTopRightRadius: 22, paddingBottom: 28 },
-  pickerHandle: { width: 40, height: 4, backgroundColor: '#2a3060', borderRadius: 2, alignSelf: 'center', marginTop: 10 },
-  pickerHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderBottomWidth: 1, borderBottomColor: '#1f254f' },
-  pickerTitle:  { color: '#fff', fontSize: 14, fontWeight: '700' },
-  doneBtn:      { backgroundColor: '#7c3aed', borderRadius: 9, paddingHorizontal: 12, paddingVertical: 6 },
+  pickerBox:    { backgroundColor: '#FFFFFF', borderTopLeftRadius: 22, borderTopRightRadius: 22, paddingBottom: 28 },
+  pickerHandle: { width: 40, height: 4, backgroundColor: '#D8C6B5', borderRadius: 2, alignSelf: 'center', marginTop: 10 },
+  pickerHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
+  pickerTitle:  { color: '#3D2B1F', fontSize: 14, fontWeight: '700' },
+  doneBtn:      { backgroundColor: '#E07B3C', borderRadius: 9, paddingHorizontal: 12, paddingVertical: 6 },
   doneBtnText:  { color: '#fff', fontSize: 12, fontWeight: '700' },
   clockHeaderRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 20, paddingTop: 14 },
-  clockTab:       { flex: 1, height: 38, borderRadius: 10, borderWidth: 1, borderColor: '#1f254f', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0d1030' },
-  clockTabOn:     { backgroundColor: '#7c3aed', borderColor: '#7c3aed' },
-  clockTabText:   { color: '#6c7094', fontSize: 13, fontWeight: '700' },
+  clockTab:       { flex: 1, height: 38, borderRadius: 10, borderWidth: 1, borderColor: '#F0E2D4', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FDF6F0' },
+  clockTabOn:     { backgroundColor: '#E07B3C', borderColor: '#E07B3C' },
+  clockTabText:   { color: '#8A6A4E', fontSize: 13, fontWeight: '700' },
   clockTabTextOn: { color: '#fff' },
-  clockFace:      { width: 260, height: 260, borderRadius: 130, backgroundColor: '#0d1030', borderWidth: 1, borderColor: '#1f254f', alignSelf: 'center', marginTop: 16 },
+  clockFace:      { width: 260, height: 260, borderRadius: 130, backgroundColor: '#FDF6F0', borderWidth: 1, borderColor: '#F0E2D4', alignSelf: 'center', marginTop: 16 },
   clockNumber:    { position: 'absolute', width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
-  clockNumberOn:  { backgroundColor: '#7c3aed' },
-  clockNumberText:{ color: '#8c91b5', fontSize: 13, fontWeight: '800' },
+  clockNumberOn:  { backgroundColor: '#E07B3C' },
+  clockNumberText:{ color: '#8A6A4E', fontSize: 13, fontWeight: '800' },
   clockNumberTextOn: { color: '#fff' },
   clockHandLayer: { position: 'absolute', left: 0, top: 0, zIndex: 1 },
-  clockCenter:    { position: 'absolute', left: 124, top: 124, width: 12, height: 12, borderRadius: 6, backgroundColor: '#7c3aed', zIndex: 3 },
+  clockCenter:    { position: 'absolute', left: 124, top: 124, width: 12, height: 12, borderRadius: 6, backgroundColor: '#E07B3C', zIndex: 3 },
   pickerBody:   { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 8 },
   drumWrap:     { flex: 1, alignItems: 'center' },
-  drumLabel:    { color: '#4a5270', fontSize: 10, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 },
+  drumLabel:    { color: '#B09A86', fontSize: 10, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 },
   colon:        { color: '#fff', fontSize: 28, fontWeight: '800', marginTop: 18, paddingHorizontal: 8 },
   ampmCol:      { alignItems: 'center', gap: 8, marginTop: 18, marginLeft: 10 },
   ampmRow:      { flexDirection: 'row', gap: 10, justifyContent: 'center', marginTop: 4 },
-  apBtn:        { paddingHorizontal: 12, paddingVertical: 9, borderRadius: 9, borderWidth: 1.5, borderColor: '#1f254f', backgroundColor: '#0d1030' },
-  apBtnOn:      { backgroundColor: '#7c3aed', borderColor: '#7c3aed' },
-  apText:       { color: '#6c7094', fontSize: 13, fontWeight: '700' },
+  apBtn:        { paddingHorizontal: 12, paddingVertical: 9, borderRadius: 9, borderWidth: 1.5, borderColor: '#F0E2D4', backgroundColor: '#FDF6F0' },
+  apBtnOn:      { backgroundColor: '#E07B3C', borderColor: '#E07B3C' },
+  apText:       { color: '#8A6A4E', fontSize: 13, fontWeight: '700' },
   apTextOn:     { color: '#fff' },
-  previewRow:   { alignItems: 'center', paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#1f254f', marginTop: 8, marginHorizontal: 20 },
-  previewText:  { color: '#7c3aed', fontSize: 26, fontWeight: '800', letterSpacing: 2 },
+  previewRow:   { alignItems: 'center', paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#F0E2D4', marginTop: 8, marginHorizontal: 20 },
+  previewText:  { color: '#E07B3C', fontSize: 26, fontWeight: '800', letterSpacing: 2 },
 });

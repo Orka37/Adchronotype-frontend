@@ -87,12 +87,12 @@ export default function TermsScreen({ navigation, route }) {
       <SafeAreaView style={styles.safeTop} />
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.root}>
-          <LinearGradient colors={['#05082a', '#0a0d3a']} style={StyleSheet.absoluteFillObject} />
+          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={StyleSheet.absoluteFillObject} />
 
           {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-              <Feather name="chevron-left" size={24} color="#fff" />
+              <Feather name="chevron-left" size={24} color="#8A6A4E" />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Terms of Service</Text>
             <View style={{ width: 32 }} />
@@ -154,32 +154,32 @@ export default function TermsScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  safeTop:    { flex: 0, backgroundColor: '#05082a', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: '#05082a' },
+  safeTop:    { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom: { flex: 1, backgroundColor: '#FDF6F0' },
   root:       { flex: 1 },
 
-  header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#1a1a40' },
+  header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
   backBtn:     { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  headerTitle: { color: '#3D2B1F', fontSize: 16, fontWeight: '700' },
 
-  scrollHint:     { backgroundColor: '#7c3aed22', paddingVertical: 7, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#7c3aed33' },
-  scrollHintText: { color: '#7c3aed', fontSize: 11, fontWeight: '600' },
+  scrollHint:     { backgroundColor: '#E07B3C22', paddingVertical: 7, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E07B3C33' },
+  scrollHintText: { color: '#E07B3C', fontSize: 11, fontWeight: '600' },
 
   scroll:        { flex: 1 },
   scrollContent: { padding: 20 },
-  lastUpdated:   { color: '#4a5270', fontSize: 11, marginBottom: 16 },
+  lastUpdated:   { color: '#B09A86', fontSize: 11, marginBottom: 16 },
 
-  disclaimerBox:  { backgroundColor: 'rgba(10,8,40,0.9)', borderRadius: 12, padding: 14, marginBottom: 20, borderWidth: 1.5, borderColor: '#ffb83066' },
-  disclaimerText: { color: '#c0c0d0', fontSize: 13, lineHeight: 20 },
-  bold:           { color: '#ffb830', fontWeight: '800' },
+  disclaimerBox:  { backgroundColor: '#FBEED2', borderRadius: 12, padding: 14, marginBottom: 20, borderWidth: 1.5, borderColor: '#E9A94A66' },
+  disclaimerText: { color: '#6B5744', fontSize: 13, lineHeight: 20 },
+  bold:           { color: '#E9A94A', fontWeight: '800' },
 
   section:         { marginBottom: 22 },
   sectionHeading:  { color: '#ffffff', fontSize: 14, fontWeight: '700', marginBottom: 8 },
-  sectionBody:     { color: '#8c91b5', fontSize: 13, lineHeight: 21 },
+  sectionBody:     { color: '#8A6A4E', fontSize: 13, lineHeight: 21 },
 
-  footer:           { padding: 16, borderTopWidth: 1, borderTopColor: '#1a1a40', backgroundColor: '#05082a' },
-  footerHint:       { color: '#4a5270', fontSize: 11, textAlign: 'center', marginBottom: 8 },
-  acceptBtn:        { backgroundColor: '#7c3aed', borderRadius: 14, height: 52, alignItems: 'center', justifyContent: 'center' },
-  acceptBtnDisabled:{ backgroundColor: '#2a1a60', opacity: 0.6 },
+  footer:           { padding: 16, borderTopWidth: 1, borderTopColor: '#F0E2D4', backgroundColor: '#FDF6F0' },
+  footerHint:       { color: '#B09A86', fontSize: 11, textAlign: 'center', marginBottom: 8 },
+  acceptBtn:        { backgroundColor: '#E07B3C', borderRadius: 14, height: 52, alignItems: 'center', justifyContent: 'center' },
+  acceptBtnDisabled:{ backgroundColor: '#C98B65', opacity: 0.6 },
   acceptBtnText:    { color: '#fff', fontSize: 15, fontWeight: '700' },
 });
