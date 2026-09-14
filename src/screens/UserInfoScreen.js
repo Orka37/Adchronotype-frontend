@@ -12,6 +12,7 @@ const ITEM_H = 44;
 
 function DrumWheel({ items, selected, onSelect, labelFn }) {
   const scrollRef = useRef(null);
+  const settleTimerRef = useRef(null);
   const [centeredIndex, setCenteredIndex] = useState(() => {
     const idx = items.indexOf(selected);
     return items.length + (idx >= 0 ? idx : 0);
@@ -33,12 +34,29 @@ function DrumWheel({ items, selected, onSelect, labelFn }) {
     }
   }, [items, selected]);
 
+  useEffect(() => () => {
+    if (settleTimerRef.current) clearTimeout(settleTimerRef.current);
+  }, []);
+
   function selectNearest(e) {
     const y = e.nativeEvent.contentOffset.y;
     const absoluteIndex = Math.max(0, Math.min(tripled.length - 1, Math.round(y / ITEM_H)));
     const idx = absoluteIndex % items.length;
     setCenteredIndex(absoluteIndex);
     onSelect(items[(idx + items.length) % items.length]);
+  }
+
+  function scheduleNearestSelection(e) {
+    const offsetY = e.nativeEvent.contentOffset.y;
+    if (settleTimerRef.current) clearTimeout(settleTimerRef.current);
+    settleTimerRef.current = setTimeout(() => {
+      selectNearest({ nativeEvent: { contentOffset: { y: offsetY } } });
+    }, 120);
+  }
+
+  function finishMomentum(e) {
+    if (settleTimerRef.current) clearTimeout(settleTimerRef.current);
+    selectNearest(e);
   }
 
   return (
@@ -54,8 +72,8 @@ function DrumWheel({ items, selected, onSelect, labelFn }) {
         snapToInterval={ITEM_H}
         snapToAlignment="center"
         decelerationRate="fast"
-        onMomentumScrollEnd={selectNearest}
-        onScrollEndDrag={selectNearest}
+        onScroll={scheduleNearestSelection}
+        onMomentumScrollEnd={finishMomentum}
         contentContainerStyle={{ paddingVertical: ITEM_H * 2 }}
         keyboardShouldPersistTaps="handled"
         style={{ height: ITEM_H * 5 }}
@@ -66,7 +84,10 @@ function DrumWheel({ items, selected, onSelect, labelFn }) {
             <TouchableOpacity
               key={`${v}-${i}`}
               style={{ height: ITEM_H, alignItems: 'center', justifyContent: 'center' }}
-              onPress={() => onSelect(v)}
+              onPress={() => {
+                setCenteredIndex(i);
+                onSelect(v);
+              }}
               activeOpacity={0.7}
             >
               <Text style={{ color: isSel ? '#3D2B1F' : '#B09A86', fontSize: isSel ? 20 : 16, fontWeight: isSel ? '800' : '500' }}>
@@ -302,28 +323,28 @@ const styles = StyleSheet.create({
   backBtn:   { padding: 4 },
   content:   { flex: 1 },
   contentInner: { paddingTop: 20, paddingBottom: 140 },
-  title:     { color: '#3D2B1F', fontSize: 26, fontWeight: '800', marginBottom: 4 },
+  title:     { color: '#3D2B1F', fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 4 },
   sub:       { color: '#8A6A4E', fontSize: 13, marginBottom: 20 },
-  label:     { color: '#3D2B1F', fontSize: 13, fontWeight: '600', marginBottom: 8 },
+  label:     { color: '#3D2B1F', fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 8 },
   field:     { backgroundColor: '#FFFFFF', borderRadius: 14, height: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 16, borderWidth: 1.5, borderColor: '#F0E2D4' },
-  fieldVal:  { color: '#3D2B1F', fontSize: 18, fontWeight: '700' },
+  fieldVal:  { color: '#3D2B1F', fontSize: 18, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   placeholder:{ color: '#B09A86', fontSize: 16 },
   toggle:    { flexDirection: 'row', backgroundColor: '#FBEADB', borderRadius: 14, padding: 4, marginBottom: 16, gap: 4 },
   toggleBtn: { flex: 1, minHeight: 54, borderRadius: 11, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
   toggleBtnOn: { backgroundColor: '#E07B3C' },
-  toggleText:  { color: '#8A6A4E', fontSize: 13, fontWeight: '800', textAlign: 'center' },
+  toggleText:  { color: '#8A6A4E', fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'center' },
   toggleTextOn:{ color: '#fff' },
-  toggleSubText: { color: '#B09A86', fontSize: 10, fontWeight: '700', marginTop: 3, textAlign: 'center' },
+  toggleSubText: { color: '#B09A86', fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginTop: 3, textAlign: 'center' },
   toggleSubTextOn: { color: '#FFF7F0' },
   bottom:    { marginBottom: 20, marginTop: 12 },
   nextBtn:   { backgroundColor: '#F0955A', paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
   nextBtnOff:{ opacity: 0.5 },
-  nextBtnText:{ color: '#fff', fontSize: 18, fontWeight: '600' },
+  nextBtnText:{ color: '#fff', fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
   inlinePicker:{ backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E07B3C44', marginTop: -8, marginBottom: 14, overflow: 'hidden', maxHeight: 300 },
   inlinePickerHeader:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
-  pickerTitle: { color: '#3D2B1F', fontSize: 14, fontWeight: '700' },
+  pickerTitle: { color: '#3D2B1F', fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   doneBtn:     { backgroundColor: '#E07B3C', borderRadius: 9, paddingHorizontal: 14, paddingVertical: 7 },
-  doneBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
+  doneBtnText: { color: '#fff', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   pickerBody:  { flexDirection: 'row', paddingHorizontal: 20, paddingTop: 8 },
   drumSep:     { width: 20, alignItems: 'center', justifyContent: 'center' },
 });

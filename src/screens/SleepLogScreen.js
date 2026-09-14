@@ -413,7 +413,7 @@ export default function SleepLogScreen({ navigation }) {
                 <View style={[styles.statPill, { backgroundColor: sleepChangePct >= 0 ? '#7EC49A11' : '#D9694F11', borderColor: sleepChangePct >= 0 ? '#7EC49A33' : '#D9694F33' }]}>
                   <Text style={styles.statPillText}>
                     Sleep duration{' '}
-                    <Text style={{ color: sleepChangePct >= 0 ? '#7EC49A' : '#D9694F', fontWeight: '700' }}>
+                    <Text style={{ color: sleepChangePct >= 0 ? '#7EC49A' : '#D9694F', fontFamily: 'Lexend_700Bold', fontWeight: 'normal' }}>
                       {sleepChangePct >= 0 ? `+${sleepChangePct}%` : `${sleepChangePct}%`}
                     </Text>
                     {' '}compared to yesterday
@@ -431,7 +431,7 @@ export default function SleepLogScreen({ navigation }) {
                     ? (
                       <>
                         Weekly average{' '}
-                        <Text style={{ color: weekChangePct >= 0 ? '#7EC49A' : '#D9694F', fontWeight: '700' }}>
+                        <Text style={{ color: weekChangePct >= 0 ? '#7EC49A' : '#D9694F', fontFamily: 'Lexend_700Bold', fontWeight: 'normal' }}>
                           {weekChangePct >= 0 ? `+${weekChangePct}%` : `${weekChangePct}%`}
                         </Text>
                         {' '}vs last week
@@ -662,28 +662,28 @@ const styles = StyleSheet.create({
   scroll:     { padding: 18, paddingTop: 28 },
 
   header:  { marginBottom: 18 },
-  heading: { color: '#3D2B1F', fontSize: 24, fontWeight: '800' },
+  heading: { color: '#3D2B1F', fontSize: 24, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   date:    { color: '#8A6A4E', fontSize: 12, marginTop: 2 },
 
   card:     { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#F0E2D4' },
   cardRow:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
-  cardTitle:{ color: '#3D2B1F', fontSize: 14, fontWeight: '700' },
+  cardTitle:{ color: '#3D2B1F', fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   avgBadge: { backgroundColor: '#E07B3C22', borderRadius: 9, paddingHorizontal: 9, paddingVertical: 3, borderWidth: 1, borderColor: '#E07B3C44' },
-  avgText:  { color: '#E07B3C', fontSize: 10, fontWeight: '700' },
+  avgText:  { color: '#E07B3C', fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   logHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
   editLogBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 10, borderWidth: 1, borderColor: '#E07B3C44', backgroundColor: '#E07B3C22', paddingHorizontal: 10, paddingVertical: 7 },
-  editLogText: { color: '#E07B3C', fontSize: 12, fontWeight: '800' },
+  editLogText: { color: '#E07B3C', fontSize: 12, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   collapsedLog: { backgroundColor: '#FDF6F0', borderRadius: 13, borderWidth: 1, borderColor: '#F0E2D4', overflow: 'hidden' },
   collapsedItem: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 14 },
-  collapsedLabel: { color: '#8A6A4E', fontSize: 12, fontWeight: '700' },
-  collapsedValue: { color: '#3D2B1F', fontSize: 16, fontWeight: '800' },
+  collapsedLabel: { color: '#8A6A4E', fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  collapsedValue: { color: '#3D2B1F', fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   collapsedDivider: { height: 1, backgroundColor: '#F0E2D4' },
 
   bars:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 90, marginBottom: 12 },
   barCol:   { alignItems: 'center', flex: 1 },
   barTrack: { width: '65%', height: 76, justifyContent: 'flex-end', borderRadius: 4, overflow: 'hidden', backgroundColor: '#FDF6F0' },
   barFill:  { width: '100%', borderRadius: 4, position: 'absolute', bottom: 0 },
-  barLabel: { color: '#B09A86', fontSize: 8, marginTop: 4, fontWeight: '600' },
+  barLabel: { color: '#B09A86', fontSize: 8, marginTop: 4, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
 
   statsRow:    { gap: 6 },
   statPill:    { backgroundColor: '#7EC49A11', borderRadius: 9, paddingVertical: 7, paddingHorizontal: 11, borderWidth: 1, borderColor: '#7EC49A33' },
@@ -691,26 +691,26 @@ const styles = StyleSheet.create({
   weekPill:    { marginTop: 8, backgroundColor: '#E07B3C11', borderColor: '#E07B3C33' },
   sourceHint:  { color: '#E9A94A', fontSize: 9, lineHeight: 14, textAlign: 'center', marginTop: 8 },
 
-  fieldLabel:  { color: '#8A6A4E', fontSize: 11, fontWeight: '600', marginBottom: 7 },
+  fieldLabel:  { color: '#8A6A4E', fontSize: 11, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 7 },
   timeCard:    { backgroundColor: '#FDF6F0', borderRadius: 12, borderWidth: 1.5, borderColor: '#E07B3C44', paddingVertical: 14, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   wakeTimeCard:{ borderColor: '#fcd53f44' },
-  timeCardVal: { color: '#3D2B1F', fontSize: 22, fontWeight: '800' },
+  timeCardVal: { color: '#3D2B1F', fontSize: 22, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 
   durRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, backgroundColor: '#FDF6F0', borderRadius: 10, padding: 10 },
   durLabel:{ color: '#8A6A4E', fontSize: 11 },
-  durVal:  { color: '#E07B3C', fontSize: 14, fontWeight: '800' },
+  durVal:  { color: '#E07B3C', fontSize: 14, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 
   qualityScale: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#FDF6F0', borderRadius: 12, borderWidth: 1, borderColor: '#F0E2D4', padding: 8 },
   qualityValueWrap: { alignItems: 'center' },
-  qualityValue: { color: '#3D2B1F', fontSize: 22, fontWeight: '900' },
-  qualityRange: { color: '#8A6A4E', fontSize: 10, fontWeight: '700', marginTop: 2 },
+  qualityValue: { color: '#3D2B1F', fontSize: 22, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  qualityRange: { color: '#8A6A4E', fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginTop: 2 },
   stepperRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#FDF6F0', borderRadius: 12, borderWidth: 1, borderColor: '#F0E2D4', padding: 8 },
   stepperBtn: { width: 38, height: 38, borderRadius: 10, backgroundColor: '#E07B3C22', borderWidth: 1, borderColor: '#E07B3C44', alignItems: 'center', justifyContent: 'center' },
-  stepperVal: { color: '#3D2B1F', fontSize: 20, fontWeight: '800' },
+  stepperVal: { color: '#3D2B1F', fontSize: 20, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 
   saveBtn:    { backgroundColor: '#E07B3C', borderRadius: 12, height: 46, alignItems: 'center', justifyContent: 'center', marginTop: 14, marginBottom: 10 },
   saveBtnOk:  { backgroundColor: '#7EC49A' },
-  saveBtnText:{ color: '#fff', fontSize: 14, fontWeight: '700' },
+  saveBtnText:{ color: '#fff', fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   hint:       { color: '#B09A86', fontSize: 10, textAlign: 'center', lineHeight: 16 },
 
 
@@ -718,8 +718,8 @@ const styles = StyleSheet.create({
   nav:       { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
   navItem:   { alignItems: 'center', width: 64 },
   navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
-  navBadgeText: { color: '#fff', fontSize: 9, fontWeight: '900' },
-  navLabel:  { color: '#8A6A4E', fontSize: 10, marginTop: 4, fontWeight: '600' },
+  navBadgeText: { color: '#fff', fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  navLabel:  { color: '#8A6A4E', fontSize: 10, marginTop: 4, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
   navLabelDisabled: { color: '#D1D5DB' },
   activeDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#F0955A', position: 'absolute', bottom: -8 },
 
@@ -728,31 +728,31 @@ const styles = StyleSheet.create({
   pickerBox:    { backgroundColor: '#FFFFFF', borderTopLeftRadius: 22, borderTopRightRadius: 22, paddingBottom: 28 },
   pickerHandle: { width: 40, height: 4, backgroundColor: '#D8C6B5', borderRadius: 2, alignSelf: 'center', marginTop: 10 },
   pickerHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
-  pickerTitle:  { color: '#3D2B1F', fontSize: 14, fontWeight: '700' },
+  pickerTitle:  { color: '#3D2B1F', fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   doneBtn:      { backgroundColor: '#E07B3C', borderRadius: 9, paddingHorizontal: 12, paddingVertical: 6 },
-  doneBtnText:  { color: '#fff', fontSize: 12, fontWeight: '700' },
+  doneBtnText:  { color: '#fff', fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   clockHeaderRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 20, paddingTop: 14 },
   clockTab:       { flex: 1, height: 38, borderRadius: 10, borderWidth: 1, borderColor: '#F0E2D4', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FDF6F0' },
   clockTabOn:     { backgroundColor: '#E07B3C', borderColor: '#E07B3C' },
-  clockTabText:   { color: '#8A6A4E', fontSize: 13, fontWeight: '700' },
+  clockTabText:   { color: '#8A6A4E', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   clockTabTextOn: { color: '#fff' },
   clockFace:      { width: 260, height: 260, borderRadius: 130, backgroundColor: '#FDF6F0', borderWidth: 1, borderColor: '#F0E2D4', alignSelf: 'center', marginTop: 16 },
   clockNumber:    { position: 'absolute', width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
   clockNumberOn:  { backgroundColor: '#E07B3C' },
-  clockNumberText:{ color: '#8A6A4E', fontSize: 13, fontWeight: '800' },
+  clockNumberText:{ color: '#8A6A4E', fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   clockNumberTextOn: { color: '#fff' },
   clockHandLayer: { position: 'absolute', left: 0, top: 0, zIndex: 1 },
   clockCenter:    { position: 'absolute', left: 124, top: 124, width: 12, height: 12, borderRadius: 6, backgroundColor: '#E07B3C', zIndex: 3 },
   pickerBody:   { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 8 },
   drumWrap:     { flex: 1, alignItems: 'center' },
-  drumLabel:    { color: '#B09A86', fontSize: 10, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 },
-  colon:        { color: '#fff', fontSize: 28, fontWeight: '800', marginTop: 18, paddingHorizontal: 8 },
+  drumLabel:    { color: '#B09A86', fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 },
+  colon:        { color: '#fff', fontSize: 28, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 18, paddingHorizontal: 8 },
   ampmCol:      { alignItems: 'center', gap: 8, marginTop: 18, marginLeft: 10 },
   ampmRow:      { flexDirection: 'row', gap: 10, justifyContent: 'center', marginTop: 4 },
   apBtn:        { paddingHorizontal: 12, paddingVertical: 9, borderRadius: 9, borderWidth: 1.5, borderColor: '#F0E2D4', backgroundColor: '#FDF6F0' },
   apBtnOn:      { backgroundColor: '#E07B3C', borderColor: '#E07B3C' },
-  apText:       { color: '#8A6A4E', fontSize: 13, fontWeight: '700' },
+  apText:       { color: '#8A6A4E', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   apTextOn:     { color: '#fff' },
   previewRow:   { alignItems: 'center', paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#F0E2D4', marginTop: 8, marginHorizontal: 20 },
-  previewText:  { color: '#E07B3C', fontSize: 26, fontWeight: '800', letterSpacing: 2 },
+  previewText:  { color: '#E07B3C', fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', letterSpacing: 2 },
 });

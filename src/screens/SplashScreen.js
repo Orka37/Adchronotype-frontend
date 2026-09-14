@@ -177,32 +177,32 @@ const styles = StyleSheet.create({
   illustrationWrap: { marginBottom: 8 },
 
   titleRow:   { flexDirection: 'row', alignItems: 'baseline', marginBottom: 10 },
-  titleBold:  { color: '#ffffff', fontSize: 38, fontWeight: '900' },
+  titleBold:  { color: '#ffffff', fontSize: 38, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   titleLight: { color: '#F0955A', fontSize: 38, fontWeight: '300' },
 
   tagline:    { color: '#8A6A4E', fontSize: 14, textAlign: 'center', lineHeight: 22, marginBottom: 20, paddingHorizontal: 10 },
 
   purposeCard: { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: 18, marginBottom: 14, width: '100%', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
-  purposeText: { color: '#3D2B1F', fontSize: 14, fontWeight: '600', textAlign: 'center', lineHeight: 22 },
+  purposeText: { color: '#3D2B1F', fontSize: 14, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', textAlign: 'center', lineHeight: 22 },
 
   disclaimerCard:   { backgroundColor: '#FBEED2', borderRadius: 14, padding: 16, marginBottom: 20, width: '100%', borderWidth: 1.5, borderColor: '#E9A94A66' },
   disclaimerHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
   disclaimerIcon:   { fontSize: 16 },
-  disclaimerTitle:  { color: '#E9A94A', fontSize: 13, fontWeight: '800', letterSpacing: 0.5 },
+  disclaimerTitle:  { color: '#E9A94A', fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', letterSpacing: 0.5 },
   disclaimerBody:   { color: '#6B5744', fontSize: 12, lineHeight: 20 },
-  appNameHighlight: { color: '#E9A94A', fontWeight: '700' },
-  notHighlight:     { color: '#E9A94A', fontWeight: '800' },
+  appNameHighlight: { color: '#E9A94A', fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  notHighlight:     { color: '#E9A94A', fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 
   termsRow:   { width: '100%', marginBottom: 10, paddingHorizontal: 4 },
   termsText:  { color: '#8A6A4E', fontSize: 13, textAlign: 'center', lineHeight: 20 },
-  termsLink:  { color: '#E07B3C', fontWeight: '700', textDecorationLine: 'underline' },
+  termsLink:  { color: '#E07B3C', fontFamily: 'Lexend_700Bold', fontWeight: 'normal', textDecorationLine: 'underline' },
 
   acceptedBadge: { backgroundColor: '#7EC49A22', borderRadius: 10, paddingVertical: 7, paddingHorizontal: 14, marginBottom: 10, alignSelf: 'center', borderWidth: 1, borderColor: '#7EC49A44' },
-  acceptedText:  { color: '#7EC49A', fontSize: 12, fontWeight: '700' },
+  acceptedText:  { color: '#7EC49A', fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 
   readFirst:  { color: '#B09A86', fontSize: 11, textAlign: 'center', marginTop: 8 },
 
   btn:          { backgroundColor: '#E07B3C', borderRadius: 16, height: 54, alignItems: 'center', justifyContent: 'center', width: '100%' },
   btnDisabled:  { backgroundColor: '#C98B65', opacity: 0.6 },
-  btnText:      { color: '#fff', fontSize: 17, fontWeight: '700' },
+  btnText:      { color: '#fff', fontSize: 17, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 });

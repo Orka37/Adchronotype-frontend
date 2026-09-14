@@ -140,13 +140,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontFamily: 'Lexend_700Bold', fontWeight: 'normal',
     color: '#3D2B1F',
     marginBottom: 16,
   },
   subtitle: {
     fontSize: 16,
     color: '#8A6A4E',
-    fontWeight: '500',
+    fontFamily: 'Lexend_500Medium', fontWeight: 'normal',
   },
 });

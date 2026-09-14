@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   num: {
     color: '#8A6A4E',
     fontSize: 15,
-    fontWeight: '600',
+    fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal',
   },
   numActive: {
     color: '#fff',

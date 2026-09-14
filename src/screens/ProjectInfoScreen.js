@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#F0E2D4',
   },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { color: '#3D2B1F', fontSize: 18, fontWeight: '800' },
+  headerTitle: { color: '#3D2B1F', fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   headerSpacer: { width: 40 },
   scroll: { padding: 20, paddingBottom: 42 },
   heroIcon: {
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 18,
   },
-  title: { color: '#3D2B1F', fontSize: 28, fontWeight: '900', marginBottom: 8 },
+  title: { color: '#3D2B1F', fontSize: 28, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 8 },
   subtitle: { color: '#8A6A4E', fontSize: 15, lineHeight: 23, marginBottom: 18 },
   noticeCard: {
     flexDirection: 'row',
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 16,
   },
-  noticeText: { flex: 1, color: '#9A6A1E', fontSize: 13, lineHeight: 20, fontWeight: '700' },
+  noticeText: { flex: 1, color: '#9A6A1E', fontSize: 13, lineHeight: 20, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   card: {
     backgroundColor: '#FDF6F0',
     borderRadius: 14,
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardTitle: { flex: 1, color: '#3D2B1F', fontSize: 15, fontWeight: '800' },
+  cardTitle: { flex: 1, color: '#3D2B1F', fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   cardBody: { color: '#8A6A4E', fontSize: 13, lineHeight: 21 },
   startBtn: {
     marginTop: 4,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
-  startBtnText: { color: '#fff', fontSize: 16, fontWeight: '900' },
+  startBtnText: { color: '#fff', fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   versionCard: {
     backgroundColor: '#FDF6F0',
     borderRadius: 14,
@@ -195,6 +195,6 @@ const styles = StyleSheet.create({
     padding: 15,
     marginTop: 4,
   },
-  versionLabel: { color: '#B09A86', fontSize: 11, fontWeight: '800', letterSpacing: 1, marginBottom: 4 },
-  versionValue: { color: '#E07B3C', fontSize: 14, fontWeight: '800' },
+  versionLabel: { color: '#B09A86', fontSize: 11, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', letterSpacing: 1, marginBottom: 4 },
+  versionValue: { color: '#E07B3C', fontSize: 14, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 });

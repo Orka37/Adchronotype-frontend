@@ -123,13 +123,13 @@ const styles = StyleSheet.create({
   },
   titleBold: {
     fontSize: 36,
-    fontWeight: 'bold',
+    fontFamily: 'Lexend_700Bold', fontWeight: 'normal',
     color: '#3D2B1F',
     letterSpacing: -0.5,
   },
   titleRegular: {
     fontSize: 36,
-    fontWeight: '600',
+    fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal',
     color: '#E07B3C',
     letterSpacing: -0.5,
   },
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     color: '#ffffff',
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal',
     marginRight: 8,
   },
   secondaryButton: {
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     color: '#3D2B1F',
     fontSize: 18,
-    fontWeight: '500',
+    fontFamily: 'Lexend_500Medium', fontWeight: 'normal',
     marginRight: 8,
   },
   iconCircle: {

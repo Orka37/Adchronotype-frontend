@@ -160,10 +160,10 @@ const styles = StyleSheet.create({
 
   header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
   backBtn:     { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { color: '#3D2B1F', fontSize: 16, fontWeight: '700' },
+  headerTitle: { color: '#3D2B1F', fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 
   scrollHint:     { backgroundColor: '#E07B3C22', paddingVertical: 7, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E07B3C33' },
-  scrollHintText: { color: '#E07B3C', fontSize: 11, fontWeight: '600' },
+  scrollHintText: { color: '#E07B3C', fontSize: 11, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
 
   scroll:        { flex: 1 },
   scrollContent: { padding: 20 },
@@ -171,15 +171,15 @@ const styles = StyleSheet.create({
 
   disclaimerBox:  { backgroundColor: '#FBEED2', borderRadius: 12, padding: 14, marginBottom: 20, borderWidth: 1.5, borderColor: '#E9A94A66' },
   disclaimerText: { color: '#6B5744', fontSize: 13, lineHeight: 20 },
-  bold:           { color: '#E9A94A', fontWeight: '800' },
+  bold:           { color: '#E9A94A', fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 
   section:         { marginBottom: 22 },
-  sectionHeading:  { color: '#ffffff', fontSize: 14, fontWeight: '700', marginBottom: 8 },
+  sectionHeading:  { color: '#ffffff', fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 8 },
   sectionBody:     { color: '#8A6A4E', fontSize: 13, lineHeight: 21 },
 
   footer:           { padding: 16, borderTopWidth: 1, borderTopColor: '#F0E2D4', backgroundColor: '#FDF6F0' },
   footerHint:       { color: '#B09A86', fontSize: 11, textAlign: 'center', marginBottom: 8 },
   acceptBtn:        { backgroundColor: '#E07B3C', borderRadius: 14, height: 52, alignItems: 'center', justifyContent: 'center' },
   acceptBtnDisabled:{ backgroundColor: '#C98B65', opacity: 0.6 },
-  acceptBtnText:    { color: '#fff', fontSize: 15, fontWeight: '700' },
+  acceptBtnText:    { color: '#fff', fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 });

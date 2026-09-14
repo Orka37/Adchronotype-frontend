@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Lexend_400Regular,
+  Lexend_500Medium,
+  Lexend_600SemiBold,
+  Lexend_700Bold,
+  Lexend_800ExtraBold,
+  useFonts,
+} from '@expo-google-fonts/lexend';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AppNavigator  from './src/navigation/AppNavigator';
 import AuthNavigator from './src/navigation/AuthNavigator';
@@ -13,6 +21,11 @@ import { OnboardingProvider, useOnboarding } from './src/context/OnboardingConte
 import { hasCurrentDeviceConsent } from './src/utils/legalConsent';
 
 const PreAuthStack = createNativeStackNavigator();
+
+Text.defaultProps = Text.defaultProps || {};
+Text.defaultProps.style = [{ fontFamily: 'Lexend_400Regular' }, Text.defaultProps.style];
+TextInput.defaultProps = TextInput.defaultProps || {};
+TextInput.defaultProps.style = [{ fontFamily: 'Lexend_400Regular' }, TextInput.defaultProps.style];
 
 const webOrigin =
   typeof window !== 'undefined' && window.location?.origin
@@ -143,6 +156,25 @@ function RootNavigator() {
 }
 
 export default function App() {
+  const [fontsLoaded, fontError] = useFonts({
+    Lexend_400Regular,
+    Lexend_500Medium,
+    Lexend_600SemiBold,
+    Lexend_700Bold,
+    Lexend_800ExtraBold,
+  });
+
+  if (!fontsLoaded && !fontError) {
+    return (
+      <View style={styles.startupLoading}>
+        <View style={styles.startupLoadingAura}>
+          <ActivityIndicator size="large" color="#E07B3C" />
+        </View>
+        <Text style={styles.startupLoadingText}>Preparing ADChronotype…</Text>
+      </View>
+    );
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AppErrorBoundary>
@@ -168,7 +200,7 @@ const styles = StyleSheet.create({
   errorTitle: {
     color: '#3D2B1F',
     fontSize: 24,
-    fontWeight: '800',
+    fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal',
     marginBottom: 12,
   },
   errorText: {
@@ -191,7 +223,7 @@ const styles = StyleSheet.create({
   },
   errorButtonText: {
     color: '#fff',
-    fontWeight: '800',
+    fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal',
     fontSize: 16,
   },
   startupLoading: {
@@ -213,7 +245,7 @@ const styles = StyleSheet.create({
   startupLoadingText: {
     color: '#8A6A4E',
     fontSize: 15,
-    fontWeight: '600',
+    fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal',
     marginTop: 18,
   },
 });
