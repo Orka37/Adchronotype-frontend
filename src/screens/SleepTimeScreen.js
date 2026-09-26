@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useState, useRef, useEffect } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity,
@@ -35,6 +36,9 @@ function roundToHalfHour(date) {
 
 // Drum scroll wheel — infinite looping feel using tripled array
 function DrumWheel({ items, selected, onSelect }) {
+
+  const drum = useThemedStyles(createDrum);
+
   const scrollRef = useRef(null);
   const tripled   = [...items, ...items, ...items];
   const midOffset = items.length * ITEM_H;
@@ -87,18 +91,21 @@ function DrumWheel({ items, selected, onSelect }) {
   );
 }
 
-const drum = StyleSheet.create({
+const createDrum = (colors) => StyleSheet.create({
   wrap:       { flex: 1, height: ITEM_H * 5, overflow: 'hidden', position: 'relative' },
   item:       { height: ITEM_H, alignItems: 'center', justifyContent: 'center' },
   itemSel:    { backgroundColor: 'transparent' },
-  label:      { color: '#B09A86', fontSize: 20, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  labelSel:   { color: '#3D2B1F', fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  hl:         { position: 'absolute', top: ITEM_H * 2, left: 0, right: 0, height: ITEM_H, borderTopWidth: 1.5, borderBottomWidth: 1.5, borderColor: '#E07B3C55', backgroundColor: '#E07B3C0a', zIndex: 1, pointerEvents: 'none' },
+  label:      { color: colors.muted, fontSize: 20, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  labelSel:   { color: colors.text, fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  hl:         { position: 'absolute', top: ITEM_H * 2, left: 0, right: 0, height: ITEM_H, borderTopWidth: 1.5, borderBottomWidth: 1.5, borderColor: colors.accent + '55', backgroundColor: colors.accent + '0a', zIndex: 1, pointerEvents: 'none' },
   fadeTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: ITEM_H * 2, backgroundColor: 'transparent', zIndex: 2 },
   fadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: ITEM_H * 2, backgroundColor: 'transparent', zIndex: 2 },
 });
 
 export default function SleepTimeScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const defaultBed  = new Date(); defaultBed.setHours(22, 0, 0, 0);
   const defaultWake = new Date(); defaultWake.setHours(6, 30, 0, 0);
 
@@ -159,15 +166,15 @@ export default function SleepTimeScreen({ navigation }) {
       <SafeAreaView style={styles.safeAreaTop} />
       <SafeAreaView style={styles.safeAreaBottom}>
         <View style={styles.container}>
-          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
+          <LinearGradient colors={[colors.background, colors.background]} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
           <View style={styles.imageContainer}>
             <Image source={require('../assets/home1.png')} style={styles.heroImage} resizeMode="cover" />
-            <LinearGradient colors={['transparent', '#FDF6F0']} style={styles.imageOverlay} />
+            <LinearGradient colors={['transparent', colors.background]} style={styles.imageOverlay} />
           </View>
 
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-              <Feather name="chevron-left" size={28} color="#8A6A4E" />
+              <Feather name="chevron-left" size={28} color={colors.secondary} />
             </TouchableOpacity>
             <StepIndicator currentStep={2} totalSteps={5} />
             <View style={{ width: 28 }} />
@@ -183,7 +190,7 @@ export default function SleepTimeScreen({ navigation }) {
               {/* Bedtime card */}
               <TouchableOpacity style={styles.timeCard} onPress={() => openPicker('bed')} activeOpacity={0.8}>
                 <View style={styles.timeCardLeft}>
-                  <Feather name="moon" size={22} color="#F0955A" />
+                  <Feather name="moon" size={22} color={colors.accentSoft} />
                   <View style={styles.timeCardText}>
                     <Text style={styles.timeCardLabel}>Bedtime</Text>
                     <Text style={[styles.timeCardValue, !bedTime && styles.placeholder]}>
@@ -191,7 +198,7 @@ export default function SleepTimeScreen({ navigation }) {
                     </Text>
                   </View>
                 </View>
-                <Feather name="chevron-down" size={20} color="#8A6A4E" />
+                <Feather name="chevron-down" size={20} color={colors.secondary} />
               </TouchableOpacity>
 
               {/* Wake-up card */}
@@ -205,12 +212,12 @@ export default function SleepTimeScreen({ navigation }) {
                     </Text>
                   </View>
                 </View>
-                <Feather name="chevron-down" size={20} color="#8A6A4E" />
+                <Feather name="chevron-down" size={20} color={colors.secondary} />
               </TouchableOpacity>
 
               {/* Duration summary */}
               <View style={styles.summaryBox}>
-                <Feather name="clock" size={22} color="#F0955A" />
+                <Feather name="clock" size={22} color={colors.accentSoft} />
                 <View style={{ marginLeft: 12 }}>
                   <Text style={styles.summaryLabel}>You sleep about</Text>
                   <Text style={styles.summaryValue}>
@@ -261,7 +268,7 @@ export default function SleepTimeScreen({ navigation }) {
 
             <View style={styles.clockFace}>
               <Svg width={260} height={260} style={styles.clockHandLayer} pointerEvents="none">
-                <Line x1={130} y1={130} x2={handEndX} y2={handEndY} stroke="#E07B3C" strokeWidth={4} strokeLinecap="round" />
+                <Line x1={130} y1={130} x2={handEndX} y2={handEndY} stroke={colors.accent} strokeWidth={4} strokeLinecap="round" />
               </Svg>
               {clockItems.map((item, index) => {
                 const angle = clockAngleForValue(item, pickerStep);
@@ -310,10 +317,10 @@ export default function SleepTimeScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeAreaTop:    { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeAreaBottom: { flex: 1, backgroundColor: '#FDF6F0' },
-  container:      { flex: 1, backgroundColor: '#FDF6F0', paddingHorizontal: 20 },
+const createStyles = (colors) => StyleSheet.create({
+  safeAreaTop:    { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeAreaBottom: { flex: 1, backgroundColor: colors.background },
+  container:      { flex: 1, backgroundColor: colors.background, paddingHorizontal: 20 },
   imageContainer: { position: 'absolute', top: 0, left: 0, right: 0, height: '50%', zIndex: -1 },
   heroImage:      { width: '100%', height: '100%', opacity: 0.9 },
   imageOverlay:   { position: 'absolute', bottom: 0, left: 0, right: 0, height: 180 },
@@ -321,55 +328,55 @@ const styles = StyleSheet.create({
   backButton:     { padding: 4 },
   contentWrapper: { flex: 1, paddingTop: 24 },
   textContainer:  { alignItems: 'center', marginBottom: 32 },
-  title:          { fontSize: 28, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: '#3D2B1F', textAlign: 'center', lineHeight: 36, marginBottom: 10 },
-  subtitle:       { fontSize: 15, color: '#8A6A4E', textAlign: 'center' },
+  title:          { fontSize: 28, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: colors.text, textAlign: 'center', lineHeight: 36, marginBottom: 10 },
+  subtitle:       { fontSize: 15, color: colors.secondary, textAlign: 'center' },
   inputsContainer:{ gap: 14 },
 
-  timeCard:      { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1.5, borderColor: '#E07B3C44' },
+  timeCard:      { backgroundColor: colors.surface, borderRadius: 16, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1.5, borderColor: colors.accent + '44' },
   wakeCard:      { borderColor: '#fcd53f44' },
   timeCardLeft:  { flexDirection: 'row', alignItems: 'center', gap: 14 },
   timeCardText:  {},
-  timeCardLabel: { color: '#8A6A4E', fontSize: 11, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 4 },
-  timeCardValue: { color: '#3D2B1F', fontSize: 24, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  placeholder:   { color: '#B09A86', fontSize: 18 },
+  timeCardLabel: { color: colors.secondary, fontSize: 11, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 4 },
+  timeCardValue: { color: colors.text, fontSize: 24, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  placeholder:   { color: colors.muted, fontSize: 18 },
 
-  summaryBox:    { backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#F0E2D4' },
-  summaryLabel:  { color: '#8A6A4E', fontSize: 12 },
-  summaryValue:  { color: '#3D2B1F', fontSize: 20, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  summaryBox:    { backgroundColor: colors.surface, borderRadius: 14, padding: 16, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.border },
+  summaryLabel:  { color: colors.secondary, fontSize: 12 },
+  summaryValue:  { color: colors.text, fontSize: 20, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 
   bottomContainer:    { marginBottom: 20, marginTop: 16 },
-  nextButton:         { backgroundColor: '#F0955A', paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
+  nextButton:         { backgroundColor: colors.brandSoft, paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
   nextButtonDisabled: { opacity: 0.5 },
-  nextButtonText:     { color: '#fff', fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  nextButtonText:     { color: colors.onBrand, fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
 
   // Picker modal
   modalOverlay:   { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' },
-  pickerContainer:{ backgroundColor: '#FFFFFF', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: 30 },
-  pickerHandle:   { width: 40, height: 4, backgroundColor: '#D8C6B5', borderRadius: 2, alignSelf: 'center', marginTop: 10 },
-  pickerHeader:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
-  pickerTitle:    { color: '#3D2B1F', fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  doneBtn:        { backgroundColor: '#E07B3C', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 7 },
-  doneBtnText:    { color: '#fff', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  pickerContainer:{ backgroundColor: colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: 30 },
+  pickerHandle:   { width: 40, height: 4, backgroundColor: colors.handle, borderRadius: 2, alignSelf: 'center', marginTop: 10 },
+  pickerHeader:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border },
+  pickerTitle:    { color: colors.text, fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  doneBtn:        { backgroundColor: colors.brand, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 7 },
+  doneBtnText:    { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 
   clockHeaderRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 20, paddingTop: 14 },
-  clockTab:       { flex: 1, height: 38, borderRadius: 10, borderWidth: 1, borderColor: '#F0E2D4', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FDF6F0' },
-  clockTabOn:     { backgroundColor: '#E07B3C', borderColor: '#E07B3C' },
-  clockTabText:   { color: '#8A6A4E', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  clockTabTextOn: { color: '#fff' },
-  clockFace:      { width: 260, height: 260, borderRadius: 130, backgroundColor: '#FDF6F0', borderWidth: 1, borderColor: '#F0E2D4', alignSelf: 'center', marginTop: 16 },
+  clockTab:       { flex: 1, height: 38, borderRadius: 10, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
+  clockTabOn:     { backgroundColor: colors.brand, borderColor: colors.accent },
+  clockTabText:   { color: colors.secondary, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  clockTabTextOn: { color: colors.onBrand },
+  clockFace:      { width: 260, height: 260, borderRadius: 130, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border, alignSelf: 'center', marginTop: 16 },
   clockNumber:    { position: 'absolute', width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
-  clockNumberOn:  { backgroundColor: '#E07B3C' },
-  clockNumberText:{ color: '#8A6A4E', fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  clockNumberTextOn: { color: '#fff' },
+  clockNumberOn:  { backgroundColor: colors.brand },
+  clockNumberText:{ color: colors.secondary, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  clockNumberTextOn: { color: colors.onBrand },
   clockHandLayer: { position: 'absolute', left: 0, top: 0, zIndex: 1 },
-  clockCenter:    { position: 'absolute', left: 124, top: 124, width: 12, height: 12, borderRadius: 6, backgroundColor: '#E07B3C', zIndex: 3 },
+  clockCenter:    { position: 'absolute', left: 124, top: 124, width: 12, height: 12, borderRadius: 6, backgroundColor: colors.brand, zIndex: 3 },
 
   ampmRow:        { flexDirection: 'row', gap: 10, justifyContent: 'center', marginTop: 4 },
-  ampmBtn:        { paddingHorizontal: 12, paddingVertical: 10, borderRadius: 10, borderWidth: 1.5, borderColor: '#F0E2D4', backgroundColor: '#FDF6F0' },
-  ampmBtnActive:  { backgroundColor: '#E07B3C', borderColor: '#E07B3C' },
-  ampmText:       { color: '#8A6A4E', fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  ampmTextActive: { color: '#fff' },
+  ampmBtn:        { paddingHorizontal: 12, paddingVertical: 10, borderRadius: 10, borderWidth: 1.5, borderColor: colors.border, backgroundColor: colors.background },
+  ampmBtnActive:  { backgroundColor: colors.brand, borderColor: colors.accent },
+  ampmText:       { color: colors.secondary, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  ampmTextActive: { color: colors.onBrand },
 
-  previewRow:  { alignItems: 'center', paddingVertical: 12, borderTopWidth: 1, borderTopColor: '#F0E2D4', marginTop: 8, marginHorizontal: 20 },
-  previewText: { color: '#E07B3C', fontSize: 28, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', letterSpacing: 2 },
+  previewRow:  { alignItems: 'center', paddingVertical: 12, borderTopWidth: 1, borderTopColor: colors.border, marginTop: 8, marginHorizontal: 20 },
+  previewText: { color: colors.accent, fontSize: 28, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', letterSpacing: 2 },
 });

@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
@@ -69,8 +70,8 @@ function modelInputRows(prediction, fallbackInputs = {}) {
     ['Chronotype', displayValue(source.chronotype)],
     ['Age', displayValue(source.age)],
     ['BMI', displayValue(source.bmi)],
-    ['Sleep time', displayTime(source.sleep_time)],
-    ['Wake time', displayTime(source.wake_time)],
+    ['Bedtime', displayTime(source.sleep_time)],
+    ['Wake-up time', displayTime(source.wake_time)],
     ['Sleep duration', source.sleep_duration == null ? '—' : `${Number(source.sleep_duration).toFixed(1)} hours`],
     ['Ethnicity', displayValue(source.ethnicity)],
   ];
@@ -83,8 +84,8 @@ function reportText({ profile, latestPrediction, sleepLogs, cognitiveTests, fall
   const factorLines = [
     ['Chronotype', latestPrediction?.factor_contributions?.chronotype],
     ['Age', latestPrediction?.factor_contributions?.age],
-    ['Sleep time', latestPrediction?.factor_contributions?.sleep_time],
-    ['Wake time', latestPrediction?.factor_contributions?.wake_time],
+    ['Bedtime', latestPrediction?.factor_contributions?.sleep_time],
+    ['Wake-up time', latestPrediction?.factor_contributions?.wake_time],
     ['BMI', latestPrediction?.factor_contributions?.bmi],
     ['Ethnicity', latestPrediction?.factor_contributions?.ethnicity],
   ].map(([label, value]) => `${label}: ${value == null ? '—' : `${Number(value) > 0 ? '+' : ''}${Number(value).toFixed(1)}%`}`);
@@ -127,6 +128,9 @@ function reportText({ profile, latestPrediction, sleepLogs, cognitiveTests, fall
 }
 
 export default function DoctorReportScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const {
     predictionResult,
     sleepType,
@@ -232,31 +236,31 @@ export default function DoctorReportScreen({ navigation }) {
     <>
       <SafeAreaView style={styles.safeTop} />
       <View style={styles.root}>
-        <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={StyleSheet.absoluteFillObject} />
+        <LinearGradient colors={[colors.background, colors.background]} style={StyleSheet.absoluteFillObject} />
 
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.75}>
-            <Feather name="chevron-left" size={28} color="#8A6A4E" />
+            <Feather name="chevron-left" size={28} color={colors.secondary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Doctor Report</Text>
           <TouchableOpacity style={styles.iconBtn} onPress={handleExport} activeOpacity={0.75}>
-            <Feather name={Platform.OS === 'web' ? 'printer' : 'share-2'} size={18} color="#E07B3C" />
+            <Feather name={Platform.OS === 'web' ? 'printer' : 'share-2'} size={18} color={colors.accent} />
           </TouchableOpacity>
         </View>
 
         {loading ? (
           <View style={styles.loading}>
-            <ActivityIndicator color="#F0955A" size="large" />
+            <ActivityIndicator color={colors.accentSoft} size="large" />
           </View>
         ) : (
           <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
             <View style={styles.heroCard}>
               <View style={styles.heroIcon}>
-                <MaterialCommunityIcons name="file-chart-outline" size={30} color="#E07B3C" />
+                <MaterialCommunityIcons name="file-chart-outline" size={30} color={colors.accent} />
               </View>
               <Text style={styles.title}>Monthly Summary</Text>
               <Text style={styles.subtitle}>
-                A monthly summary you can review or bring to a general physician appointment.
+                A monthly summary you can review or bring to an appointment with your physician.
               </Text>
               <Text style={styles.generated}>Generated {fmtDate(new Date().toISOString())}</Text>
             </View>
@@ -305,8 +309,8 @@ export default function DoctorReportScreen({ navigation }) {
               {[
                 ['Chronotype', factors.chronotype],
                 ['Age', factors.age],
-                ['Sleep Time', factors.sleep_time],
-                ['Wake Time', factors.wake_time],
+                ['Bedtime', factors.sleep_time],
+                ['Wake-up Time', factors.wake_time],
                 ['BMI', factors.bmi],
                 ['Ethnicity', factors.ethnicity],
               ].map(([label, value]) => (
@@ -329,7 +333,7 @@ export default function DoctorReportScreen({ navigation }) {
                   activeOpacity={0.75}
                 >
                   <Text style={styles.sourceText}>{source.label} — View published research</Text>
-                  <Feather name="external-link" size={14} color="#E07B3C" />
+                  <Feather name="external-link" size={14} color={colors.accent} />
                 </TouchableOpacity>
               ))}
             </View>
@@ -361,8 +365,8 @@ export default function DoctorReportScreen({ navigation }) {
             </View>
 
             <TouchableOpacity style={styles.exportBtn} onPress={handleExport} activeOpacity={0.85}>
-              <Feather name={Platform.OS === 'web' ? 'printer' : 'share-2'} size={18} color="#fff" />
-              <Text style={styles.exportText}>Export Report for General Physician</Text>
+              <Feather name={Platform.OS === 'web' ? 'printer' : 'share-2'} size={18} color={colors.onBrand} />
+              <Text style={styles.exportText}>Export Report for Your Physician</Text>
             </TouchableOpacity>
 
             <View style={{ height: 40 }} />
@@ -374,6 +378,9 @@ export default function DoctorReportScreen({ navigation }) {
 }
 
 function Metric({ label, value }) {
+
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={styles.metricCard}>
       <Text style={styles.metricValue}>{value}</Text>
@@ -382,9 +389,9 @@ function Metric({ label, value }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  root: { flex: 1, backgroundColor: '#FDF6F0' },
+const createStyles = (colors) => StyleSheet.create({
+  safeTop: { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  root: { flex: 1, backgroundColor: colors.background },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -392,27 +399,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0E2D4',
+    borderBottomColor: colors.border,
   },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   iconBtn: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#F0E2D4',
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerTitle: { color: '#3D2B1F', fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  headerTitle: { color: colors.text, fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll: { padding: 18, paddingBottom: 42 },
   heroCard: {
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#F0E2D4',
+    borderColor: colors.border,
     padding: 18,
     marginBottom: 12,
   },
@@ -420,20 +427,20 @@ const styles = StyleSheet.create({
     width: 58,
     height: 58,
     borderRadius: 18,
-    backgroundColor: '#E07B3C22',
+    backgroundColor: colors.accent + '22',
     borderWidth: 1,
-    borderColor: '#E07B3C44',
+    borderColor: colors.accent + '44',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 14,
   },
-  title: { color: '#3D2B1F', fontSize: 24, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 8 },
-  subtitle: { color: '#8A6A4E', fontSize: 13, lineHeight: 20, marginBottom: 12 },
-  generated: { color: '#8A6A4E', fontSize: 11, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  title: { color: colors.text, fontSize: 24, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 8 },
+  subtitle: { color: colors.secondary, fontSize: 13, lineHeight: 20, marginBottom: 12 },
+  generated: { color: colors.secondary, fontSize: 11, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   noticeCard: {
     flexDirection: 'row',
     gap: 10,
-    backgroundColor: '#FBEED2',
+    backgroundColor: colors.warningSurface,
     borderWidth: 1,
     borderColor: '#E9A94A66',
     borderRadius: 14,
@@ -442,47 +449,47 @@ const styles = StyleSheet.create({
   },
   noticeContent: { flex: 1 },
   noticeTitle: { color: '#ffcf66', fontSize: 12, lineHeight: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 4 },
-  noticeText: { color: '#9A6A1E', fontSize: 11, lineHeight: 17, marginBottom: 5 },
+  noticeText: { color: colors.warningText, fontSize: 11, lineHeight: 17, marginBottom: 5 },
   section: {
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#F0E2D4',
+    borderColor: colors.border,
     padding: 15,
     marginBottom: 12,
   },
-  sectionTitle: { color: '#3D2B1F', fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 12 },
+  sectionTitle: { color: colors.text, fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 12 },
   scoreRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   scoreValue: { color: '#7EC49A', fontSize: 36, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   scoreBadge: { backgroundColor: '#7EC49A22', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6 },
   scoreBadgeText: { color: '#7EC49A', fontSize: 12, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  muted: { color: '#8A6A4E', fontSize: 11, lineHeight: 16 },
-  explainText: { color: '#8A6A4E', fontSize: 11, lineHeight: 17, marginTop: 10 },
-  inputRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
-  inputLabel: { color: '#8A6A4E', fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  inputValue: { color: '#3D2B1F', fontSize: 12, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'right', flexShrink: 1 },
-  factorRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
-  factorLabel: { color: '#8A6A4E', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  muted: { color: colors.secondary, fontSize: 11, lineHeight: 16 },
+  explainText: { color: colors.secondary, fontSize: 11, lineHeight: 17, marginTop: 10 },
+  inputRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border },
+  inputLabel: { color: colors.secondary, fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  inputValue: { color: colors.text, fontSize: 12, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'right', flexShrink: 1 },
+  factorRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border },
+  factorLabel: { color: colors.secondary, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   factorValue: { fontSize: 17, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  sourceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
-  sourceText: { color: '#E07B3C', fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
+  sourceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: colors.border },
+  sourceText: { color: colors.accent, fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
   metricRow: { flexDirection: 'row', gap: 8 },
-  metricCard: { flex: 1, backgroundColor: '#FDF6F0', borderRadius: 12, borderWidth: 1, borderColor: '#F0E2D4', padding: 12 },
-  metricValue: { color: '#E07B3C', fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 4 },
-  metricLabel: { color: '#8A6A4E', fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  resultRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
-  resultTitle: { color: '#3D2B1F', fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textTransform: 'capitalize' },
-  resultScore: { color: '#E07B3C', fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  emptyText: { color: '#8A6A4E', fontSize: 12, lineHeight: 18 },
+  metricCard: { flex: 1, backgroundColor: colors.background, borderRadius: 12, borderWidth: 1, borderColor: colors.border, padding: 12 },
+  metricValue: { color: colors.accent, fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 4 },
+  metricLabel: { color: colors.secondary, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  resultRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.border },
+  resultTitle: { color: colors.text, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textTransform: 'capitalize' },
+  resultScore: { color: colors.accent, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  emptyText: { color: colors.secondary, fontSize: 12, lineHeight: 18 },
   exportBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#E07B3C',
+    backgroundColor: colors.brand,
     borderRadius: 14,
     paddingVertical: 15,
     paddingHorizontal: 14,
   },
-  exportText: { color: '#fff', fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'center' },
+  exportText: { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'center' },
 });

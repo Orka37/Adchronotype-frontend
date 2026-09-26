@@ -1,3 +1,4 @@
+import { ThemeProvider, useTheme, useThemedStyles } from './src/context/ThemeContext';
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -80,6 +81,7 @@ class AppErrorBoundary extends React.Component {
   }
 
   render() {
+    const { styles } = this.props;
     if (!this.state.error) return this.props.children;
 
     return (
@@ -98,6 +100,8 @@ class AppErrorBoundary extends React.Component {
 }
 
 function RootNavigator() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const {
     user, loading, consentShown, markConsentGiven,
     requiresPreAuthConsent, markPreAuthConsentComplete,
@@ -133,7 +137,7 @@ function RootNavigator() {
     return (
       <View style={styles.startupLoading}>
         <View style={styles.startupLoadingAura}>
-          <ActivityIndicator size="large" color="#E07B3C" />
+          <ActivityIndicator size="large" color={colors.accent} />
         </View>
         <Text style={styles.startupLoadingText}>Preparing ADChronotype…</Text>
       </View>
@@ -156,6 +160,12 @@ function RootNavigator() {
 }
 
 export default function App() {
+  return <ThemeProvider><ThemedApp /></ThemeProvider>;
+}
+
+function ThemedApp() {
+  const { colors, navigationTheme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const [fontsLoaded, fontError] = useFonts({
     Lexend_400Regular,
     Lexend_500Medium,
@@ -168,7 +178,7 @@ export default function App() {
     return (
       <View style={styles.startupLoading}>
         <View style={styles.startupLoadingAura}>
-          <ActivityIndicator size="large" color="#E07B3C" />
+          <ActivityIndicator size="large" color={colors.accent} />
         </View>
         <Text style={styles.startupLoadingText}>Preparing ADChronotype…</Text>
       </View>
@@ -177,10 +187,10 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <AppErrorBoundary>
+      <AppErrorBoundary styles={styles}>
         <AuthProvider>
           <OnboardingProvider>
-            <NavigationContainer linking={linking}>
+            <NavigationContainer linking={linking} theme={navigationTheme}>
               <RootNavigator />
             </NavigationContainer>
           </OnboardingProvider>
@@ -190,21 +200,21 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = colors => StyleSheet.create({
   errorScreen: {
     flex: 1,
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
     justifyContent: 'center',
     padding: 24,
   },
   errorTitle: {
-    color: '#3D2B1F',
+    color: colors.text,
     fontSize: 24,
     fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal',
     marginBottom: 12,
   },
   errorText: {
-    color: '#8A6A4E',
+    color: colors.secondary,
     fontSize: 16,
     lineHeight: 24,
     marginBottom: 16,
@@ -216,26 +226,26 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   errorButton: {
-    backgroundColor: '#E07B3C',
+    backgroundColor: colors.brand,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
   },
   errorButtonText: {
-    color: '#fff',
+    color: colors.onBrand,
     fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal',
     fontSize: 16,
   },
   startupLoading: {
     alignItems: 'center',
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
     flex: 1,
     justifyContent: 'center',
   },
   startupLoadingAura: {
     alignItems: 'center',
-    backgroundColor: '#FBEADB',
-    borderColor: '#F0D9C5',
+    backgroundColor: colors.tint,
+    borderColor: colors.subtleBorder,
     borderRadius: 42,
     borderWidth: 1,
     height: 84,
@@ -243,7 +253,7 @@ const styles = StyleSheet.create({
     width: 84,
   },
   startupLoadingText: {
-    color: '#8A6A4E',
+    color: colors.secondary,
     fontSize: 15,
     fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal',
     marginTop: 18,

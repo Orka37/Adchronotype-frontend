@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, Dimensions, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -6,13 +7,16 @@ import { Feather } from '@expo/vector-icons';
 const { width } = Dimensions.get('window');
 
 export default function WelcomeScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   return (
     <>
       <SafeAreaView style={styles.safeAreaTop} />
       <SafeAreaView style={styles.safeAreaBottom}>
         <View style={styles.container}>
         <LinearGradient
-          colors={['#FDF6F0', '#FDF6F0']}
+          colors={[colors.background, colors.background]}
           style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }}
         />
         
@@ -25,7 +29,7 @@ export default function WelcomeScreen({ navigation }) {
           />
           {/* An overlay to fade the bottom of the image into the background */}
           <LinearGradient
-            colors={['transparent', '#FDF6F0']}
+            colors={['transparent', colors.background]}
             style={styles.imageOverlay}
           />
         </View>
@@ -49,13 +53,13 @@ export default function WelcomeScreen({ navigation }) {
               onPress={() => navigation.navigate('SleepType')}
             >
               <LinearGradient
-                colors={['#F0955A', '#E07B3C']}
+                colors={[colors.brandSoft, colors.brand]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.primaryButton}
               >
                 <Text style={styles.primaryButtonText}>Get Started</Text>
-                <Feather name="arrow-right" size={20} color="#fff" />
+                <Feather name="arrow-right" size={20} color={colors.onBrand} />
               </LinearGradient>
             </TouchableOpacity>
 
@@ -67,7 +71,7 @@ export default function WelcomeScreen({ navigation }) {
             >
               <Text style={styles.secondaryButtonText}>About the Project</Text>
               <View style={styles.iconCircle}>
-                <Feather name="info" size={14} color="#E07B3C" />
+                <Feather name="info" size={14} color={colors.accent} />
               </View>
             </TouchableOpacity>
           </View>
@@ -78,19 +82,19 @@ export default function WelcomeScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   safeAreaTop: {
     flex: 0,
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
     paddingTop: Platform.OS === 'android' ? 25 : 0,
   },
   safeAreaBottom: {
     flex: 1,
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
   },
   container: {
     flex: 1,
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
   },
   imageContainer: {
     height: '50%',
@@ -124,18 +128,18 @@ const styles = StyleSheet.create({
   titleBold: {
     fontSize: 36,
     fontFamily: 'Lexend_700Bold', fontWeight: 'normal',
-    color: '#3D2B1F',
+    color: colors.text,
     letterSpacing: -0.5,
   },
   titleRegular: {
     fontSize: 36,
     fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal',
-    color: '#E07B3C',
+    color: colors.accent,
     letterSpacing: -0.5,
   },
   subtitle: {
     fontSize: 17,
-    color: '#8A6A4E',
+    color: colors.secondary,
     textAlign: 'center',
     lineHeight: 26,
     marginBottom: 40,
@@ -158,7 +162,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   primaryButtonText: {
-    color: '#ffffff',
+    color: colors.onBrand,
     fontSize: 18,
     fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal',
     marginRight: 8,
@@ -171,11 +175,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: '#E2C2AA',
-    backgroundColor: '#FFFFFF',
+    borderColor: colors.outline,
+    backgroundColor: colors.surface,
   },
   secondaryButtonText: {
-    color: '#3D2B1F',
+    color: colors.text,
     fontSize: 18,
     fontFamily: 'Lexend_500Medium', fontWeight: 'normal',
     marginRight: 8,
@@ -185,7 +189,7 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 11,
     borderWidth: 1.5,
-    borderColor: '#E07B3C',
+    borderColor: colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
   }

@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React from 'react';
 import {
   SafeAreaView,
@@ -41,6 +42,9 @@ const INFO_SECTIONS = [
 ];
 
 export default function ProjectInfoScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const { hasCompletedPrediction } = useOnboarding();
 
   const handleBack = () => {
@@ -56,11 +60,11 @@ export default function ProjectInfoScreen({ navigation }) {
     <>
       <SafeAreaView style={styles.safeTop} />
       <View style={styles.root}>
-        <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={StyleSheet.absoluteFillObject} />
+        <LinearGradient colors={[colors.background, colors.background]} style={StyleSheet.absoluteFillObject} />
 
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={handleBack} activeOpacity={0.75}>
-            <Feather name="chevron-left" size={28} color="#8A6A4E" />
+            <Feather name="chevron-left" size={28} color={colors.secondary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Project Info</Text>
           <View style={styles.headerSpacer} />
@@ -68,7 +72,7 @@ export default function ProjectInfoScreen({ navigation }) {
 
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <View style={styles.heroIcon}>
-            <MaterialCommunityIcons name="brain" size={34} color="#E07B3C" />
+            <MaterialCommunityIcons name="brain" size={34} color={colors.accent} />
           </View>
           <Text style={styles.title}>ADChronotype</Text>
           <Text style={styles.subtitle}>
@@ -86,7 +90,7 @@ export default function ProjectInfoScreen({ navigation }) {
             <View key={item.title} style={styles.card}>
               <View style={styles.cardHeader}>
                 <View style={styles.cardIcon}>
-                  <Feather name={item.icon} size={18} color="#F0955A" />
+                  <Feather name={item.icon} size={18} color={colors.accentSoft} />
                 </View>
                 <Text style={styles.cardTitle}>{item.title}</Text>
               </View>
@@ -101,7 +105,7 @@ export default function ProjectInfoScreen({ navigation }) {
               activeOpacity={0.85}
             >
               <Text style={styles.startBtnText}>Get Started</Text>
-              <Feather name="arrow-right" size={18} color="#ffffff" />
+              <Feather name="arrow-right" size={18} color={colors.onBrand} />
             </TouchableOpacity>
           )}
 
@@ -115,9 +119,9 @@ export default function ProjectInfoScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  root: { flex: 1, backgroundColor: '#FDF6F0' },
+const createStyles = (colors) => StyleSheet.create({
+  safeTop: { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  root: { flex: 1, backgroundColor: colors.background },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -125,41 +129,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0E2D4',
+    borderBottomColor: colors.border,
   },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { color: '#3D2B1F', fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  headerTitle: { color: colors.text, fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   headerSpacer: { width: 40 },
   scroll: { padding: 20, paddingBottom: 42 },
   heroIcon: {
     width: 76,
     height: 76,
     borderRadius: 24,
-    backgroundColor: '#E07B3C22',
+    backgroundColor: colors.accent + '22',
     borderWidth: 1,
-    borderColor: '#E07B3C44',
+    borderColor: colors.accent + '44',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 18,
   },
-  title: { color: '#3D2B1F', fontSize: 28, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 8 },
-  subtitle: { color: '#8A6A4E', fontSize: 15, lineHeight: 23, marginBottom: 18 },
+  title: { color: colors.text, fontSize: 28, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 8 },
+  subtitle: { color: colors.secondary, fontSize: 15, lineHeight: 23, marginBottom: 18 },
   noticeCard: {
     flexDirection: 'row',
     gap: 10,
-    backgroundColor: '#FBEED2',
+    backgroundColor: colors.warningSurface,
     borderWidth: 1,
     borderColor: '#E9A94A66',
     borderRadius: 14,
     padding: 14,
     marginBottom: 16,
   },
-  noticeText: { flex: 1, color: '#9A6A1E', fontSize: 13, lineHeight: 20, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  noticeText: { flex: 1, color: colors.warningText, fontSize: 13, lineHeight: 20, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   card: {
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#F0E2D4',
+    borderColor: colors.border,
     padding: 15,
     marginBottom: 12,
   },
@@ -168,16 +172,16 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 10,
-    backgroundColor: '#E07B3C22',
+    backgroundColor: colors.accent + '22',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardTitle: { flex: 1, color: '#3D2B1F', fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  cardBody: { color: '#8A6A4E', fontSize: 13, lineHeight: 21 },
+  cardTitle: { flex: 1, color: colors.text, fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  cardBody: { color: colors.secondary, fontSize: 13, lineHeight: 21 },
   startBtn: {
     marginTop: 4,
     marginBottom: 12,
-    backgroundColor: '#E07B3C',
+    backgroundColor: colors.brand,
     borderRadius: 14,
     paddingVertical: 16,
     paddingHorizontal: 18,
@@ -186,15 +190,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
-  startBtnText: { color: '#fff', fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  startBtnText: { color: colors.onBrand, fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   versionCard: {
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#F0E2D4',
+    borderColor: colors.border,
     padding: 15,
     marginTop: 4,
   },
-  versionLabel: { color: '#B09A86', fontSize: 11, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', letterSpacing: 1, marginBottom: 4 },
-  versionValue: { color: '#E07B3C', fontSize: 14, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  versionLabel: { color: colors.muted, fontSize: 11, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', letterSpacing: 1, marginBottom: 4 },
+  versionValue: { color: colors.accent, fontSize: 14, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 });

@@ -6,11 +6,11 @@
     "scheme": "adchronotype",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#030A31"
+      "backgroundColor": "#FDF6F0"
     },
     "ios": {
       "supportsTablet": true,

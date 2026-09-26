@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -172,6 +173,9 @@ function formatAvailableDate(value) {
 }
 
 export default function CognitiveTestScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const { user, signOut } = useAuth();
   const draftKey = user ? `cognitive_draft_${user.id || user.username}` : null;
   const [phase, setPhase] = useState('intro');
@@ -363,11 +367,11 @@ export default function CognitiveTestScreen({ navigation }) {
       <SafeAreaView style={styles.safeTop} />
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.root}>
-          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={StyleSheet.absoluteFillObject} />
+          <LinearGradient colors={[colors.background, colors.background]} style={StyleSheet.absoluteFillObject} />
 
           <View style={styles.header}>
             <TouchableOpacity onPress={handleBackPress} style={styles.backBtn} activeOpacity={0.7}>
-              <Feather name="arrow-left" size={22} color="#8A6A4E" />
+              <Feather name="arrow-left" size={22} color={colors.secondary} />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Cognitive Test</Text>
             <View style={styles.headerSpacer} />
@@ -413,10 +417,13 @@ export default function CognitiveTestScreen({ navigation }) {
 }
 
 function Intro({ locked, nextAvailableAt, onStart, onViewResults, onBack }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   return (
     <ScrollView contentContainerStyle={styles.introScroll}>
       <View style={styles.brainCircle}>
-        <MaterialCommunityIcons name="brain" size={40} color="#E07B3C" />
+        <MaterialCommunityIcons name="brain" size={40} color={colors.accent} />
       </View>
       <Text style={styles.introTitle}>Cognitive Test Battery</Text>
 
@@ -470,13 +477,16 @@ function TestHub({
   onPick,
   onSubmit,
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const doneCount = Object.keys(results).length;
   const recentResults = savedResults.slice(0, 6);
 
   return (
     <ScrollView contentContainerStyle={styles.hubScroll}>
       {!resultsOnly && (
-        <Text style={styles.hubSubtitle}>Complete each task. Your results feed your score.</Text>
+        <Text style={styles.hubSubtitle}>Complete each task to save your cognitive test results.</Text>
       )}
       {resultsOnly ? (
         <Text style={styles.hubProgress}>Saved cognitive test results</Text>
@@ -512,7 +522,7 @@ function TestHub({
             {done ? (
               <Feather name="check-circle" size={22} color="#7EC49A" />
             ) : (
-              <Feather name="chevron-right" size={22} color="#8A6A4E" />
+              <Feather name="chevron-right" size={22} color={colors.secondary} />
             )}
           </TouchableOpacity>
         );
@@ -526,7 +536,7 @@ function TestHub({
           activeOpacity={0.85}
         >
           {submitting ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={colors.onBrand} />
           ) : (
             <Text style={styles.primaryBtnText}>{allDone ? 'Submit All Results' : 'Complete all 4 tests'}</Text>
           )}
@@ -538,8 +548,8 @@ function TestHub({
           <Text style={styles.summaryTitle}>Personal Bests</Text>
           <TouchableOpacity onPress={onRefreshSummary} disabled={summaryLoading} activeOpacity={0.7}>
             {summaryLoading
-              ? <ActivityIndicator color="#E07B3C" size="small" />
-              : <Feather name="refresh-cw" size={16} color="#F0955A" />
+              ? <ActivityIndicator color={colors.accent} size="small" />
+              : <Feather name="refresh-cw" size={16} color={colors.accentSoft} />
             }
           </TouchableOpacity>
         </View>
@@ -559,7 +569,7 @@ function TestHub({
         <Text style={styles.summaryTitle}>Recent Saved Results</Text>
         {summaryLoading && !recentResults.length ? (
           <View style={styles.emptyResultsRow}>
-            <ActivityIndicator color="#E07B3C" size="small" />
+            <ActivityIndicator color={colors.accent} size="small" />
             <Text style={styles.emptyResultsText}>Loading saved results</Text>
           </View>
         ) : recentResults.length ? (
@@ -567,8 +577,8 @@ function TestHub({
             const meta = TEST_META[item.test_type] || {};
             return (
               <View key={item.id || `${item.test_type}-${item.tested_at}`} style={styles.resultRow}>
-                <View style={[styles.resultIcon, { backgroundColor: `${meta.color || '#E07B3C'}22` }]}>
-                  <MaterialCommunityIcons name={meta.icon || 'brain'} size={16} color={meta.color || '#E07B3C'} />
+                <View style={[styles.resultIcon, { backgroundColor: `${meta.color || colors.brand}22` }]}>
+                  <MaterialCommunityIcons name={meta.icon || 'brain'} size={16} color={meta.color || colors.accent} />
                 </View>
                 <View style={styles.resultTextWrap}>
                   <Text style={styles.resultLabel}>{meta.label || item.test_type}</Text>
@@ -588,13 +598,16 @@ function TestHub({
 
 
 function TestInstruction({ testKey, onBegin, onBack }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const meta = TEST_META[testKey] || TESTS[0];
   const instructions = TEST_INSTRUCTIONS[testKey] || [];
 
   return (
     <ScrollView contentContainerStyle={styles.introScroll}>
-      <View style={[styles.brainCircle, { backgroundColor: `${meta.color || '#E07B3C'}22` }]}> 
-        <MaterialCommunityIcons name={meta.icon || 'brain'} size={40} color={meta.color || '#E07B3C'} />
+      <View style={[styles.brainCircle, { backgroundColor: `${meta.color || colors.brand}22` }]}>
+        <MaterialCommunityIcons name={meta.icon || 'brain'} size={40} color={meta.color || colors.accent} />
       </View>
       <Text style={styles.introTitle}>{meta.label}</Text>
       <Text style={styles.introSub}>{meta.desc}</Text>
@@ -615,6 +628,9 @@ function TestInstruction({ testKey, onBegin, onBack }) {
 }
 
 function MemoryTest({ onDone, onCancel }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const basePairsRef = useRef(WORDSETS[0]);
   const answerRef = useRef('');
   const [stage, setStage] = useState('study');
@@ -730,7 +746,7 @@ function MemoryTest({ onDone, onCancel }) {
         </View>
         <View style={styles.pairBox}>
           <Text style={styles.pairWord}>{pairs[studyIdx][0]}</Text>
-          <Feather name="arrow-right" size={24} color="#8A6A4E" />
+          <Feather name="arrow-right" size={24} color={colors.secondary} />
           <Text style={styles.pairWord}>{pairs[studyIdx][1]}</Text>
         </View>
         <Text style={styles.helperText}>Each pair appears for 3 seconds.</Text>
@@ -749,7 +765,7 @@ function MemoryTest({ onDone, onCancel }) {
         value={answer}
         onChangeText={setAnswer}
         placeholder="Type the matching word"
-        placeholderTextColor="#B09A86"
+        placeholderTextColor={colors.muted}
         autoCapitalize="none"
         autoCorrect={false}
         onSubmitEditing={() => canSubmitAnswer && finishCue(answer)}
@@ -770,6 +786,9 @@ function MemoryTest({ onDone, onCancel }) {
 }
 
 function StroopTest({ onDone, onCancel }) {
+
+  const styles = useThemedStyles(createStyles);
+
   const [phase, setPhase] = useState('congruent');
   const [trial, setTrial] = useState(() => createStroopTrial('congruent'));
   const [secondsLeft, setSecondsLeft] = useState(STROOP_PHASE_SECONDS);
@@ -874,6 +893,9 @@ function StroopTest({ onDone, onCancel }) {
 }
 
 function DigitSpanTest({ onDone, onCancel }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const [currentLen, setCurrentLen] = useState(DIGIT_START_LEN);
   const [trialCount, setTrialCount] = useState(0);
   const [failuresAtLen, setFailuresAtLen] = useState(0);
@@ -991,7 +1013,7 @@ function DigitSpanTest({ onDone, onCancel }) {
             value={answer}
             onChangeText={setAnswer}
             placeholder="Smallest to largest, e.g. 138"
-            placeholderTextColor="#B09A86"
+            placeholderTextColor={colors.muted}
             keyboardType="number-pad"
             onSubmitEditing={() => submitDigitAnswer(answer)}
             returnKeyType="done"
@@ -1007,6 +1029,9 @@ function DigitSpanTest({ onDone, onCancel }) {
 }
 
 function ReactionTest({ onDone, onCancel }) {
+
+  const styles = useThemedStyles(createStyles);
+
   const [trial, setTrial] = useState(0);
   const [targetVisible, setTargetVisible] = useState(false);
   const [times, setTimes] = useState([]);
@@ -1118,15 +1143,21 @@ function ReactionTest({ onDone, onCancel }) {
 }
 
 function BackToTestsButton({ onPress }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   return (
     <TouchableOpacity style={styles.secondaryBtn} onPress={onPress} activeOpacity={0.7}>
-      <Feather name="grid" size={15} color="#E07B3C" />
+      <Feather name="grid" size={15} color={colors.accent} />
       <Text style={styles.secondaryBtnText}>Back to Tests</Text>
     </TouchableOpacity>
   );
 }
 
 function Done({ onHome }) {
+
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={styles.testBody}>
       <View style={styles.brainCircle}>
@@ -1141,9 +1172,9 @@ function Done({ onHome }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: '#FDF6F0' },
+const createStyles = (colors) => StyleSheet.create({
+  safeTop: { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom: { flex: 1, backgroundColor: colors.background },
   root: { flex: 1 },
   header: {
     flexDirection: 'row',
@@ -1152,23 +1183,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0E2D4',
+    borderBottomColor: colors.border,
   },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { color: '#3D2B1F', fontSize: 17, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  headerTitle: { color: colors.text, fontSize: 17, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   headerSpacer: { width: 40 },
   introScroll: { padding: 20, alignItems: 'center', paddingBottom: 36 },
   brainCircle: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#FBEADB',
+    backgroundColor: colors.tint,
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 20,
   },
-  introTitle: { color: '#3D2B1F', fontSize: 20, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 16, textAlign: 'center' },
-  introSub: { color: '#8A6A4E', fontSize: 13, textAlign: 'center', marginVertical: 16, lineHeight: 20 },
+  introTitle: { color: colors.text, fontSize: 20, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 16, textAlign: 'center' },
+  introSub: { color: colors.secondary, fontSize: 13, textAlign: 'center', marginVertical: 16, lineHeight: 20 },
   infoCard: {
     backgroundColor: 'rgba(224, 123, 60,0.10)',
     borderWidth: 1,
@@ -1178,110 +1209,110 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 12,
   },
-  infoLabel: { color: '#E07B3C', fontSize: 11, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 6 },
-  infoBody: { color: '#6B5744', fontSize: 13, lineHeight: 20 },
-  instructionLine: { color: '#6B5744', fontSize: 13, lineHeight: 21, marginBottom: 8 },
-  lockCard: { backgroundColor: '#FBEED2', borderWidth: 1, borderColor: '#F0D9A8', borderRadius: 14, padding: 16, width: '100%', alignItems: 'center', marginVertical: 12 },
-  lockTitle: { color: '#9A6A1E', fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 8, textAlign: 'center' },
-  lockText: { color: '#7C4A1E', fontSize: 13, lineHeight: 19, marginTop: 6, textAlign: 'center' },
-  secondaryFullBtn: { width: '100%', minHeight: 46, borderRadius: 12, borderWidth: 1, borderColor: '#E07B3C77', backgroundColor: '#E07B3C22', alignItems: 'center', justifyContent: 'center', marginTop: 14 },
-  secondaryFullBtnText: { color: '#E07B3C', fontSize: 14, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  infoLabel: { color: colors.accent, fontSize: 11, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 6 },
+  infoBody: { color: colors.body, fontSize: 13, lineHeight: 20 },
+  instructionLine: { color: colors.body, fontSize: 13, lineHeight: 21, marginBottom: 8 },
+  lockCard: { backgroundColor: colors.warningSurface, borderWidth: 1, borderColor: colors.warningBorder, borderRadius: 14, padding: 16, width: '100%', alignItems: 'center', marginVertical: 12 },
+  lockTitle: { color: colors.warningText, fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 8, textAlign: 'center' },
+  lockText: { color: colors.warningBody, fontSize: 13, lineHeight: 19, marginTop: 6, textAlign: 'center' },
+  secondaryFullBtn: { width: '100%', minHeight: 46, borderRadius: 12, borderWidth: 1, borderColor: colors.accent + '77', backgroundColor: colors.accent + '22', alignItems: 'center', justifyContent: 'center', marginTop: 14 },
+  secondaryFullBtnText: { color: colors.accent, fontSize: 14, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   warnCard: {
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: '#F0E2D4',
+    borderColor: colors.border,
     borderRadius: 12,
     padding: 14,
     width: '100%',
     marginBottom: 8,
   },
   warnLabel: { color: '#E9A94A', fontSize: 11, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 6 },
-  warnBody: { color: '#8A6A4E', fontSize: 12, lineHeight: 18 },
+  warnBody: { color: colors.secondary, fontSize: 12, lineHeight: 18 },
   hubScroll: { padding: 20, paddingBottom: 36 },
-  hubSubtitle: { color: '#8A6A4E', fontSize: 13, lineHeight: 19, marginBottom: 16 },
-  hubProgress: { color: '#9A6A1E', fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 8 },
-  progressBar: { height: 6, backgroundColor: '#F0E2D4', borderRadius: 3, marginBottom: 20, overflow: 'hidden' },
-  progressBarWide: { width: '100%', height: 6, backgroundColor: '#F0E2D4', borderRadius: 3, marginBottom: 24, overflow: 'hidden' },
-  progressFill: { height: 6, backgroundColor: '#E07B3C', borderRadius: 3 },
+  hubSubtitle: { color: colors.secondary, fontSize: 13, lineHeight: 19, marginBottom: 16 },
+  hubProgress: { color: colors.warningText, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 8 },
+  progressBar: { height: 6, backgroundColor: colors.border, borderRadius: 3, marginBottom: 20, overflow: 'hidden' },
+  progressBarWide: { width: '100%', height: 6, backgroundColor: colors.border, borderRadius: 3, marginBottom: 24, overflow: 'hidden' },
+  progressFill: { height: 6, backgroundColor: colors.brand, borderRadius: 3 },
   summaryCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#F0E2D4',
+    borderColor: colors.border,
     padding: 14,
     marginBottom: 16,
   },
   summaryHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  summaryTitle: { color: '#3D2B1F', fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 12 },
+  summaryTitle: { color: colors.text, fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 12 },
   summaryError: { color: '#E9A94A', fontSize: 12, marginBottom: 10, lineHeight: 17 },
   bestGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   bestTile: {
     width: '48%',
     minHeight: 90,
     borderRadius: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#F0E2D4',
+    borderColor: colors.border,
     padding: 10,
   },
-  bestLabel: { color: '#8A6A4E', fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginTop: 8, minHeight: 28 },
-  bestValue: { color: '#3D2B1F', fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 4 },
+  bestLabel: { color: colors.secondary, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginTop: 8, minHeight: 28 },
+  bestValue: { color: colors.text, fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 4 },
   resultRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: '#F0E2D4',
+    borderTopColor: colors.border,
   },
   resultIcon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   resultTextWrap: { flex: 1 },
-  resultLabel: { color: '#6B5744', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  resultDate: { color: '#8A6A4E', fontSize: 11, marginTop: 2 },
-  resultScore: { color: '#E07B3C', fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  resultLabel: { color: colors.body, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  resultDate: { color: colors.secondary, fontSize: 11, marginTop: 2 },
+  resultScore: { color: colors.accent, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   emptyResultsRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  emptyResultsText: { color: '#8A6A4E', fontSize: 12, lineHeight: 18 },
+  emptyResultsText: { color: colors.secondary, fontSize: 12, lineHeight: 18 },
   testCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderRadius: 14,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#F0E2D4',
+    borderColor: colors.border,
   },
   testCardDone: { opacity: 0.7, borderColor: '#7EC49A' },
   testIcon: { width: 46, height: 46, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   testCardContent: { flex: 1 },
-  testLabel: { color: '#3D2B1F', fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  testDesc: { color: '#8A6A4E', fontSize: 12, marginTop: 2 },
+  testLabel: { color: colors.text, fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  testDesc: { color: colors.secondary, fontSize: 12, marginTop: 2 },
   testBody: { flex: 1, padding: 20, alignItems: 'center', justifyContent: 'center' },
-  testStage: { color: '#3D2B1F', fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'center', marginBottom: 6 },
-  testCounter: { color: '#8A6A4E', fontSize: 13, marginBottom: 30 },
-  helperText: { color: '#8A6A4E', fontSize: 12, lineHeight: 18, textAlign: 'center', marginTop: 8, marginBottom: 6 },
+  testStage: { color: colors.text, fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'center', marginBottom: 6 },
+  testCounter: { color: colors.secondary, fontSize: 13, marginBottom: 30 },
+  helperText: { color: colors.secondary, fontSize: 12, lineHeight: 18, textAlign: 'center', marginTop: 8, marginBottom: 6 },
   pairBox: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     paddingVertical: 30,
     paddingHorizontal: 24,
     marginBottom: 30,
   },
-  pairWord: { color: '#E07B3C', fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  cueWord: { color: '#3D2B1F', fontSize: 30, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 24, textAlign: 'center' },
+  pairWord: { color: colors.accent, fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  cueWord: { color: colors.text, fontSize: 30, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 24, textAlign: 'center' },
   input: {
     width: '100%',
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
     borderWidth: 1.5,
-    borderColor: '#E07B3C',
+    borderColor: colors.accent,
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 16,
-    color: '#3D2B1F',
+    color: colors.text,
     fontSize: 16,
     marginBottom: 16,
     textAlign: 'center',
@@ -1289,9 +1320,9 @@ const styles = StyleSheet.create({
   stroopWord: { fontSize: 52, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 40, letterSpacing: 0 },
   stroopBtns: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12 },
   stroopBtn: { paddingVertical: 14, paddingHorizontal: 24, borderRadius: 12, minWidth: 100, alignItems: 'center' },
-  stroopBtnText: { color: '#fff', fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  stroopBtnText: { color: colors.onBrand, fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   digitBox: { alignItems: 'center', marginBottom: 30 },
-  digitBig: { color: '#E07B3C', fontSize: 80, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 12 },
+  digitBig: { color: colors.accent, fontSize: 80, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 12 },
   reactionArea: {
     width: '100%',
     height: 260,
@@ -1299,11 +1330,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.stage,
     borderWidth: 2,
-    borderColor: '#F0E2D4',
+    borderColor: colors.border,
   },
-  reactionText: { color: '#3D2B1F', fontSize: 24, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'center' },
+  reactionText: { color: colors.text, fontSize: 24, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'center' },
   reactionBall: {
     width: 84,
     height: 84,
@@ -1312,10 +1343,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  reactionBallText: { color: '#fff', fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  reactionBallText: { color: colors.onBrand, fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   primaryBtn: {
     width: '100%',
-    backgroundColor: '#E07B3C',
+    backgroundColor: colors.brand,
     borderRadius: 12,
     height: 50,
     alignItems: 'center',
@@ -1323,8 +1354,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 12,
   },
-  primaryBtnDisabled: { backgroundColor: '#C98B65', opacity: 0.6 },
-  primaryBtnText: { color: '#fff', fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  primaryBtnDisabled: { backgroundColor: colors.disabled, opacity: 0.6 },
+  primaryBtnText: { color: colors.onBrand, fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   secondaryBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1334,10 +1365,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E07B3C55',
-    backgroundColor: '#FFFFFF',
+    borderColor: colors.accent + '55',
+    backgroundColor: colors.surface,
     marginTop: 8,
   },
-  secondaryBtnText: { color: '#E07B3C', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  linkText: { color: '#8A6A4E', fontSize: 13, textAlign: 'center', marginTop: 8 },
+  secondaryBtnText: { color: colors.accent, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  linkText: { color: colors.secondary, fontSize: 13, textAlign: 'center', marginTop: 8 },
 });

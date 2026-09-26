@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useState, useRef, useEffect } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity,
@@ -11,6 +12,8 @@ import { useOnboarding } from '../context/OnboardingContext';
 const ITEM_H = 44;
 
 function DrumWheel({ items, selected, onSelect, labelFn }) {
+  const { colors } = useTheme();
+
   const scrollRef = useRef(null);
   const settleTimerRef = useRef(null);
   const [centeredIndex, setCenteredIndex] = useState(() => {
@@ -61,7 +64,7 @@ function DrumWheel({ items, selected, onSelect, labelFn }) {
 
   return (
     <View style={{ flex: 1, height: ITEM_H * 5, overflow: 'hidden', position: 'relative' }}>
-      <View style={{ position: 'absolute', top: ITEM_H * 2, left: 0, right: 0, height: ITEM_H, borderTopWidth: 1.5, borderBottomWidth: 1.5, borderColor: '#E07B3C55', backgroundColor: '#E07B3C0a', zIndex: 1, pointerEvents: 'none' }} />
+      <View style={{ position: 'absolute', top: ITEM_H * 2, left: 0, right: 0, height: ITEM_H, borderTopWidth: 1.5, borderBottomWidth: 1.5, borderColor: colors.accent + '55', backgroundColor: colors.accent + '0a', zIndex: 1, pointerEvents: 'none' }} />
       <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: ITEM_H * 2, zIndex: 2, pointerEvents: 'none' }} />
       <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: ITEM_H * 2, zIndex: 2, pointerEvents: 'none' }} />
       <ScrollView
@@ -90,7 +93,7 @@ function DrumWheel({ items, selected, onSelect, labelFn }) {
               }}
               activeOpacity={0.7}
             >
-              <Text style={{ color: isSel ? '#3D2B1F' : '#B09A86', fontSize: isSel ? 20 : 16, fontWeight: isSel ? '800' : '500' }}>
+              <Text style={{ color: isSel ? colors.text : colors.muted, fontSize: isSel ? 20 : 16, fontWeight: isSel ? '800' : '500' }}>
                 {label(v)}
               </Text>
             </TouchableOpacity>
@@ -117,6 +120,9 @@ function clampAge(value) {
 }
 
 export default function UserInfoScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const {
     age, setAge,
     heightFt, setHeightFt,
@@ -232,15 +238,15 @@ export default function UserInfoScreen({ navigation }) {
       <SafeAreaView style={styles.safeTop} />
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.container}>
-          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
+          <LinearGradient colors={[colors.background, colors.background]} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
           <View style={styles.imgWrap}>
             <Image source={require('../assets/home1.png')} style={styles.heroImg} resizeMode="cover" />
-            <LinearGradient colors={['transparent', '#FDF6F0']} style={styles.imgOverlay} />
+            <LinearGradient colors={['transparent', colors.background]} style={styles.imgOverlay} />
           </View>
 
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-              <Feather name="chevron-left" size={28} color="#8A6A4E" />
+              <Feather name="chevron-left" size={28} color={colors.secondary} />
             </TouchableOpacity>
             <StepIndicator currentStep={3} totalSteps={5} />
             <View style={{ width: 28 }} />
@@ -255,13 +261,13 @@ export default function UserInfoScreen({ navigation }) {
             scrollEnabled
           >
             <Text style={styles.title}>Tell us about you</Text>
-            <Text style={styles.sub}>Used to calculate your BMI and factors.</Text>
+            <Text style={styles.sub}>These details are used to calculate your BMI and research score.</Text>
 
             {/* Age */}
             <Text style={styles.label}>Age</Text>
             <TouchableOpacity style={styles.field} onPress={() => openPicker('age')} activeOpacity={0.8}>
               <Text style={[styles.fieldVal, !age && styles.placeholder]}>{displayAge}</Text>
-              <Feather name="chevron-down" size={18} color="#8A6A4E" />
+              <Feather name="chevron-down" size={18} color={colors.secondary} />
             </TouchableOpacity>
             {renderInlinePicker('age')}
 
@@ -269,7 +275,7 @@ export default function UserInfoScreen({ navigation }) {
             <Text style={styles.label}>Units</Text>
             <View style={styles.toggle}>
               <TouchableOpacity style={[styles.toggleBtn, unit === 'lbs' && styles.toggleBtnOn]} onPress={() => toggleUnit('lbs')}>
-                <Text style={[styles.toggleText, unit === 'lbs' && styles.toggleTextOn]}>Freedom units</Text>
+                <Text style={[styles.toggleText, unit === 'lbs' && styles.toggleTextOn]}>US customary units</Text>
                 <Text style={[styles.toggleSubText, unit === 'lbs' && styles.toggleSubTextOn]}>ft / in · lbs</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.toggleBtn, unit === 'kg' && styles.toggleBtnOn]} onPress={() => toggleUnit('kg')}>
@@ -282,7 +288,7 @@ export default function UserInfoScreen({ navigation }) {
             <Text style={styles.label}>Height</Text>
             <TouchableOpacity style={styles.field} onPress={() => openPicker('height')} activeOpacity={0.8}>
               <Text style={[styles.fieldVal, !heightCm && !heightFt && styles.placeholder]}>{displayHeight}</Text>
-              <Feather name="chevron-down" size={18} color="#8A6A4E" />
+              <Feather name="chevron-down" size={18} color={colors.secondary} />
             </TouchableOpacity>
             {renderInlinePicker('height')}
 
@@ -290,7 +296,7 @@ export default function UserInfoScreen({ navigation }) {
             <Text style={styles.label}>Weight</Text>
             <TouchableOpacity style={styles.field} onPress={() => openPicker('weight')} activeOpacity={0.8}>
               <Text style={[styles.fieldVal, !weight && styles.placeholder]}>{displayWeight}</Text>
-              <Feather name="chevron-down" size={18} color="#8A6A4E" />
+              <Feather name="chevron-down" size={18} color={colors.secondary} />
             </TouchableOpacity>
             {renderInlinePicker('weight')}
           </ScrollView>
@@ -312,10 +318,10 @@ export default function UserInfoScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeTop:   { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom:{ flex: 1, backgroundColor: '#FDF6F0' },
-  container: { flex: 1, backgroundColor: '#FDF6F0', paddingHorizontal: 20 },
+const createStyles = (colors) => StyleSheet.create({
+  safeTop:   { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom:{ flex: 1, backgroundColor: colors.background },
+  container: { flex: 1, backgroundColor: colors.background, paddingHorizontal: 20 },
   imgWrap:   { position: 'absolute', top: 0, left: 0, right: 0, height: '50%', zIndex: -1 },
   heroImg:   { width: '100%', height: '100%', opacity: 0.9 },
   imgOverlay:{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 180 },
@@ -323,28 +329,28 @@ const styles = StyleSheet.create({
   backBtn:   { padding: 4 },
   content:   { flex: 1 },
   contentInner: { paddingTop: 20, paddingBottom: 140 },
-  title:     { color: '#3D2B1F', fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 4 },
-  sub:       { color: '#8A6A4E', fontSize: 13, marginBottom: 20 },
-  label:     { color: '#3D2B1F', fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 8 },
-  field:     { backgroundColor: '#FFFFFF', borderRadius: 14, height: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 16, borderWidth: 1.5, borderColor: '#F0E2D4' },
-  fieldVal:  { color: '#3D2B1F', fontSize: 18, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  placeholder:{ color: '#B09A86', fontSize: 16 },
-  toggle:    { flexDirection: 'row', backgroundColor: '#FBEADB', borderRadius: 14, padding: 4, marginBottom: 16, gap: 4 },
+  title:     { color: colors.text, fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 4 },
+  sub:       { color: colors.secondary, fontSize: 13, marginBottom: 20 },
+  label:     { color: colors.text, fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 8 },
+  field:     { backgroundColor: colors.surface, borderRadius: 14, height: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 16, borderWidth: 1.5, borderColor: colors.border },
+  fieldVal:  { color: colors.text, fontSize: 18, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  placeholder:{ color: colors.muted, fontSize: 16 },
+  toggle:    { flexDirection: 'row', backgroundColor: colors.tint, borderRadius: 14, padding: 4, marginBottom: 16, gap: 4 },
   toggleBtn: { flex: 1, minHeight: 54, borderRadius: 11, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
-  toggleBtnOn: { backgroundColor: '#E07B3C' },
-  toggleText:  { color: '#8A6A4E', fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'center' },
-  toggleTextOn:{ color: '#fff' },
-  toggleSubText: { color: '#B09A86', fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginTop: 3, textAlign: 'center' },
-  toggleSubTextOn: { color: '#FFF7F0' },
+  toggleBtnOn: { backgroundColor: colors.brand },
+  toggleText:  { color: colors.secondary, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'center' },
+  toggleTextOn:{ color: colors.onBrand },
+  toggleSubText: { color: colors.muted, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginTop: 3, textAlign: 'center' },
+  toggleSubTextOn: { color: colors.subtleSurface },
   bottom:    { marginBottom: 20, marginTop: 12 },
-  nextBtn:   { backgroundColor: '#F0955A', paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
+  nextBtn:   { backgroundColor: colors.brandSoft, paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
   nextBtnOff:{ opacity: 0.5 },
-  nextBtnText:{ color: '#fff', fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  inlinePicker:{ backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E07B3C44', marginTop: -8, marginBottom: 14, overflow: 'hidden', maxHeight: 300 },
-  inlinePickerHeader:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
-  pickerTitle: { color: '#3D2B1F', fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  doneBtn:     { backgroundColor: '#E07B3C', borderRadius: 9, paddingHorizontal: 14, paddingVertical: 7 },
-  doneBtnText: { color: '#fff', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  nextBtnText:{ color: colors.onBrand, fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  inlinePicker:{ backgroundColor: colors.surface, borderRadius: 14, borderWidth: 1, borderColor: colors.accent + '44', marginTop: -8, marginBottom: 14, overflow: 'hidden', maxHeight: 300 },
+  inlinePickerHeader:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderBottomWidth: 1, borderBottomColor: colors.border },
+  pickerTitle: { color: colors.text, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  doneBtn:     { backgroundColor: colors.brand, borderRadius: 9, paddingHorizontal: 14, paddingVertical: 7 },
+  doneBtnText: { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   pickerBody:  { flexDirection: 'row', paddingHorizontal: 20, paddingTop: 8 },
   drumSep:     { width: 20, alignItems: 'center', justifyContent: 'center' },
 });

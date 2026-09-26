@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
@@ -36,7 +37,7 @@ const TIPS = [
     cat: 'BMI & DIET',
     icon: '⚖️',
     title: 'Weight, Diet and Brain Risk',
-    body: 'Maintaining a healthy BMI and following a brain-healthy diet are among the strongest modifiable risk factors for dementia prevention.',
+    body: 'Body weight and diet are modifiable factors studied in relation to dementia risk.',
     links: [
       { label: "BMI & Dementia Risk — Alzheimer's Society", url: 'https://www.alzheimers.org.uk/about-dementia/managing-the-risk-of-dementia/reduce-your-risk-of-dementia/obesity' },
       { label: 'Healthy Weight — CDC', url: 'https://www.cdc.gov/healthyweight/index.html' },
@@ -68,6 +69,9 @@ const TIPS = [
 ];
 
 export default function TipsScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const [expanded, setExpanded] = useState(null);
   const caregiverRequestCount = useCaregiverRequestCount();
 
@@ -87,7 +91,7 @@ export default function TipsScreen({ navigation }) {
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.root}>
           <LinearGradient
-            colors={['#FDF6F0', '#FDF6F0']}
+            colors={[colors.background, colors.background]}
             style={StyleSheet.absoluteFillObject}
           />
           <ScrollView
@@ -100,13 +104,13 @@ export default function TipsScreen({ navigation }) {
                 onPress={() => navigation.navigate('Report')}
                 activeOpacity={0.8}
               >
-                <Feather name="chevron-left" size={26} color="#8A6A4E" />
+                <Feather name="chevron-left" size={26} color={colors.secondary} />
               </TouchableOpacity>
               <Text style={styles.heading}>Research Tips</Text>
               <View style={styles.headerSpacer} />
             </View>
             <Text style={styles.sub}>
-              Evidence-based resources on each factor that influences your brain health score.
+              Research resources on the factors used to calculate your research score.
             </Text>
 
             {TIPS.map((tip, idx) => {
@@ -128,7 +132,7 @@ export default function TipsScreen({ navigation }) {
                     <Feather
                       name={open ? 'chevron-up' : 'chevron-down'}
                       size={18}
-                      color="#8A6A4E"
+                      color={colors.secondary}
                     />
                   </TouchableOpacity>
 
@@ -143,7 +147,7 @@ export default function TipsScreen({ navigation }) {
                             onPress={() => openLink(lnk.url)}
                             activeOpacity={0.7}
                           >
-                            <Feather name="external-link" size={12} color="#E07B3C" style={{ marginRight: 7, marginTop: 2 }} />
+                            <Feather name="external-link" size={12} color={colors.accent} style={{ marginRight: 7, marginTop: 2 }} />
                             <Text style={styles.linkText}>{lnk.label}</Text>
                           </TouchableOpacity>
                         ))}
@@ -179,8 +183,8 @@ export default function TipsScreen({ navigation }) {
                       <Text style={styles.navBadgeText}>{t.badgeCount > 9 ? '9+' : t.badgeCount}</Text>
                     </View>
                   )}
-                  <Feather name={t.icon} size={22} color={t.active ? '#F0955A' : '#8A6A4E'} />
-                  <Text style={[styles.navLabel, t.active && { color: '#F0955A' }]}>{t.label}</Text>
+                  <Feather name={t.icon} size={22} color={t.active ? colors.accentSoft : colors.secondary} />
+                  <Text style={[styles.navLabel, t.active && { color: colors.accentSoft }]}>{t.label}</Text>
                   {t.active && <View style={styles.activeDot} />}
                 </TouchableOpacity>
               ))}
@@ -192,36 +196,36 @@ export default function TipsScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeTop:    { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: '#FDF6F0' },
+const createStyles = (colors) => StyleSheet.create({
+  safeTop:    { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom: { flex: 1, backgroundColor: colors.background },
   root:       { flex: 1 },
   scroll:     { padding: 20, paddingTop: 32 },
   headerRow:  { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
   backBtn:    { alignItems: 'center', height: 40, justifyContent: 'center', width: 40 },
   headerSpacer: { width: 40 },
-  heading:    { color: '#3D2B1F', fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  sub:        { color: '#8A6A4E', fontSize: 13, lineHeight: 20, marginBottom: 24 },
+  heading:    { color: colors.text, fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  sub:        { color: colors.secondary, fontSize: 13, lineHeight: 20, marginBottom: 24 },
 
-  card:       { backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#F0E2D4', marginBottom: 12, overflow: 'hidden' },
+  card:       { backgroundColor: colors.surface, borderRadius: 16, borderWidth: 1, borderColor: colors.border, marginBottom: 12, overflow: 'hidden' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
   catRow:     { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
   catIcon:    { fontSize: 22 },
-  catLabel:   { color: '#E07B3C', fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', letterSpacing: 0.8, marginBottom: 2 },
-  catTitle:   { color: '#fff', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  catLabel:   { color: colors.accent, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', letterSpacing: 0.8, marginBottom: 2 },
+  catTitle:   { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 
-  cardBody:   { borderTopWidth: 1, borderTopColor: '#F0E2D4', padding: 16, paddingTop: 14 },
-  bodyText:   { color: '#8A6A4E', fontSize: 13, lineHeight: 20, marginBottom: 14 },
+  cardBody:   { borderTopWidth: 1, borderTopColor: colors.border, padding: 16, paddingTop: 14 },
+  bodyText:   { color: colors.secondary, fontSize: 13, lineHeight: 20, marginBottom: 14 },
   links:      { gap: 10 },
   linkRow:    { flexDirection: 'row', alignItems: 'flex-start' },
-  linkText:   { color: '#E07B3C', fontSize: 12, lineHeight: 18, flex: 1, textDecorationLine: 'underline' },
+  linkText:   { color: colors.accent, fontSize: 12, lineHeight: 18, flex: 1, textDecorationLine: 'underline' },
 
-  navWrap:    { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FDF6F0', borderTopWidth: 1, borderTopColor: '#F0E2D4' },
+  navWrap:    { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.background, borderTopWidth: 1, borderTopColor: colors.border },
   nav:        { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
   navItem:    { alignItems: 'center', width: 64 },
   navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
-  navBadgeText: { color: '#fff', fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  navLabel:   { color: '#8A6A4E', fontSize: 10, marginTop: 4, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  navLabelDisabled: { color: '#D1D5DB' },
-  activeDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: '#F0955A', position: 'absolute', bottom: -8 },
+  navBadgeText: { color: colors.onBrand, fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  navLabel:   { color: colors.secondary, fontSize: 10, marginTop: 4, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  navLabelDisabled: { color: colors.disabledText },
+  activeDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: colors.brandSoft, position: 'absolute', bottom: -8 },
 });

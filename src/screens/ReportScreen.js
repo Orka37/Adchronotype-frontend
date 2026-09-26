@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useCallback, useRef, useState } from 'react';
 import {
   StyleSheet, Text, View, SafeAreaView, TouchableOpacity,
@@ -46,7 +47,7 @@ const SUGGESTIONS = [
     cat: 'BMI & DIET',
     icon: '⚖️',
     title: 'Weight, Diet and Brain Risk',
-    body: 'Maintaining a healthy BMI and following a brain-healthy diet are among the strongest modifiable risk factors for dementia.',
+    body: 'Body weight and diet are modifiable factors studied in relation to dementia risk.',
     links: [
       { label: "Alzheimer's Society — BMI & Dementia Risk", url: 'https://www.alzheimers.org.uk/about-dementia/managing-the-risk-of-dementia/reduce-your-risk-of-dementia/obesity' },
       { label: 'Harvard — Mediterranean Diet & Brain Health', url: 'https://www.health.harvard.edu/mind-and-mood/the-mind-diet' },
@@ -82,6 +83,9 @@ function impactLabel(val) {
 }
 
 export default function ReportScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const {
     predictionResult,
     heightFt, heightIn, heightCm, weight, unit,
@@ -142,9 +146,9 @@ export default function ReportScreen({ navigation }) {
   const FACTOR_KEYS = [
     { key: 'chronotype', label: 'Chronotype' },
     { key: 'age',        label: 'Age' },
-    { key: 'sleep_time', label: 'Sleeptime' },
+    { key: 'sleep_time', label: 'Bedtime' },
     { key: 'bmi',        label: 'BMI' },
-    { key: 'wake_time',  label: 'Waketime' },
+    { key: 'wake_time',  label: 'Wake-up Time' },
     { key: 'ethnicity',  label: 'Ethnicity' },
   ];
 
@@ -161,13 +165,13 @@ export default function ReportScreen({ navigation }) {
       <SafeAreaView style={styles.safeTop} />
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.root}>
-          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={StyleSheet.absoluteFillObject} />
+          <LinearGradient colors={[colors.background, colors.background]} style={StyleSheet.absoluteFillObject} />
 
           <ScrollView
             style={styles.scroll}
             showsVerticalScrollIndicator={false}
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F0955A" colors={['#F0955A']} progressBackgroundColor="#FFFFFF" />
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accentSoft} colors={[colors.brandSoft]} progressBackgroundColor={colors.surface} />
             }
           >
             {/* Header */}
@@ -180,7 +184,7 @@ export default function ReportScreen({ navigation }) {
               onPress={() => navigation.navigate('CognitiveTest')}
               activeOpacity={0.85}
             >
-              <MaterialCommunityIcons name="brain" size={17} color="#E07B3C" />
+              <MaterialCommunityIcons name="brain" size={17} color={colors.accent} />
               <Text style={styles.cognitiveBtnText}>Take Cognitive Test</Text>
             </TouchableOpacity>
 
@@ -190,11 +194,11 @@ export default function ReportScreen({ navigation }) {
               {/* LEFT — Score */}
               <View style={styles.leftCol}>
                 <Text style={styles.colTitle}>Score</Text>
-                <Text style={styles.scoreLabel}>Cognitive Similarity Score</Text>
+                <Text style={styles.scoreLabel}>Research Similarity Score</Text>
 
                 <View style={styles.ringWrap}>
                   <Svg width={100} height={100} viewBox="0 0 100 100">
-                    <Circle cx="50" cy="50" r="44" stroke="#F0E2D4" strokeWidth="8" fill="transparent" />
+                    <Circle cx="50" cy="50" r="44" stroke={colors.border} strokeWidth="8" fill="transparent" />
                     <AnimatedCircle
                       cx="50" cy="50" r="44"
                       stroke={riskColor}
@@ -227,7 +231,7 @@ export default function ReportScreen({ navigation }) {
                     <Text style={styles.researchToggleText}>
                       View full disclaimer and research sources
                     </Text>
-                    <Feather name="info" size={12} color="#E07B3C" />
+                    <Feather name="info" size={12} color={colors.accent} />
                   </TouchableOpacity>
                 </View>
 
@@ -254,7 +258,7 @@ export default function ReportScreen({ navigation }) {
                   onPress={() => navigation.navigate('DoctorReport')}
                   activeOpacity={0.85}
                 >
-                  <Feather name="file-text" size={14} color="#E07B3C" />
+                  <Feather name="file-text" size={14} color={colors.accent} />
                   <Text style={styles.reportBtnText}>Doctor Report</Text>
                 </TouchableOpacity>
               </View>
@@ -320,8 +324,8 @@ export default function ReportScreen({ navigation }) {
                       <Text style={styles.navBadgeText}>{t.badgeCount > 9 ? '9+' : t.badgeCount}</Text>
                     </View>
                   )}
-                  <Feather name={t.icon} size={22} color={t.active ? '#F0955A' : '#8A6A4E'} />
-                  <Text style={[styles.navLabel, t.active && { color: '#F0955A' }]}>{t.label}</Text>
+                  <Feather name={t.icon} size={22} color={t.active ? colors.accentSoft : colors.secondary} />
+                  <Text style={[styles.navLabel, t.active && { color: colors.accentSoft }]}>{t.label}</Text>
                   {t.active && <View style={styles.activeDot} />}
                 </TouchableOpacity>
               ))}
@@ -341,7 +345,7 @@ export default function ReportScreen({ navigation }) {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>About Your Research Score</Text>
               <TouchableOpacity onPress={() => setShowResearchDetails(false)} accessibilityLabel="Close">
-                <Feather name="x" size={22} color="#8A6A4E" />
+                <Feather name="x" size={22} color={colors.secondary} />
               </TouchableOpacity>
             </View>
             <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator>
@@ -353,7 +357,7 @@ export default function ReportScreen({ navigation }) {
               {RESEARCH_SOURCES.map(source => (
                 <TouchableOpacity key={source.label} onPress={() => openLink(source.url)} style={styles.modalLinkRow}>
                   <Text style={styles.modalLink}>{source.label} — View published research</Text>
-                  <Feather name="external-link" size={13} color="#E07B3C" />
+                  <Feather name="external-link" size={13} color={colors.accent} />
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -367,23 +371,23 @@ export default function ReportScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeTop:    { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: '#FDF6F0' },
+const createStyles = (colors) => StyleSheet.create({
+  safeTop:    { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom: { flex: 1, backgroundColor: colors.background },
   root:       { flex: 1 },
   scroll:     { flex: 1, paddingHorizontal: 16 },
 
   header:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 28, marginBottom: 20 },
-  appTitle:   { color: '#3D2B1F', fontSize: 22, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  headerCognitiveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: '#E07B3C77', borderRadius: 12, paddingVertical: 13, marginBottom: 18 },
+  appTitle:   { color: colors.text, fontSize: 22, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  headerCognitiveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.accent + '77', borderRadius: 12, paddingVertical: 13, marginBottom: 18 },
 
   mainRow:    { flexDirection: 'row', gap: 14 },
 
   leftCol:    { flex: 1 },
   rightCol:   { flex: 1 },
-  colTitle:   { color: '#3D2B1F', fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 6 },
+  colTitle:   { color: colors.text, fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 6 },
 
-  scoreLabel: { color: '#8A6A4E', fontSize: 11, marginBottom: 14 },
+  scoreLabel: { color: colors.secondary, fontSize: 11, marginBottom: 14 },
   ringWrap:   { width: 100, height: 100, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
   ringCenter: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
   scoreNum:   { fontSize: 22, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
@@ -392,71 +396,71 @@ const styles = StyleSheet.create({
   riskIcon:   { fontSize: 12 },
   riskText:   { fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 
-  disclaimer:      { backgroundColor: '#FBEED2', borderRadius: 10, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: '#F0D9A8' },
-  disclaimerTitle: { color: '#9A3412', fontSize: 11, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 6 },
-  disclaimerBody:  { color: '#7C4A1E', fontSize: 10, lineHeight: 15 },
-  researchToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4, marginTop: 7, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F0D9A8' },
-  researchToggleText: { color: '#E07B3C', fontSize: 9, lineHeight: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', flex: 1 },
+  disclaimer:      { backgroundColor: colors.warningSurface, borderRadius: 10, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: colors.warningBorder },
+  disclaimerTitle: { color: colors.warningStrong, fontSize: 11, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 6 },
+  disclaimerBody:  { color: colors.warningBody, fontSize: 10, lineHeight: 15 },
+  researchToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4, marginTop: 7, paddingTop: 6, borderTopWidth: 1, borderTopColor: colors.warningBorder },
+  researchToggleText: { color: colors.accent, fontSize: 9, lineHeight: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', flex: 1 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 20 },
-  researchModal: { width: '100%', maxWidth: 520, maxHeight: '82%', backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#E07B3C66', padding: 18 },
+  researchModal: { width: '100%', maxWidth: 520, maxHeight: '82%', backgroundColor: colors.surface, borderRadius: 16, borderWidth: 1, borderColor: colors.accent + '66', padding: 18 },
   modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 },
-  modalTitle: { color: '#3D2B1F', fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', flex: 1 },
+  modalTitle: { color: colors.text, fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', flex: 1 },
   modalScroll: { flexGrow: 0 },
-  modalSectionTitle: { color: '#3D2B1F', fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 10, marginBottom: 5 },
-  modalBody: { color: '#8A6A4E', fontSize: 12, lineHeight: 19 },
+  modalSectionTitle: { color: colors.text, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 10, marginBottom: 5 },
+  modalBody: { color: colors.secondary, fontSize: 12, lineHeight: 19 },
   modalLinkRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, paddingVertical: 7 },
-  modalLink: { color: '#E07B3C', fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
-  modalCloseButton: { backgroundColor: '#E07B3C', borderRadius: 10, alignItems: 'center', paddingVertical: 11, marginTop: 14 },
-  modalCloseText: { color: '#fff', fontSize: 14, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  modalLink: { color: colors.accent, fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
+  modalCloseButton: { backgroundColor: colors.brand, borderRadius: 10, alignItems: 'center', paddingVertical: 11, marginTop: 14 },
+  modalCloseText: { color: colors.onBrand, fontSize: 14, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 
   bmiCard:    { borderWidth: 1.5, borderRadius: 10, padding: 10, marginBottom: 12 },
   bmiText:    { fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', textAlign: 'center' },
 
-  tipsBtn:    { backgroundColor: '#E07B3C', borderRadius: 12, paddingVertical: 12, alignItems: 'center', marginTop: 4 },
-  tipsBtnText:{ color: '#fff', fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  reportBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#FFFFFF', borderRadius: 12, borderWidth: 1, borderColor: '#E07B3C55', paddingVertical: 11, marginTop: 10 },
-  reportBtnText:{ color: '#E07B3C', fontSize: 12, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  cognitiveBtnText: { color: '#E07B3C', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  tipsBtn:    { backgroundColor: colors.brand, borderRadius: 12, paddingVertical: 12, alignItems: 'center', marginTop: 4 },
+  tipsBtnText:{ color: colors.onBrand, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  reportBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: colors.surface, borderRadius: 12, borderWidth: 1, borderColor: colors.accent + '55', paddingVertical: 11, marginTop: 10 },
+  reportBtnText:{ color: colors.accent, fontSize: 12, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  cognitiveBtnText: { color: colors.accent, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 
-  baselineText: { color: '#8A6A4E', fontSize: 10, marginBottom: 12, lineHeight: 15 },
+  baselineText: { color: colors.secondary, fontSize: 10, marginBottom: 12, lineHeight: 15 },
   factorGrid:   { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   factorCell:   { width: '47%', gap: 2, minHeight: 84 },
-  factorLabel:  { color: '#8A6A4E', fontSize: 11, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  factorLabel:  { color: colors.secondary, fontSize: 11, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
   factorVal:    { fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   impactBadge:  { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 8, paddingHorizontal: 6, paddingVertical: 3, alignSelf: 'flex-start', marginTop: 2 },
   impactIcon:   { fontSize: 10 },
   impactText:   { fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 
-  factorPlaceholder:     { padding: 12, backgroundColor: '#FFFFFF', borderRadius: 12, borderWidth: 1, borderColor: '#F0E2D4' },
-  factorPlaceholderText: { color: '#B09A86', fontSize: 11, lineHeight: 17 },
+  factorPlaceholder:     { padding: 12, backgroundColor: colors.surface, borderRadius: 12, borderWidth: 1, borderColor: colors.border },
+  factorPlaceholderText: { color: colors.muted, fontSize: 11, lineHeight: 17 },
 
   // suggestion bubble
   sugWrap:      { position: 'absolute', bottom: 70, right: 14, zIndex: 100, alignItems: 'flex-end' },
-  sugDot:       { width: 48, height: 48, borderRadius: 24, backgroundColor: '#E07B3C', alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#E07B3C', shadowOpacity: 0.7, shadowRadius: 8 },
-  sugBadge:     { position: 'absolute', top: -4, right: -4, width: 18, height: 18, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#FDF6F0' },
-  sugBadgeText: { color: '#fff', fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  sugPanel:     { position: 'absolute', bottom: 56, right: 0, width: 255, backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: '#E07B3C55', borderRadius: 16, borderBottomRightRadius: 4, padding: 14 },
-  sugClose:     { position: 'absolute', top: -12, left: -12, width: 28, height: 28, borderRadius: 14, backgroundColor: '#D9694F', borderWidth: 2, borderColor: '#FDF6F0', alignItems: 'center', justifyContent: 'center', zIndex: 10 },
-  sugCloseText: { color: '#fff', fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', lineHeight: 16 },
-  sugTag:       { backgroundColor: '#E07B3C33', borderRadius: 8, paddingHorizontal: 7, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 7 },
-  sugTagText:   { color: '#E07B3C', fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', letterSpacing: 0.4 },
-  sugTitle:     { color: '#3D2B1F', fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 5, lineHeight: 17 },
-  sugBody:      { color: '#8A6A4E', fontSize: 10, lineHeight: 15, marginBottom: 9 },
+  sugDot:       { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: colors.accent, shadowOpacity: 0.7, shadowRadius: 8 },
+  sugBadge:     { position: 'absolute', top: -4, right: -4, width: 18, height: 18, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.background },
+  sugBadgeText: { color: colors.onBrand, fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  sugPanel:     { position: 'absolute', bottom: 56, right: 0, width: 255, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.accent + '55', borderRadius: 16, borderBottomRightRadius: 4, padding: 14 },
+  sugClose:     { position: 'absolute', top: -12, left: -12, width: 28, height: 28, borderRadius: 14, backgroundColor: '#D9694F', borderWidth: 2, borderColor: colors.background, alignItems: 'center', justifyContent: 'center', zIndex: 10 },
+  sugCloseText: { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', lineHeight: 16 },
+  sugTag:       { backgroundColor: colors.accent + '33', borderRadius: 8, paddingHorizontal: 7, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 7 },
+  sugTagText:   { color: colors.accent, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', letterSpacing: 0.4 },
+  sugTitle:     { color: colors.text, fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 5, lineHeight: 17 },
+  sugBody:      { color: colors.secondary, fontSize: 10, lineHeight: 15, marginBottom: 9 },
   linkList:     { marginBottom: 10, gap: 7 },
   linkRow:      { flexDirection: 'row', alignItems: 'flex-start' },
-  linkText:     { color: '#E07B3C', fontSize: 10, lineHeight: 14, flex: 1, textDecorationLine: 'underline' },
-  sugNav:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: '#F0E2D4', paddingTop: 8 },
-  sugCount:     { color: '#555', fontSize: 9 },
-  sugArrow:     { width: 26, height: 26, borderRadius: 7, backgroundColor: '#FDF6F0', borderWidth: 1, borderColor: '#F0E2D4', alignItems: 'center', justifyContent: 'center' },
-  sugArrowText: { color: '#888', fontSize: 14, lineHeight: 18 },
+  linkText:     { color: colors.accent, fontSize: 10, lineHeight: 14, flex: 1, textDecorationLine: 'underline' },
+  sugNav:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 8 },
+  sugCount:     { color: colors.grayStrong, fontSize: 9 },
+  sugArrow:     { width: 26, height: 26, borderRadius: 7, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' },
+  sugArrowText: { color: colors.gray, fontSize: 14, lineHeight: 18 },
 
   // bottom nav
-  navWrap:   { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FDF6F0', borderTopWidth: 1, borderTopColor: '#F0E2D4' },
+  navWrap:   { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.background, borderTopWidth: 1, borderTopColor: colors.border },
   nav:       { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
   navItem:   { alignItems: 'center', width: 64 },
   navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
-  navBadgeText: { color: '#fff', fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  navLabel:  { color: '#8A6A4E', fontSize: 10, marginTop: 4, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  navLabelDisabled: { color: '#D1D5DB' },
-  activeDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#F0955A', position: 'absolute', bottom: -8 },
+  navBadgeText: { color: colors.onBrand, fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  navLabel:  { color: colors.secondary, fontSize: 10, marginTop: 4, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  navLabelDisabled: { color: colors.disabledText },
+  activeDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: colors.brandSoft, position: 'absolute', bottom: -8 },
 });

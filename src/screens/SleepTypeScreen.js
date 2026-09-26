@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useEffect, useState } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity,
@@ -12,6 +13,9 @@ import { useAuth } from '../context/AuthContext';
 import { log } from '../utils/logger';
 
 export default function SleepTypeScreen({ navigation, route }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const {
     sleepType: selectedOption,
     setSleepType: setSelectedOption,
@@ -79,10 +83,10 @@ export default function SleepTypeScreen({ navigation, route }) {
 
   const options = [
     { id: 'Definite Morning', title: 'Definite Morning', icon: <Feather name="sun"     size={24} color="#fcd53f" /> },
-    { id: 'Moderate Morning', title: 'Moderate Morning', icon: <Feather name="sunrise" size={24} color="#F0955A" /> },
+    { id: 'Moderate Morning', title: 'Moderate Morning', icon: <Feather name="sunrise" size={24} color={colors.accentSoft} /> },
     { id: 'Intermediate',     title: 'Intermediate',     icon: <Ionicons name="person" size={24} color="#ffd25c" /> },
-    { id: 'Moderate Evening', title: 'Moderate Evening', icon: <Feather name="sunset"  size={24} color="#E07B3C" /> },
-    { id: 'Definite Evening', title: 'Definite Evening', icon: <Feather name="moon"    size={24} color="#F0955A" /> },
+    { id: 'Moderate Evening', title: 'Moderate Evening', icon: <Feather name="sunset"  size={24} color={colors.accent} /> },
+    { id: 'Definite Evening', title: 'Definite Evening', icon: <Feather name="moon"    size={24} color={colors.accentSoft} /> },
   ];
 
   return (
@@ -90,15 +94,15 @@ export default function SleepTypeScreen({ navigation, route }) {
       <SafeAreaView style={styles.safeAreaTop} />
       <SafeAreaView style={styles.safeAreaBottom}>
         <View style={styles.container}>
-          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
+          <LinearGradient colors={[colors.background, colors.background]} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
           <View style={styles.imageContainer}>
             <Image source={require('../assets/home1.png')} style={styles.heroImage} resizeMode="cover" />
-            <LinearGradient colors={['transparent', '#FDF6F0']} style={styles.imageOverlay} />
+            <LinearGradient colors={['transparent', colors.background]} style={styles.imageOverlay} />
           </View>
 
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-              <Feather name="chevron-left" size={28} color="#8A6A4E" />
+              <Feather name="chevron-left" size={28} color={colors.secondary} />
             </TouchableOpacity>
             <StepIndicator currentStep={1} totalSteps={5} />
             <View style={{ width: 32 }} />
@@ -132,7 +136,7 @@ export default function SleepTypeScreen({ navigation, route }) {
                     <View style={styles.checkContainer}>
                       {isActive && (
                         <View style={styles.checkCircle}>
-                          <Feather name="check" size={12} color="#ffffff" />
+                          <Feather name="check" size={12} color={colors.onBrand} />
                         </View>
                       )}
                     </View>
@@ -162,10 +166,10 @@ export default function SleepTypeScreen({ navigation, route }) {
             <TouchableOpacity style={styles.popupClose} onPress={handleWelcomeOk}>
               <Text style={styles.popupCloseText}>×</Text>
             </TouchableOpacity>
-            <Text style={styles.popupTitle}>Welcome to AD Chronotype</Text>
+            <Text style={styles.popupTitle}>Welcome to ADChronotype</Text>
             <Text style={styles.popupBody}>
               Hey there!{'\n\n'}
-              Thank you for choosing ADChronotype. Complete the 5-step questionnaire to get your personalised brain health score based on your sleep patterns and lifestyle factors.
+              Thank you for choosing ADChronotype. Complete the 5-step questionnaire to get your personalized research score based on your sleep patterns and lifestyle factors.
             </Text>
             <TouchableOpacity style={styles.popupBtn} onPress={handleWelcomeOk}>
               <Text style={styles.popupBtnText}>Okay!</Text>
@@ -210,10 +214,10 @@ export default function SleepTypeScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeAreaTop:    { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeAreaBottom: { flex: 1, backgroundColor: '#FDF6F0', position: 'relative' },
-  container:      { flex: 1, backgroundColor: '#FDF6F0', paddingHorizontal: 20 },
+const createStyles = (colors) => StyleSheet.create({
+  safeAreaTop:    { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeAreaBottom: { flex: 1, backgroundColor: colors.background, position: 'relative' },
+  container:      { flex: 1, backgroundColor: colors.background, paddingHorizontal: 20 },
   imageContainer: { position: 'absolute', top: 0, left: 0, right: 0, height: '50%', zIndex: -1 },
   heroImage:      { width: '100%', height: '100%', opacity: 0.9 },
   imageOverlay:   { position: 'absolute', bottom: 0, left: 0, right: 0, height: 180 },
@@ -221,33 +225,33 @@ const styles = StyleSheet.create({
   backButton:     { padding: 4 },
   contentWrapper: { flex: 1, paddingTop: 8 },
   textContainer:  { alignItems: 'center', marginBottom: 14, paddingHorizontal: 10 },
-  title:          { fontSize: 26, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: '#3D2B1F', textAlign: 'center', lineHeight: 32, marginBottom: 8 },
-  subtitle:       { fontSize: 14, color: '#8A6A4E', textAlign: 'center', lineHeight: 20 },
+  title:          { fontSize: 26, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: colors.text, textAlign: 'center', lineHeight: 32, marginBottom: 8 },
+  subtitle:       { fontSize: 14, color: colors.secondary, textAlign: 'center', lineHeight: 20 },
   optionsContainer:    { gap: 10 },
-  optionCard:          { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 14, padding: 12, borderWidth: 1.5, borderColor: 'transparent', minHeight: 72 },
-  optionCardActive:    { backgroundColor: '#FBEADB', borderColor: '#E07B3C' },
+  optionCard:          { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: 14, padding: 12, borderWidth: 1.5, borderColor: 'transparent', minHeight: 72 },
+  optionCardActive:    { backgroundColor: colors.tint, borderColor: colors.accent },
   optionIconContainer: { width: 40, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
   optionTextContainer: { flex: 1 },
-  optionTitle:    { fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: '#3D2B1F', marginBottom: 3 },
-  optionSubtitle: { fontSize: 12, color: '#8A6A4E', lineHeight: 16 },
+  optionTitle:    { fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: colors.text, marginBottom: 3 },
+  optionSubtitle: { fontSize: 12, color: colors.secondary, lineHeight: 16 },
   checkContainer: { width: 24, alignItems: 'flex-end' },
-  checkCircle:    { width: 20, height: 20, borderRadius: 10, backgroundColor: '#F0955A', alignItems: 'center', justifyContent: 'center' },
+  checkCircle:    { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
   bottomContainer:{ marginBottom: 20, marginTop: 10 },
-  nextButton:     { backgroundColor: '#F0955A', paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
+  nextButton:     { backgroundColor: colors.brandSoft, paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
   nextButtonDisabled: { opacity: 0.5 },
-  nextButtonText: { color: '#ffffff', fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  nextButtonText: { color: colors.onBrand, fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
 
   // Modals
   overlay:        { flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  popup:          { backgroundColor: '#FFFFFF', borderRadius: 18, padding: 24, width: '100%', maxWidth: 380, borderWidth: 1, borderColor: '#F0E2D4', position: 'relative' },
+  popup:          { backgroundColor: colors.surface, borderRadius: 18, padding: 24, width: '100%', maxWidth: 380, borderWidth: 1, borderColor: colors.border, position: 'relative' },
   popupClose:     { position: 'absolute', top: 14, right: 18, zIndex: 10 },
-  popupCloseText: { color: '#8A6A4E', fontSize: 22, fontWeight: '400', lineHeight: 24 },
-  popupTitle:     { color: '#3D2B1F', fontSize: 20, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 14, paddingRight: 20 },
-  popupBody:      { color: '#8A6A4E', fontSize: 14, lineHeight: 22 },
-  popupLink:      { color: '#E07B3C', fontSize: 11, lineHeight: 18, textDecorationLine: 'underline', flexWrap: 'wrap', flexShrink: 1 },
+  popupCloseText: { color: colors.secondary, fontSize: 22, fontWeight: '400', lineHeight: 24 },
+  popupTitle:     { color: colors.text, fontSize: 20, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 14, paddingRight: 20 },
+  popupBody:      { color: colors.secondary, fontSize: 14, lineHeight: 22 },
+  popupLink:      { color: colors.accent, fontSize: 11, lineHeight: 18, textDecorationLine: 'underline', flexWrap: 'wrap', flexShrink: 1 },
   popupBtnRow:    { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 20 },
-  popupBtn:       { backgroundColor: '#E07B3C', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20, alignSelf: 'flex-start' },
-  popupBtnText:   { color: '#fff', fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', textAlign: 'center' },
-  popupBtnSecondary:     { borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, borderWidth: 1, borderColor: '#F0E2D4', alignSelf: 'flex-start', maxWidth: '100%' },
-  popupBtnSecondaryText: { color: '#8A6A4E', fontSize: 15, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', textAlign: 'center' },
+  popupBtn:       { backgroundColor: colors.brand, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20, alignSelf: 'flex-start' },
+  popupBtnText:   { color: colors.onBrand, fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', textAlign: 'center' },
+  popupBtnSecondary:     { borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, borderWidth: 1, borderColor: colors.border, alignSelf: 'flex-start', maxWidth: '100%' },
+  popupBtnSecondaryText: { color: colors.secondary, fontSize: 15, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', textAlign: 'center' },
 });

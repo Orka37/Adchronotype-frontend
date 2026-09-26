@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
@@ -16,15 +17,18 @@ const { height } = Dimensions.get('window');
 const webInputReset = Platform.OS === 'web' ? { outlineStyle: 'none' } : null;
 
 function SignupField({ id, label, value, onChange, icon, opts = {}, focused, setFocused, error, clearErr }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={{ marginBottom: 4 }}>
       <Text style={styles.label}>{label}</Text>
       <View style={[styles.inputRow, focused === id && styles.inputFocused, error && styles.inputErr]}>
-        <Feather name={icon} size={18} color={focused === id ? '#E07B3C' : '#8A6A4E'} style={styles.icon} />
+        <Feather name={icon} size={18} color={focused === id ? colors.accent : colors.secondary} style={styles.icon} />
         <TextInput
           style={[styles.input, webInputReset]}
           placeholder={opts.ph || `Enter ${label.toLowerCase()}`}
-          placeholderTextColor="#B09A86"
+          placeholderTextColor={colors.muted}
           value={value}
           onChangeText={v => { onChange(v); clearErr(id); }}
           autoCapitalize={opts.cap || 'words'}
@@ -44,6 +48,9 @@ function SignupField({ id, label, value, onChange, icon, opts = {}, focused, set
 }
 
 export default function SignupScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const { signIn } = useAuth();
 
   const [firstName, setFirstName] = useState('');
@@ -119,7 +126,7 @@ export default function SignupScreen({ navigation }) {
               <Text style={styles.logoLight}>Chronotype</Text>
             </View>
             <Text style={styles.title}>Create account</Text>
-            <Text style={styles.subtitle}>Start your brain health prediction journey.</Text>
+            <Text style={styles.subtitle}>Explore sleep patterns and cognitive health research.</Text>
 
             <SignupField id="fn" label="First Name" value={firstName} onChange={setFirstName} icon="user" opts={{ autoComplete: 'given-name', textContentType: 'givenName' }} focused={focused} setFocused={setFocused} error={errs.fn} clearErr={clearErr} />
             <SignupField id="ln" label="Last Name" value={lastName} onChange={setLastName} icon="user" opts={{ marginTop: 18, autoComplete: 'family-name', textContentType: 'familyName' }} focused={focused} setFocused={setFocused} error={errs.ln} clearErr={clearErr} />
@@ -129,11 +136,11 @@ export default function SignupScreen({ navigation }) {
             {/* Password — manual because of eye toggle */}
             <Text style={[styles.label, { marginTop: 4 }]}>Password</Text>
             <View style={[styles.inputRow, focused === 'pw' && styles.inputFocused, hasErr('pw') && styles.inputErr]}>
-              <Feather name="lock" size={18} color={focused === 'pw' ? '#E07B3C' : '#8A6A4E'} style={styles.icon} />
+              <Feather name="lock" size={18} color={focused === 'pw' ? colors.accent : colors.secondary} style={styles.icon} />
               <TextInput
                 style={[styles.input, webInputReset]}
-                placeholder="Min 8 characters"
-                placeholderTextColor="#B09A86"
+                placeholder="At least 8 characters"
+                placeholderTextColor={colors.muted}
                 value={password}
                 onChangeText={v => { setPassword(v); clearErr('pw'); }}
                 secureTextEntry={secureText}
@@ -151,7 +158,7 @@ export default function SignupScreen({ navigation }) {
                 hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
                 style={{ padding: 8 }}
               >
-                <Feather name={secureText ? 'eye-off' : 'eye'} size={18} color="#8A6A4E" />
+                <Feather name={secureText ? 'eye-off' : 'eye'} size={18} color={colors.secondary} />
               </Pressable>
             </View>
             {hasErr('pw') && <Text style={styles.errText}>{errs.pw}</Text>}
@@ -173,7 +180,7 @@ export default function SignupScreen({ navigation }) {
               activeOpacity={0.8}
             >
               {submitting
-                ? <ActivityIndicator color="#fff" />
+                ? <ActivityIndicator color={colors.onBrand} />
                 : <Text style={styles.btnText}>Create Account</Text>
               }
             </TouchableOpacity>
@@ -189,30 +196,30 @@ export default function SignupScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#FDF6F0' },
-  safeTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+const createStyles = (colors) => StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.background },
+  safeTop: { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
   scroll: { flexGrow: 1, paddingHorizontal: 24, paddingTop: height * 0.08, paddingBottom: 40 },
   logoWrap: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
-  logoBold: { fontSize: 30, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', color: '#3D2B1F', letterSpacing: -0.5 },
-  logoLight: { fontSize: 30, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', color: '#E07B3C', letterSpacing: -0.5 },
-  title: { fontSize: 24, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: '#3D2B1F', marginBottom: 6 },
-  subtitle: { fontSize: 14, color: '#8A6A4E', lineHeight: 21, marginBottom: 28 },
-  label: { color: '#3D2B1F', fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 7, marginTop: 14 },
+  logoBold: { fontSize: 30, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', color: colors.text, letterSpacing: -0.5 },
+  logoLight: { fontSize: 30, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', color: colors.accent, letterSpacing: -0.5 },
+  title: { fontSize: 24, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: colors.text, marginBottom: 6 },
+  subtitle: { fontSize: 14, color: colors.secondary, lineHeight: 21, marginBottom: 28 },
+  label: { color: colors.text, fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 7, marginTop: 14 },
   inputRow: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#FFFFFF', borderRadius: 14,
+    backgroundColor: colors.surface, borderRadius: 14,
     borderWidth: 1.5, borderColor: 'transparent',
     paddingHorizontal: 14, height: 52, marginBottom: 2,
   },
-  inputFocused: { borderColor: '#E07B3C' },
+  inputFocused: { borderColor: colors.accent },
   inputErr: { borderColor: '#D9694F' },
   errText: { color: '#D9694F', fontSize: 11, marginBottom: 2, marginLeft: 2 },
   submitErrorBox: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: '#FFF1F2',
-    borderColor: '#7f1d1d',
+    backgroundColor: colors.errorSurface,
+    borderColor: colors.errorStrong,
     borderWidth: 1,
     borderRadius: 14,
     paddingHorizontal: 14,
@@ -220,17 +227,17 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   submitErrorIcon: { marginRight: 10, marginTop: 1 },
-  submitErrorTitle: { color: '#fff', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 3 },
+  submitErrorTitle: { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 3 },
   submitErrorText: { color: '#fca5a5', fontSize: 12, lineHeight: 17 },
   icon: { marginRight: 10 },
-  input: { flex: 1, color: '#3D2B1F', fontSize: 15 },
+  input: { flex: 1, color: colors.text, fontSize: 15 },
   btn: {
-    backgroundColor: '#E07B3C', borderRadius: 14,
+    backgroundColor: colors.brand, borderRadius: 14,
     height: 54, alignItems: 'center', justifyContent: 'center', marginTop: 28,
   },
-  btnDisabled: { backgroundColor: '#C98B65' },
-  btnText: { color: '#fff', fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  btnDisabled: { backgroundColor: colors.disabled },
+  btnText: { color: colors.onBrand, fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   linkRow: { marginTop: 22, alignItems: 'center' },
-  linkText: { color: '#8A6A4E', fontSize: 14 },
-  linkAccent: { color: '#E07B3C', fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  linkText: { color: colors.secondary, fontSize: 14 },
+  linkAccent: { color: colors.accent, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 });

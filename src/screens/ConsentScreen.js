@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
@@ -15,6 +16,9 @@ const CONSENT_POINTS = [
 ];
 
 export default function ConsentScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const { markConsentGiven } = useAuth();
 
   async function handleConsent() {
@@ -29,7 +33,7 @@ export default function ConsentScreen({ navigation }) {
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.root}>
           <LinearGradient
-            colors={['#FDF6F0', '#FDF6F0']}
+            colors={[colors.background, colors.background]}
             style={StyleSheet.absoluteFillObject}
           />
           <ScrollView
@@ -38,7 +42,7 @@ export default function ConsentScreen({ navigation }) {
           >
             <Text style={styles.title}>Consent</Text>
             <Text style={styles.subtitle}>
-              By using this app you fully consent to/acknowledge the following:
+              By using this app, you consent to and acknowledge the following:
             </Text>
 
             {CONSENT_POINTS.map((point, i) => (
@@ -62,16 +66,16 @@ export default function ConsentScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeTop:    { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: '#FDF6F0' },
+const createStyles = (colors) => StyleSheet.create({
+  safeTop:    { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom: { flex: 1, backgroundColor: colors.background },
   root:       { flex: 1 },
   scroll:     { padding: 28, paddingTop: 48 },
-  title:      { color: '#3D2B1F', fontSize: 32, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', fontStyle: 'italic', textAlign: 'center', marginBottom: 28 },
-  subtitle:   { color: '#3D2B1F', fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', fontStyle: 'italic', marginBottom: 28, lineHeight: 24 },
+  title:      { color: colors.text, fontSize: 32, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', fontStyle: 'italic', textAlign: 'center', marginBottom: 28 },
+  subtitle:   { color: colors.text, fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', fontStyle: 'italic', marginBottom: 28, lineHeight: 24 },
   point:      { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 22 },
-  bullet:     { width: 7, height: 7, borderRadius: 4, backgroundColor: '#fff', marginTop: 7, marginRight: 14, flexShrink: 0 },
-  pointText:  { color: '#6B5744', fontSize: 15, lineHeight: 24, flex: 1 },
-  btn:        { backgroundColor: '#E07B3C', borderRadius: 14, paddingVertical: 16, paddingHorizontal: 32, alignSelf: 'flex-start', marginTop: 16 },
-  btnText:    { color: '#fff', fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  bullet:     { width: 7, height: 7, borderRadius: 4, backgroundColor: colors.surface, marginTop: 7, marginRight: 14, flexShrink: 0 },
+  pointText:  { color: colors.body, fontSize: 15, lineHeight: 24, flex: 1 },
+  btn:        { backgroundColor: colors.brand, borderRadius: 14, paddingVertical: 16, paddingHorizontal: 32, alignSelf: 'flex-start', marginTop: 16 },
+  btnText:    { color: colors.onBrand, fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 });

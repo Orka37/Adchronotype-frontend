@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useEffect, useState } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity,
@@ -18,6 +19,9 @@ const SEX_OPTIONS = ['Male', 'Female'];
 const FAMILY_OPTIONS = ['Yes', 'No', "Don't know"];
 
 function ListPicker({ visible, title, items, selected, onSelect, onClose }) {
+
+  const ps = useThemedStyles(createPs);
+
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View style={ps.overlay}>
@@ -49,22 +53,25 @@ function ListPicker({ visible, title, items, selected, onSelect, onClose }) {
   );
 }
 
-const ps = StyleSheet.create({
+const createPs = (colors) => StyleSheet.create({
   overlay:    { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' },
-  box:        { backgroundColor: '#FFFFFF', borderTopLeftRadius: 22, borderTopRightRadius: 22, paddingBottom: 28 },
-  handle:     { width: 40, height: 4, backgroundColor: '#D8C6B5', borderRadius: 2, alignSelf: 'center', marginTop: 10 },
-  header:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
-  title:      { color: '#3D2B1F', fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  done:       { backgroundColor: '#E07B3C', borderRadius: 9, paddingHorizontal: 14, paddingVertical: 7 },
-  doneText:   { color: '#fff', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  item:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 15, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: '#F0E2D4' },
-  itemSel:    { backgroundColor: '#E07B3C15' },
-  itemText:   { color: '#8A6A4E', fontSize: 15 },
-  itemTextSel:{ color: '#fff', fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  check:      { color: '#E07B3C', fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  box:        { backgroundColor: colors.surface, borderTopLeftRadius: 22, borderTopRightRadius: 22, paddingBottom: 28 },
+  handle:     { width: 40, height: 4, backgroundColor: colors.handle, borderRadius: 2, alignSelf: 'center', marginTop: 10 },
+  header:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderBottomWidth: 1, borderBottomColor: colors.border },
+  title:      { color: colors.text, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  done:       { backgroundColor: colors.brand, borderRadius: 9, paddingHorizontal: 14, paddingVertical: 7 },
+  doneText:   { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  item:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 15, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: colors.border },
+  itemSel:    { backgroundColor: colors.accent + '15' },
+  itemText:   { color: colors.secondary, fontSize: 15 },
+  itemTextSel:{ color: colors.onBrand, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  check:      { color: colors.accent, fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 });
 
 export default function BackgroundInfoScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const { ethnicity, setEthnicity, gender, setGender, familyHistory, setFamilyHistory } = useOnboarding();
 
   const [openPicker, setOpenPicker] = useState(null); // 'eth' | 'gen' | 'fam'
@@ -81,15 +88,15 @@ export default function BackgroundInfoScreen({ navigation }) {
       <SafeAreaView style={styles.safeTop} />
       <SafeAreaView style={styles.safeBottom}>
         <View style={styles.container}>
-          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
+          <LinearGradient colors={[colors.background, colors.background]} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
           <View style={styles.imgWrap}>
             <Image source={require('../assets/home1.png')} style={styles.heroImg} resizeMode="cover" />
-            <LinearGradient colors={['transparent', '#FDF6F0']} style={styles.imgOverlay} />
+            <LinearGradient colors={['transparent', colors.background]} style={styles.imgOverlay} />
           </View>
 
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-              <Feather name="chevron-left" size={28} color="#8A6A4E" />
+              <Feather name="chevron-left" size={28} color={colors.secondary} />
             </TouchableOpacity>
             <StepIndicator currentStep={4} totalSteps={5} />
             <View style={{ width: 28 }} />
@@ -103,21 +110,21 @@ export default function BackgroundInfoScreen({ navigation }) {
             <Text style={styles.label}>Ethnicity</Text>
             <TouchableOpacity style={styles.field} onPress={() => setOpenPicker('eth')} activeOpacity={0.8}>
               <Text style={[styles.fieldVal, !ethnicity && styles.placeholder]}>{ethnicity || 'Tap to select'}</Text>
-              <Feather name="chevron-down" size={18} color="#8A6A4E" />
+              <Feather name="chevron-down" size={18} color={colors.secondary} />
             </TouchableOpacity>
 
             {/* Sex */}
             <Text style={styles.label}>Sex</Text>
             <TouchableOpacity style={styles.field} onPress={() => setOpenPicker('gen')} activeOpacity={0.8}>
               <Text style={[styles.fieldVal, !gender && styles.placeholder]}>{gender || 'Tap to select'}</Text>
-              <Feather name="chevron-down" size={18} color="#8A6A4E" />
+              <Feather name="chevron-down" size={18} color={colors.secondary} />
             </TouchableOpacity>
 
             {/* Family history */}
             <Text style={[styles.label, { color: '#7EC49A' }]}>Family history of Alzheimer's</Text>
             <TouchableOpacity style={styles.field} onPress={() => setOpenPicker('fam')} activeOpacity={0.8}>
               <Text style={[styles.fieldVal, !familyHistory && styles.placeholder]}>{familyHistory || 'Tap to select'}</Text>
-              <Feather name="chevron-down" size={18} color="#8A6A4E" />
+              <Feather name="chevron-down" size={18} color={colors.secondary} />
             </TouchableOpacity>
           </View>
 
@@ -141,24 +148,24 @@ export default function BackgroundInfoScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeTop:    { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: '#FDF6F0' },
-  container:  { flex: 1, backgroundColor: '#FDF6F0', paddingHorizontal: 20 },
+const createStyles = (colors) => StyleSheet.create({
+  safeTop:    { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeBottom: { flex: 1, backgroundColor: colors.background },
+  container:  { flex: 1, backgroundColor: colors.background, paddingHorizontal: 20 },
   imgWrap:    { position: 'absolute', top: 0, left: 0, right: 0, height: '50%', zIndex: -1 },
   heroImg:    { width: '100%', height: '100%', opacity: 0.9 },
   imgOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 180 },
   header:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 24 },
   backBtn:    { padding: 4 },
   content:    { flex: 1, paddingTop: 20 },
-  title:      { color: '#3D2B1F', fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 4 },
-  sub:        { color: '#8A6A4E', fontSize: 13, marginBottom: 20 },
-  label:      { color: '#3D2B1F', fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 8 },
-  field:      { backgroundColor: '#FFFFFF', borderRadius: 14, height: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 16, borderWidth: 1.5, borderColor: '#F0E2D4' },
-  fieldVal:   { color: '#3D2B1F', fontSize: 16, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  placeholder:{ color: '#B09A86', fontSize: 15 },
+  title:      { color: colors.text, fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 4 },
+  sub:        { color: colors.secondary, fontSize: 13, marginBottom: 20 },
+  label:      { color: colors.text, fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 8 },
+  field:      { backgroundColor: colors.surface, borderRadius: 14, height: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 16, borderWidth: 1.5, borderColor: colors.border },
+  fieldVal:   { color: colors.text, fontSize: 16, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  placeholder:{ color: colors.muted, fontSize: 15 },
   bottom:     { marginBottom: 20, marginTop: 12 },
-  nextBtn:    { backgroundColor: '#F0955A', paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
+  nextBtn:    { backgroundColor: colors.brandSoft, paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
   nextBtnOff: { opacity: 0.5 },
-  nextBtnText:{ color: '#fff', fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  nextBtnText:{ color: colors.onBrand, fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
 });

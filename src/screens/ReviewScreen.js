@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useState } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity,
@@ -17,6 +18,9 @@ import {
 } from '../constants/researchDisclosure';
 
 export default function ReviewScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const [submitting, setSubmitting] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
   const [showSources, setShowSources] = useState(false);
@@ -135,7 +139,7 @@ export default function ReviewScreen({ navigation }) {
         <View style={styles.container}>
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-              <Feather name="chevron-left" size={28} color="#8A6A4E" />
+              <Feather name="chevron-left" size={28} color={colors.secondary} />
             </TouchableOpacity>
             <StepIndicator currentStep={5} totalSteps={5} />
             <View style={{ width: 28 }} />
@@ -150,15 +154,15 @@ export default function ReviewScreen({ navigation }) {
 
               <View style={styles.summaryCard}>
                 {[
-                  { icon: <Ionicons name="person" size={20} color="#F0955A" />, label: 'Sleep type', value: sleepType || 'Not set' },
-                  { icon: <Feather name="moon" size={20} color="#F0955A" />, label: 'Bedtime', value: formatTime(bedTime) },
+                  { icon: <Ionicons name="person" size={20} color={colors.accentSoft} />, label: 'Sleep type', value: sleepType || 'Not set' },
+                  { icon: <Feather name="moon" size={20} color={colors.accentSoft} />, label: 'Bedtime', value: formatTime(bedTime) },
                   { icon: <Feather name="sun" size={20} color="#fcd53f" />, label: 'Wake-up time', value: formatTime(wakeTime) },
-                  { icon: <Ionicons name="person" size={20} color="#F0955A" />, label: 'Age', value: age || 'Not set' },
-                  { icon: <MaterialCommunityIcons name="human-male-height" size={20} color="#F0955A" />, label: 'Height', value: getHeightDisplay() },
-                  { icon: <MaterialCommunityIcons name="weight" size={20} color="#F0955A" />, label: 'Weight', value: `${weight || '0'} ${unit}` },
-                  { icon: <Feather name="globe" size={20} color="#F0955A" />, label: 'Ethnicity', value: ethnicity || 'Not set' },
-                  { icon: <Ionicons name="people" size={20} color="#F0955A" />, label: 'Sex', value: gender || 'Not set' },
-                  { icon: <Feather name="heart" size={20} color="#F0955A" />, label: 'Family history', value: familyHistory || 'Not set' },
+                  { icon: <Ionicons name="person" size={20} color={colors.accentSoft} />, label: 'Age', value: age || 'Not set' },
+                  { icon: <MaterialCommunityIcons name="human-male-height" size={20} color={colors.accentSoft} />, label: 'Height', value: getHeightDisplay() },
+                  { icon: <MaterialCommunityIcons name="weight" size={20} color={colors.accentSoft} />, label: 'Weight', value: `${weight || '0'} ${unit}` },
+                  { icon: <Feather name="globe" size={20} color={colors.accentSoft} />, label: 'Ethnicity', value: ethnicity || 'Not set' },
+                  { icon: <Ionicons name="people" size={20} color={colors.accentSoft} />, label: 'Sex', value: gender || 'Not set' },
+                  { icon: <Feather name="heart" size={20} color={colors.accentSoft} />, label: 'Family history', value: familyHistory || 'Not set' },
                 ].map((row, i, arr) => (
                   <View key={row.label}>
                     <View style={styles.row}>
@@ -176,11 +180,11 @@ export default function ReviewScreen({ navigation }) {
               <Text style={styles.consentBody}>{RESEARCH_DISCLAIMER_SHORT}</Text>
               <TouchableOpacity onPress={() => setShowSources(true)} style={styles.sourcesToggle}>
                 <Text style={styles.sourcesToggleText}>View full disclaimer and research sources</Text>
-                <Feather name="info" size={15} color="#E07B3C" />
+                <Feather name="info" size={15} color={colors.accent} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.ackRow} onPress={() => setAcknowledged(value => !value)} activeOpacity={0.8}>
                 <View style={[styles.checkbox, acknowledged && styles.checkboxChecked]}>
-                  {acknowledged && <Feather name="check" size={14} color="#ffffff" />}
+                  {acknowledged && <Feather name="check" size={14} color={colors.onBrand} />}
                 </View>
                 <Text style={styles.ackText}>I understand this is a research score and not a medical diagnosis.</Text>
               </TouchableOpacity>
@@ -206,7 +210,7 @@ export default function ReviewScreen({ navigation }) {
               {submitting
                 ? (
                   <View style={styles.generateLoading}>
-                    <ActivityIndicator color="#ffffff" />
+                    <ActivityIndicator color={colors.onBrand} />
                     <Text style={styles.generateButtonText}>Generating...</Text>
                   </View>
                 )
@@ -228,7 +232,7 @@ export default function ReviewScreen({ navigation }) {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>About Your Research Score</Text>
               <TouchableOpacity onPress={() => setShowSources(false)} accessibilityLabel="Close">
-                <Feather name="x" size={22} color="#8A6A4E" />
+                <Feather name="x" size={22} color={colors.secondary} />
               </TouchableOpacity>
             </View>
             <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator>
@@ -240,7 +244,7 @@ export default function ReviewScreen({ navigation }) {
               {RESEARCH_SOURCES.map(source => (
                 <TouchableOpacity key={source.label} onPress={() => Linking.openURL(source.url)} style={styles.modalLinkRow}>
                   <Text style={styles.modalLink}>{source.label} — View published research</Text>
-                  <Feather name="external-link" size={13} color="#E07B3C" />
+                  <Feather name="external-link" size={13} color={colors.accent} />
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -254,47 +258,47 @@ export default function ReviewScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeAreaTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeAreaBottom: { flex: 1, backgroundColor: '#FDF6F0' },
-  container: { flex: 1, backgroundColor: '#FDF6F0', paddingHorizontal: 20 },
+const createStyles = (colors) => StyleSheet.create({
+  safeAreaTop: { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  safeAreaBottom: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1, backgroundColor: colors.background, paddingHorizontal: 20 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 14 },
   backButton: { padding: 4 },
   contentWrapper: { flex: 1 },
   contentContainer: { paddingBottom: 8 },
-  title: { fontSize: 30, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', color: '#3D2B1F', textAlign: 'center', lineHeight: 38, marginTop: 6, marginBottom: 16 },
-  consentCard: { backgroundColor: '#FBEED2', borderRadius: 12, borderWidth: 1, borderColor: '#F0D9A8', padding: 12, marginTop: 12, marginBottom: 8 },
-  consentTitle: { color: '#9A3412', fontSize: 12, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 6 },
-  consentBody: { color: '#7C4A1E', fontSize: 10, lineHeight: 15, marginBottom: 6 },
+  title: { fontSize: 30, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', color: colors.text, textAlign: 'center', lineHeight: 38, marginTop: 6, marginBottom: 16 },
+  consentCard: { backgroundColor: colors.warningSurface, borderRadius: 12, borderWidth: 1, borderColor: colors.warningBorder, padding: 12, marginTop: 12, marginBottom: 8 },
+  consentTitle: { color: colors.warningStrong, fontSize: 12, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 6 },
+  consentBody: { color: colors.warningBody, fontSize: 10, lineHeight: 15, marginBottom: 6 },
   sourcesToggle: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 5 },
-  sourcesToggleText: { color: '#E07B3C', fontSize: 11, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  sourcesToggleText: { color: colors.accent, fontSize: 11, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   ackRow: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 8, gap: 9 },
-  checkbox: { width: 20, height: 20, borderRadius: 4, borderWidth: 1.5, borderColor: '#F0955A', alignItems: 'center', justifyContent: 'center' },
-  checkboxChecked: { backgroundColor: '#E07B3C' },
-  ackText: { flex: 1, color: '#3D2B1F', fontSize: 11, lineHeight: 16, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  summaryCard: { backgroundColor: '#FFFFFF', borderRadius: 16, paddingVertical: 8, paddingHorizontal: 20, borderWidth: 1.5, borderColor: 'transparent' },
+  checkbox: { width: 20, height: 20, borderRadius: 4, borderWidth: 1.5, borderColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' },
+  checkboxChecked: { backgroundColor: colors.brand },
+  ackText: { flex: 1, color: colors.text, fontSize: 11, lineHeight: 16, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  summaryCard: { backgroundColor: colors.surface, borderRadius: 16, paddingVertical: 8, paddingHorizontal: 20, borderWidth: 1.5, borderColor: 'transparent' },
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 13 },
   icon: { marginRight: 16, width: 24, textAlign: 'center' },
-  label: { color: '#4B5563', fontSize: 16, fontFamily: 'Lexend_500Medium', fontWeight: 'normal', flex: 1 },
-  value: { color: '#3D2B1F', fontSize: 16, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', textAlign: 'right', flexShrink: 1 },
-  divider: { height: 1, backgroundColor: '#F0E2D4', width: '100%' },
+  label: { color: colors.neutralText, fontSize: 16, fontFamily: 'Lexend_500Medium', fontWeight: 'normal', flex: 1 },
+  value: { color: colors.text, fontSize: 16, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', textAlign: 'right', flexShrink: 1 },
+  divider: { height: 1, backgroundColor: colors.border, width: '100%' },
   bottomButtons: { flexDirection: 'row', marginBottom: 12, marginTop: 10, gap: 12 },
-  editButton: { flex: 1, backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: '#E07B3C', paddingVertical: 18, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  editButtonText: { color: '#E07B3C', fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  generateButton: { flex: 2, backgroundColor: '#F0955A', paddingVertical: 18, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  editButton: { flex: 1, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.accent, paddingVertical: 18, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  editButtonText: { color: colors.accent, fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  generateButton: { flex: 2, backgroundColor: colors.brandSoft, paddingVertical: 18, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   generateButtonDisabled: { opacity: 0.75 },
   buttonDisabled: { opacity: 0.55 },
   generateLoading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
-  generateButtonText: { color: '#ffffff', fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  generateButtonText: { color: colors.onBrand, fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 20 },
-  researchModal: { width: '100%', maxWidth: 520, maxHeight: '82%', backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#E07B3C66', padding: 18 },
+  researchModal: { width: '100%', maxWidth: 520, maxHeight: '82%', backgroundColor: colors.surface, borderRadius: 16, borderWidth: 1, borderColor: colors.accent + '66', padding: 18 },
   modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 },
-  modalTitle: { color: '#3D2B1F', fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', flex: 1 },
+  modalTitle: { color: colors.text, fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', flex: 1 },
   modalScroll: { flexGrow: 0 },
-  modalSectionTitle: { color: '#3D2B1F', fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 10, marginBottom: 5 },
-  modalBody: { color: '#8A6A4E', fontSize: 12, lineHeight: 19 },
+  modalSectionTitle: { color: colors.text, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 10, marginBottom: 5 },
+  modalBody: { color: colors.secondary, fontSize: 12, lineHeight: 19 },
   modalLinkRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, paddingVertical: 7 },
-  modalLink: { color: '#E07B3C', fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
-  modalCloseButton: { backgroundColor: '#E07B3C', borderRadius: 10, alignItems: 'center', paddingVertical: 11, marginTop: 14 },
-  modalCloseText: { color: '#ffffff', fontSize: 14, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  modalLink: { color: colors.accent, fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
+  modalCloseButton: { backgroundColor: colors.brand, borderRadius: 10, alignItems: 'center', paddingVertical: 11, marginTop: 14 },
+  modalCloseText: { color: colors.onBrand, fontSize: 14, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 });

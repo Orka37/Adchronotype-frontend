@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
@@ -15,6 +16,9 @@ const { height } = Dimensions.get('window');
 const webInputReset = Platform.OS === 'web' ? { outlineStyle: 'none' } : null;
 
 export default function LoginScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const { signIn } = useAuth();
 
   const [emailOrUsername, setEmailOrUsername] = useState('');
@@ -78,16 +82,16 @@ export default function LoginScreen({ navigation }) {
             </View>
 
             <Text style={styles.title}>Welcome back</Text>
-            <Text style={styles.subtitle}>Log in to continue your brain health check.</Text>
+            <Text style={styles.subtitle}>Log in to continue using ADChronotype.</Text>
 
             {/* Email / username */}
             <Text style={styles.label}>Email or Username</Text>
             <View style={[styles.inputRow, focused === 'id' && styles.inputFocused, hasErr('id') && styles.inputErr]}>
-              <Feather name="mail" size={18} color={focused === 'id' ? '#E07B3C' : '#8A6A4E'} style={styles.icon} />
+              <Feather name="mail" size={18} color={focused === 'id' ? colors.accent : colors.secondary} style={styles.icon} />
               <TextInput
                 style={[styles.input, webInputReset]}
                 placeholder="Enter email or username"
-                placeholderTextColor="#B09A86"
+                placeholderTextColor={colors.muted}
                 value={emailOrUsername}
                 onChangeText={v => { setEmailOrUsername(v); clearErr('id'); }}
                 autoCapitalize="none"
@@ -107,11 +111,11 @@ export default function LoginScreen({ navigation }) {
             {/* Password */}
             <Text style={[styles.label, { marginTop: 18 }]}>Password</Text>
             <View style={[styles.inputRow, focused === 'pw' && styles.inputFocused, hasErr('pw') && styles.inputErr]}>
-              <Feather name="lock" size={18} color={focused === 'pw' ? '#E07B3C' : '#8A6A4E'} style={styles.icon} />
+              <Feather name="lock" size={18} color={focused === 'pw' ? colors.accent : colors.secondary} style={styles.icon} />
               <TextInput
                 style={[styles.input, webInputReset]}
                 placeholder="Enter password"
-                placeholderTextColor="#B09A86"
+                placeholderTextColor={colors.muted}
                 value={password}
                 onChangeText={v => { setPassword(v); clearErr('pw'); }}
                 secureTextEntry={secureText}
@@ -130,7 +134,7 @@ export default function LoginScreen({ navigation }) {
                 hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
                 style={{ padding: 8 }}
               >
-                <Feather name={secureText ? 'eye-off' : 'eye'} size={18} color="#8A6A4E" />
+                <Feather name={secureText ? 'eye-off' : 'eye'} size={18} color={colors.secondary} />
               </Pressable>
             </View>
             {hasErr('pw') && <Text style={styles.errText}>{fieldErrors.pw}</Text>}
@@ -152,7 +156,7 @@ export default function LoginScreen({ navigation }) {
               activeOpacity={0.8}
             >
               {submitting
-                ? <ActivityIndicator color="#fff" />
+                ? <ActivityIndicator color={colors.onBrand} />
                 : <Text style={styles.btnText}>Log In</Text>
               }
             </TouchableOpacity>
@@ -168,38 +172,38 @@ export default function LoginScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#FDF6F0' },
-  safeTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+const createStyles = (colors) => StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.background },
+  safeTop: { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
   scroll: { flexGrow: 1, paddingHorizontal: 24, paddingTop: height * 0.14, paddingBottom: 40 },
   logoWrap: { flexDirection: 'row', alignItems: 'center', marginBottom: 28 },
-  logoBold: { fontSize: 32, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', color: '#3D2B1F', letterSpacing: -0.5 },
-  logoLight: { fontSize: 32, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', color: '#E07B3C', letterSpacing: -0.5 },
-  title: { fontSize: 26, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: '#3D2B1F', marginBottom: 8 },
-  subtitle: { fontSize: 15, color: '#8A6A4E', lineHeight: 22, marginBottom: 36 },
-  label: { color: '#3D2B1F', fontSize: 14, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 8 },
+  logoBold: { fontSize: 32, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', color: colors.text, letterSpacing: -0.5 },
+  logoLight: { fontSize: 32, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', color: colors.accent, letterSpacing: -0.5 },
+  title: { fontSize: 26, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: colors.text, marginBottom: 8 },
+  subtitle: { fontSize: 15, color: colors.secondary, lineHeight: 22, marginBottom: 36 },
+  label: { color: colors.text, fontSize: 14, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 8 },
   inputRow: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#FFFFFF', borderRadius: 14,
+    backgroundColor: colors.surface, borderRadius: 14,
     borderWidth: 1.5, borderColor: 'transparent',
     paddingHorizontal: 14, height: 54,
     marginBottom: 4,
   },
-  inputFocused: { borderColor: '#E07B3C' },
+  inputFocused: { borderColor: colors.accent },
   inputErr: { borderColor: '#D9694F' },
   errText: { color: '#D9694F', fontSize: 12, marginBottom: 4, marginLeft: 4 },
   formErrText: { color: '#ff6b6b', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginTop: 8, lineHeight: 18 },
   icon: { marginRight: 10 },
-  input: { flex: 1, color: '#3D2B1F', fontSize: 15 },
+  input: { flex: 1, color: colors.text, fontSize: 15 },
   forgotLink: { alignSelf: 'flex-end', paddingVertical: 8 },
-  forgotText: { color: '#E07B3C', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  forgotText: { color: colors.accent, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   btn: {
-    backgroundColor: '#E07B3C', borderRadius: 14,
+    backgroundColor: colors.brand, borderRadius: 14,
     height: 54, alignItems: 'center', justifyContent: 'center', marginTop: 28,
   },
-  btnDisabled: { backgroundColor: '#C98B65' },
-  btnText: { color: '#fff', fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  btnDisabled: { backgroundColor: colors.disabled },
+  btnText: { color: colors.onBrand, fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   linkRow: { marginTop: 24, alignItems: 'center' },
-  linkText: { color: '#8A6A4E', fontSize: 14 },
-  linkAccent: { color: '#E07B3C', fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  linkText: { color: colors.secondary, fontSize: 14 },
+  linkAccent: { color: colors.accent, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 });

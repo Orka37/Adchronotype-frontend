@@ -1,12 +1,16 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Animated, Easing } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function LoadingScreen({ navigation }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const spinAnim = useRef(new Animated.Value(0)).current;
-  const [loadingText, setLoadingText] = useState('Analyzing your profile...');
+  const [loadingText, setLoadingText] = useState('Preparing your research summary...');
 
   useEffect(() => {
     // Infinite pulsing aura animation
@@ -38,8 +42,8 @@ export default function LoadingScreen({ navigation }) {
     ).start();
 
     // Dynamic text sequence to make the loading feel active
-    const t1 = setTimeout(() => setLoadingText('Calculating sleep debt...'), 1000);
-    const t2 = setTimeout(() => setLoadingText('Cross-referencing metrics...'), 2000);
+    const t1 = setTimeout(() => setLoadingText('Preparing your results...'), 1000);
+    const t2 = setTimeout(() => setLoadingText('Getting your report ready...'), 2000);
 
     // Navigate to the Report screen after exactly 3 seconds
     const t3 = setTimeout(() => {
@@ -64,7 +68,7 @@ export default function LoadingScreen({ navigation }) {
       <SafeAreaView style={styles.safeAreaBottom}>
         <View style={styles.container}>
           {/* Base gradient matching the app palette */}
-          <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={styles.background} />
+          <LinearGradient colors={[colors.background, colors.background]} style={styles.background} />
           
           <View style={styles.content}>
             
@@ -74,12 +78,12 @@ export default function LoadingScreen({ navigation }) {
               
               {/* Spinning purple dashed loading ring */}
               <Animated.View style={[styles.spinner, { transform: [{ rotate: spin }] }]}>
-                <MaterialCommunityIcons name="loading" size={100} color="#F0955A" />
+                <MaterialCommunityIcons name="loading" size={100} color={colors.accentSoft} />
               </Animated.View>
               
               {/* Static center magic wand icon */}
               <View style={styles.centerIcon}>
-                <MaterialCommunityIcons name="auto-fix" size={40} color="#E07B3C" />
+                <MaterialCommunityIcons name="auto-fix" size={40} color={colors.accent} />
               </View>
             </View>
 
@@ -93,18 +97,18 @@ export default function LoadingScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   safeAreaTop: {
     flex: 0,
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
   },
   safeAreaBottom: {
     flex: 1,
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
   },
   container: {
     flex: 1,
-    backgroundColor: '#FDF6F0',
+    backgroundColor: colors.background,
   },
   background: {
     position: 'absolute',
@@ -141,12 +145,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontFamily: 'Lexend_700Bold', fontWeight: 'normal',
-    color: '#3D2B1F',
+    color: colors.text,
     marginBottom: 16,
   },
   subtitle: {
     fontSize: 16,
-    color: '#8A6A4E',
+    color: colors.secondary,
     fontFamily: 'Lexend_500Medium', fontWeight: 'normal',
   },
 });

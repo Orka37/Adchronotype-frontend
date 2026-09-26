@@ -1,8 +1,12 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 export default function StepIndicator({ currentStep, totalSteps = 5 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
 
   return (
@@ -14,7 +18,7 @@ export default function StepIndicator({ currentStep, totalSteps = 5 }) {
           <React.Fragment key={step}>
             <View style={[styles.circle, active && styles.circleActive, completed && styles.circleActive]}>
               {completed
-                ? <Feather name="check" size={14} color="#fff" />
+                ? <Feather name="check" size={14} color={colors.onBrand} />
                 : <Text style={[styles.num, active && styles.numActive]}>{step}</Text>
               }
             </View>
@@ -26,7 +30,7 @@ export default function StepIndicator({ currentStep, totalSteps = 5 }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -35,25 +39,25 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   circleActive: {
-    backgroundColor: '#E07B3C',
+    backgroundColor: colors.brand,
   },
   num: {
-    color: '#8A6A4E',
+    color: colors.secondary,
     fontSize: 15,
     fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal',
   },
   numActive: {
-    color: '#fff',
+    color: colors.onBrand,
   },
   line: {
     width: 18,
     height: 2,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     marginHorizontal: 4,
   },
 });

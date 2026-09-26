@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
@@ -13,8 +14,12 @@ import { useCaregiverRequestCount } from '../hooks/useCaregiverRequestCount';
 import { parseApiError } from '../utils/errors';
 import { log } from '../utils/logger';
 import ConfirmationModal from '../components/ConfirmationModal';
+import AppearancePicker from '../components/AppearancePicker';
 
 export default function ProfileScreen({ navigation }) {
+  const { colors, mode } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const { user, signOut, signIn } = useAuth();
   const {
     predictionResult, predictionCount, resetOnboarding, clearSavedPrediction,
@@ -26,6 +31,7 @@ export default function ProfileScreen({ navigation }) {
   const [saving,    setSaving]    = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName,  setLastName]  = useState('');
+  const [showAppearance, setShowAppearance] = useState(false);
   const [showMEQ,   setShowMEQ]   = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
@@ -126,7 +132,7 @@ export default function ProfileScreen({ navigation }) {
   if (loading) {
     return (
       <View style={[styles.root, { alignItems: 'center', justifyContent: 'center' }]}>
-        <ActivityIndicator color="#E07B3C" size="large" />
+        <ActivityIndicator color={colors.accent} size="large" />
       </View>
     );
   }
@@ -142,13 +148,13 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.headerTitle}>Profile</Text>
             {!editing
               ? <TouchableOpacity onPress={() => setEditing(true)} style={styles.editBtn}>
-                  <Feather name="edit-2" size={16} color="#E07B3C" />
+                  <Feather name="edit-2" size={16} color={colors.accent} />
                   <Text style={styles.editBtnText}>Edit</Text>
                 </TouchableOpacity>
-              : <TouchableOpacity onPress={handleSave} disabled={saving} style={[styles.editBtn, { backgroundColor: '#E07B3C33' }]}>
+              : <TouchableOpacity onPress={handleSave} disabled={saving} style={[styles.editBtn, { backgroundColor: colors.accent + '33' }]}>
                   {saving
-                    ? <ActivityIndicator size="small" color="#E07B3C" />
-                    : <><Feather name="check" size={16} color="#E07B3C" /><Text style={styles.editBtnText}>Save</Text></>
+                    ? <ActivityIndicator size="small" color={colors.accent} />
+                    : <><Feather name="check" size={16} color={colors.accent} /><Text style={styles.editBtnText}>Save</Text></>
                   }
                 </TouchableOpacity>
             }
@@ -163,8 +169,8 @@ export default function ProfileScreen({ navigation }) {
             </View>
             {editing ? (
               <View style={styles.nameEditRow}>
-                <TextInput style={[styles.nameInput, { marginRight: 8 }]} value={firstName} onChangeText={setFirstName} placeholder="First name" placeholderTextColor="#B09A86" autoCapitalize="words" />
-                <TextInput style={styles.nameInput} value={lastName} onChangeText={setLastName} placeholder="Last name" placeholderTextColor="#B09A86" autoCapitalize="words" />
+                <TextInput style={[styles.nameInput, { marginRight: 8 }]} value={firstName} onChangeText={setFirstName} placeholder="First name" placeholderTextColor={colors.muted} autoCapitalize="words" />
+                <TextInput style={styles.nameInput} value={lastName} onChangeText={setLastName} placeholder="Last name" placeholderTextColor={colors.muted} autoCapitalize="words" />
               </View>
             ) : (
               <Text style={styles.displayName}>{profile?.firstName} {profile?.lastName}</Text>
@@ -177,7 +183,7 @@ export default function ProfileScreen({ navigation }) {
           <View style={styles.statsRow}>
             <View style={styles.statCard}>
               <Text style={styles.statVal}>{score != null ? `${score}%` : '—'}</Text>
-              <Text style={styles.statKey}>Brain Score</Text>
+              <Text style={styles.statKey}>Research Score</Text>
             </View>
             <View style={styles.statCard}>
               <Text style={[styles.statVal, styles.statLevelVal]}>
@@ -200,31 +206,31 @@ export default function ProfileScreen({ navigation }) {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.chronoTitle}>Know Your Sleep Type</Text>
-                <Text style={styles.chronoSub}>Your chronotype is your body's natural sleep-wake preference. It affects your brain health score.</Text>
+                <Text style={styles.chronoSub}>Your chronotype is your body's natural sleep-wake preference. It is one of the factors used to calculate your research score.</Text>
               </View>
             </View>
             <TouchableOpacity style={styles.meqBtn} onPress={() => setShowMEQ(true)} activeOpacity={0.85}>
-              <Feather name="external-link" size={14} color="#E07B3C" />
+              <Feather name="external-link" size={14} color={colors.accent} />
               <Text style={styles.meqBtnText}>Take the Chronotype Quiz (MEQ)</Text>
             </TouchableOpacity>
             <View style={styles.divider} />
             <TouchableOpacity style={styles.updateBtn} onPress={handleUpdateFactors} activeOpacity={0.85}>
-              <Feather name="refresh-cw" size={16} color="#fff" style={{ marginRight: 8 }} />
+              <Feather name="refresh-cw" size={16} color={colors.onBrand} style={{ marginRight: 8 }} />
               <Text style={styles.updateBtnText}>Update My Factors & Get New Research Score</Text>
             </TouchableOpacity>
             <Text style={styles.updateHint}>
-              If your sleep type or lifestyle has changed, update your factors to get an updated brain health score.
+              If your sleep type or lifestyle has changed, update your factors to get an updated research score.
             </Text>
           </View>
 
           {/* Account */}
           <Text style={styles.sectionLabel}>ACCOUNT</Text>
           <View style={styles.card}>
-            <MenuItem icon={<Feather name="lock" size={18} color="#E07B3C" />} label="Change Password" onPress={() => navigation.navigate('ChangePassword')} />
+            <MenuItem icon={<Feather name="lock" size={18} color={colors.accent} />} label="Change Password" onPress={() => navigation.navigate('ChangePassword')} />
             <View style={styles.divider} />
-            <MenuItem icon={<Feather name="shield" size={18} color="#E07B3C" />} label="Privacy Policy" onPress={() => navigation.navigate('PrivacyPolicy')} />
+            <MenuItem icon={<Feather name="shield" size={18} color={colors.accent} />} label="Privacy Policy" onPress={() => navigation.navigate('PrivacyPolicy')} />
             <View style={styles.divider} />
-            <MenuItem icon={<Feather name="file-text" size={18} color="#E07B3C" />} label="Terms of Service" onPress={() => navigation.navigate('Terms')} />
+            <MenuItem icon={<Feather name="file-text" size={18} color={colors.accent} />} label="Terms of Service" onPress={() => navigation.navigate('Terms')} />
             <View style={styles.divider} />
             <MenuItem
               icon={<Feather name="trash-2" size={18} color="#D9694F" />}
@@ -237,11 +243,13 @@ export default function ProfileScreen({ navigation }) {
           {/* App */}
           <Text style={styles.sectionLabel}>APP</Text>
           <View style={styles.card}>
-            <MenuItem icon={<MaterialCommunityIcons name="brain" size={18} color="#E07B3C" />} label="Project Info" onPress={() => navigation.navigate('ProjectInfo')} />
+            <MenuItem icon={<Feather name={mode === 'dark' ? 'moon' : 'sun'} size={18} color={colors.accent} />} label="Appearance" badge={mode === 'dark' ? 'Dark' : 'Light'} onPress={() => setShowAppearance(true)} />
             <View style={styles.divider} />
-            <MenuItem icon={<Feather name="file-text" size={18} color="#E07B3C" />} label="Doctor Report" onPress={() => navigation.navigate('DoctorReport')} />
+            <MenuItem icon={<MaterialCommunityIcons name="brain" size={18} color={colors.accent} />} label="Project Info" onPress={() => navigation.navigate('ProjectInfo')} />
             <View style={styles.divider} />
-            <MenuItem icon={<Feather name="help-circle" size={18} color="#E07B3C" />} label="Help & Support" onPress={() => setShowSupport(true)} />
+            <MenuItem icon={<Feather name="file-text" size={18} color={colors.accent} />} label="Doctor Report" onPress={() => navigation.navigate('DoctorReport')} />
+            <View style={styles.divider} />
+            <MenuItem icon={<Feather name="help-circle" size={18} color={colors.accent} />} label="Help & Support" onPress={() => setShowSupport(true)} />
           </View>
 
           {/* Logout */}
@@ -270,14 +278,16 @@ export default function ProfileScreen({ navigation }) {
                     <Text style={styles.navBadgeText}>{t.badgeCount > 9 ? '9+' : t.badgeCount}</Text>
                   </View>
                 )}
-                <Feather name={t.icon} size={22} color={t.active ? '#F0955A' : '#8A6A4E'} />
-                <Text style={[styles.navLabel, t.active && { color: '#F0955A' }]}>{t.label}</Text>
+                <Feather name={t.icon} size={22} color={t.active ? colors.accentSoft : colors.secondary} />
+                <Text style={[styles.navLabel, t.active && { color: colors.accentSoft }]}>{t.label}</Text>
                 {t.active && <View style={styles.activeDot} />}
               </TouchableOpacity>
             ))}
           </View>
         </View>
       </View>
+
+      <AppearancePicker visible={showAppearance} onClose={() => setShowAppearance(false)} />
 
       {/* MEQ modal */}
       <Modal visible={showMEQ} transparent animationType="fade">
@@ -319,7 +329,7 @@ export default function ProfileScreen({ navigation }) {
               <Text style={styles.popupCloseText}>×</Text>
             </TouchableOpacity>
             <View style={styles.supportIcon}>
-              <Feather name="help-circle" size={24} color="#E07B3C" />
+              <Feather name="help-circle" size={24} color={colors.accent} />
             </View>
             <Text style={styles.popupTitle}>Help & Support</Text>
             <Text style={styles.popupBody}>For any questions, email:</Text>
@@ -357,88 +367,91 @@ export default function ProfileScreen({ navigation }) {
 }
 
 function MenuItem({ icon, label, onPress, badge, disabled = false, danger = false }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   return (
     <TouchableOpacity style={[styles.menuItem, disabled && styles.menuItemDisabled]} onPress={onPress} activeOpacity={onPress ? 0.7 : 1} disabled={!onPress || disabled}>
       <View style={styles.menuIcon}>{icon}</View>
       <Text style={[styles.menuLabel, danger && styles.menuLabelDanger, disabled && styles.menuLabelDisabled]}>{label}</Text>
       {badge
         ? <View style={styles.badgeWrap}><Text style={styles.badgeText}>{badge}</Text></View>
-        : onPress ? <Feather name="chevron-right" size={16} color="#B09A86" /> : null
+        : onPress ? <Feather name="chevron-right" size={16} color={colors.muted} /> : null
       }
     </TouchableOpacity>
   );
 }
 
-const styles = StyleSheet.create({
-  root:        { flex: 1, backgroundColor: '#FDF6F0' },
-  safeTop:     { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
+const createStyles = (colors) => StyleSheet.create({
+  root:        { flex: 1, backgroundColor: colors.background },
+  safeTop:     { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
   headerRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 20, paddingBottom: 8 },
-  headerTitle: { color: '#3D2B1F', fontSize: 22, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  editBtn:     { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, backgroundColor: '#E07B3C22', borderRadius: 20, borderWidth: 1, borderColor: '#E07B3C44' },
-  editBtnText: { color: '#E07B3C', fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  headerTitle: { color: colors.text, fontSize: 22, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  editBtn:     { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, backgroundColor: colors.accent + '22', borderRadius: 20, borderWidth: 1, borderColor: colors.accent + '44' },
+  editBtnText: { color: colors.accent, fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
   avatarSection: { alignItems: 'center', paddingVertical: 20 },
-  avatarRing:  { width: 82, height: 82, borderRadius: 41, borderWidth: 3, borderColor: '#E07B3C', padding: 3, marginBottom: 12 },
-  avatar:      { flex: 1, borderRadius: 38, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
-  initials:    { color: '#E07B3C', fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  displayName: { color: '#3D2B1F', fontSize: 19, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 3 },
+  avatarRing:  { width: 82, height: 82, borderRadius: 41, borderWidth: 3, borderColor: colors.accent, padding: 3, marginBottom: 12 },
+  avatar:      { flex: 1, borderRadius: 38, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
+  initials:    { color: colors.accent, fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  displayName: { color: colors.text, fontSize: 19, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 3 },
   nameEditRow: { flexDirection: 'row', marginBottom: 4, paddingHorizontal: 24 },
-  nameInput:   { flex: 1, color: '#3D2B1F', fontSize: 15, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', backgroundColor: '#FFFFFF', borderRadius: 10, borderWidth: 1.5, borderColor: '#E07B3C', paddingHorizontal: 12, paddingVertical: 8 },
-  username:    { color: '#8A6A4E', fontSize: 13, marginBottom: 2 },
-  email:       { color: '#B09A86', fontSize: 12 },
+  nameInput:   { flex: 1, color: colors.text, fontSize: 15, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', backgroundColor: colors.surface, borderRadius: 10, borderWidth: 1.5, borderColor: colors.accent, paddingHorizontal: 12, paddingVertical: 8 },
+  username:    { color: colors.secondary, fontSize: 13, marginBottom: 2 },
+  email:       { color: colors.muted, fontSize: 12 },
   statsRow:    { flexDirection: 'row', gap: 8, marginHorizontal: 18, marginBottom: 20 },
-  statCard:    { flex: 1, minHeight: 76, backgroundColor: '#FFFFFF', borderRadius: 13, paddingVertical: 11, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#F0E2D4' },
-  statVal:     { color: '#E07B3C', fontSize: 17, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 2 },
+  statCard:    { flex: 1, minHeight: 76, backgroundColor: colors.surface, borderRadius: 13, paddingVertical: 11, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border },
+  statVal:     { color: colors.accent, fontSize: 17, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 2 },
   statLevelVal:{ color: '#E9A94A', fontSize: 13, lineHeight: 17, minHeight: 34, textAlign: 'center', textAlignVertical: 'center' },
-  statKey:     { color: '#8A6A4E', fontSize: 9, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', letterSpacing: 0.3 },
-  sectionLabel:{ color: '#B09A86', fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', letterSpacing: 1, marginHorizontal: 20, marginBottom: 7, marginTop: 4 },
-  card:        { marginHorizontal: 18, backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#F0E2D4', marginBottom: 16, overflow: 'hidden' },
-  divider:     { height: 1, backgroundColor: '#F0E2D4', marginLeft: 48 },
+  statKey:     { color: colors.secondary, fontSize: 9, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', letterSpacing: 0.3 },
+  sectionLabel:{ color: colors.muted, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', letterSpacing: 1, marginHorizontal: 20, marginBottom: 7, marginTop: 4 },
+  card:        { marginHorizontal: 18, backgroundColor: colors.surface, borderRadius: 16, borderWidth: 1, borderColor: colors.border, marginBottom: 16, overflow: 'hidden' },
+  divider:     { height: 1, backgroundColor: colors.border, marginLeft: 48 },
   menuItem:    { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 14 },
   menuItemDisabled: { opacity: 0.8 },
   menuIcon:    { width: 34, alignItems: 'center' },
-  menuLabel:   { flex: 1, color: '#3D2B1F', fontSize: 14, fontFamily: 'Lexend_500Medium', fontWeight: 'normal' },
+  menuLabel:   { flex: 1, color: colors.text, fontSize: 14, fontFamily: 'Lexend_500Medium', fontWeight: 'normal' },
   menuLabelDanger: { color: '#D9694F', fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  menuLabelDisabled: { color: '#8A6A4E' },
-  badgeWrap:   { backgroundColor: '#F0E2D4', borderRadius: 9, paddingHorizontal: 7, paddingVertical: 2 },
-  badgeText:   { color: '#B09A86', fontSize: 10, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  menuLabelDisabled: { color: colors.secondary },
+  badgeWrap:   { backgroundColor: colors.border, borderRadius: 9, paddingHorizontal: 7, paddingVertical: 2 },
+  badgeText:   { color: colors.muted, fontSize: 10, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
 
   // Chronotype section
   chronoRow:     { flexDirection: 'row', alignItems: 'flex-start', gap: 12, padding: 14, paddingBottom: 10 },
-  chronoIconWrap:{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#E07B3C22', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  chronoTitle:   { color: '#3D2B1F', fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 4 },
-  chronoSub:     { color: '#8A6A4E', fontSize: 11, lineHeight: 16 },
-  meqBtn:        { flexDirection: 'row', alignItems: 'center', gap: 7, marginHorizontal: 14, marginBottom: 12, backgroundColor: '#E07B3C15', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, borderWidth: 1, borderColor: '#E07B3C33' },
-  meqBtnText:    { color: '#E07B3C', fontSize: 12, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', flex: 1 },
-  updateBtn:     { flexDirection: 'row', alignItems: 'center', margin: 14, marginTop: 12, backgroundColor: '#E07B3C', borderRadius: 12, paddingVertical: 13, paddingHorizontal: 14, justifyContent: 'center' },
-  updateBtnText: { color: '#fff', fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', textAlign: 'center', flex: 1 },
-  updateHint:    { color: '#B09A86', fontSize: 10, lineHeight: 15, marginHorizontal: 14, marginBottom: 12, textAlign: 'center' },
+  chronoIconWrap:{ width: 36, height: 36, borderRadius: 10, backgroundColor: colors.accent + '22', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  chronoTitle:   { color: colors.text, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 4 },
+  chronoSub:     { color: colors.secondary, fontSize: 11, lineHeight: 16 },
+  meqBtn:        { flexDirection: 'row', alignItems: 'center', gap: 7, marginHorizontal: 14, marginBottom: 12, backgroundColor: colors.accent + '15', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, borderWidth: 1, borderColor: colors.accent + '33' },
+  meqBtnText:    { color: colors.accent, fontSize: 12, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', flex: 1 },
+  updateBtn:     { flexDirection: 'row', alignItems: 'center', margin: 14, marginTop: 12, backgroundColor: colors.brand, borderRadius: 12, paddingVertical: 13, paddingHorizontal: 14, justifyContent: 'center' },
+  updateBtnText: { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', textAlign: 'center', flex: 1 },
+  updateHint:    { color: colors.muted, fontSize: 10, lineHeight: 15, marginHorizontal: 14, marginBottom: 12, textAlign: 'center' },
 
   logoutBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginHorizontal: 18, borderRadius: 14, borderWidth: 1.5, borderColor: '#D9694F44', paddingVertical: 14, backgroundColor: '#D9694F11', marginBottom: 14 },
   logoutText:  { color: '#D9694F', fontSize: 14, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  version:     { color: '#B09A86', fontSize: 11, textAlign: 'center', marginBottom: 8 },
+  version:     { color: colors.muted, fontSize: 11, textAlign: 'center', marginBottom: 8 },
 
   // nav
-  navWrap:    { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FDF6F0', borderTopWidth: 1, borderTopColor: '#F0E2D4' },
+  navWrap:    { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.background, borderTopWidth: 1, borderTopColor: colors.border },
   nav:        { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
   navItem:    { alignItems: 'center', width: 64 },
   navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
-  navBadgeText: { color: '#fff', fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  navLabel:   { color: '#8A6A4E', fontSize: 10, marginTop: 4, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  navLabelDisabled: { color: '#D1D5DB' },
-  activeDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: '#F0955A', position: 'absolute', bottom: -8 },
+  navBadgeText: { color: colors.onBrand, fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  navLabel:   { color: colors.secondary, fontSize: 10, marginTop: 4, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  navLabelDisabled: { color: colors.disabledText },
+  activeDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: colors.brandSoft, position: 'absolute', bottom: -8 },
 
   // MEQ modal
   overlay:        { flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  popup:          { backgroundColor: '#FFFFFF', borderRadius: 18, padding: 22, width: '100%', borderWidth: 1, borderColor: '#F0E2D4', position: 'relative' },
+  popup:          { backgroundColor: colors.surface, borderRadius: 18, padding: 22, width: '100%', borderWidth: 1, borderColor: colors.border, position: 'relative' },
   popupClose:     { position: 'absolute', top: 14, right: 18, zIndex: 10 },
-  popupCloseText: { color: '#8A6A4E', fontSize: 22 },
-  popupTitle:     { color: '#3D2B1F', fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 12, paddingRight: 20 },
-  popupBody:      { color: '#8A6A4E', fontSize: 13, lineHeight: 20 },
-  popupBtn:       { backgroundColor: '#E07B3C', borderRadius: 12, paddingVertical: 11, paddingHorizontal: 20 },
-  popupBtnText:   { color: '#fff', fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  popupBtnSecondary:     { borderRadius: 12, paddingVertical: 11, paddingHorizontal: 16, borderWidth: 1, borderColor: '#F0E2D4' },
-  popupBtnSecondaryText: { color: '#8A6A4E', fontSize: 14, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  supportIcon: { width: 46, height: 46, borderRadius: 14, backgroundColor: '#E07B3C22', borderWidth: 1, borderColor: '#E07B3C44', alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
-  supportEmail: { color: '#E07B3C', fontSize: 14, lineHeight: 20, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 6 },
-  supportCloseBtn: { backgroundColor: '#E07B3C', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20, alignItems: 'center', marginTop: 20 },
+  popupCloseText: { color: colors.secondary, fontSize: 22 },
+  popupTitle:     { color: colors.text, fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 12, paddingRight: 20 },
+  popupBody:      { color: colors.secondary, fontSize: 13, lineHeight: 20 },
+  popupBtn:       { backgroundColor: colors.brand, borderRadius: 12, paddingVertical: 11, paddingHorizontal: 20 },
+  popupBtnText:   { color: colors.onBrand, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  popupBtnSecondary:     { borderRadius: 12, paddingVertical: 11, paddingHorizontal: 16, borderWidth: 1, borderColor: colors.border },
+  popupBtnSecondaryText: { color: colors.secondary, fontSize: 14, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  supportIcon: { width: 46, height: 46, borderRadius: 14, backgroundColor: colors.accent + '22', borderWidth: 1, borderColor: colors.accent + '44', alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
+  supportEmail: { color: colors.accent, fontSize: 14, lineHeight: 20, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 6 },
+  supportCloseBtn: { backgroundColor: colors.brand, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20, alignItems: 'center', marginTop: 20 },
 });

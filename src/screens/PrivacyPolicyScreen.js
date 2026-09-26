@@ -1,3 +1,4 @@
+import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React, { useState } from 'react';
 import {
   Platform,
@@ -59,6 +60,9 @@ const SECTIONS = [
 ];
 
 export default function PrivacyPolicyScreen({ navigation, route }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   const canGoBack = navigation?.canGoBack?.();
   const consentFlow = route?.params?.consentFlow === true;
   const [reachedBottom, setReachedBottom] = useState(false);
@@ -86,7 +90,7 @@ export default function PrivacyPolicyScreen({ navigation, route }) {
     <>
       <SafeAreaView style={styles.safeTop} />
       <View style={styles.root}>
-        <LinearGradient colors={['#FDF6F0', '#FDF6F0']} style={StyleSheet.absoluteFillObject} />
+        <LinearGradient colors={[colors.background, colors.background]} style={StyleSheet.absoluteFillObject} />
 
         <View style={styles.header}>
           <TouchableOpacity
@@ -94,7 +98,7 @@ export default function PrivacyPolicyScreen({ navigation, route }) {
             onPress={() => (canGoBack ? navigation.goBack() : navigation.navigate('Login'))}
             activeOpacity={0.8}
           >
-            <Feather name="chevron-left" size={26} color="#8A6A4E" />
+            <Feather name="chevron-left" size={26} color={colors.secondary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Privacy Policy</Text>
           <View style={styles.headerSpacer} />
@@ -115,7 +119,7 @@ export default function PrivacyPolicyScreen({ navigation, route }) {
           <Text style={styles.updated}>ADC (AD Chronotype) • Last updated: August 16, 2026</Text>
 
           <View style={styles.notice}>
-            <Feather name="shield" size={20} color="#E07B3C" />
+            <Feather name="shield" size={20} color={colors.accent} />
             <Text style={styles.noticeText}>
               ADC is a research-oriented app that estimates your chronotype and explores its relationship to lifestyle and cognitive factors associated with Alzheimer's disease risk. ADC is developed and operated by an independent developer, not a registered company. This policy explains what information we collect, how we use it, and the choices you have.
             </Text>
@@ -151,12 +155,12 @@ export default function PrivacyPolicyScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeTop: { flex: 0, backgroundColor: '#FDF6F0', paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  root: { flex: 1, backgroundColor: '#FDF6F0' },
+const createStyles = (colors) => StyleSheet.create({
+  safeTop: { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
+  root: { flex: 1, backgroundColor: colors.background },
   header: {
     alignItems: 'center',
-    borderBottomColor: '#F0E2D4',
+    borderBottomColor: colors.border,
     borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -164,16 +168,16 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   backBtn: { alignItems: 'center', height: 40, justifyContent: 'center', width: 40 },
-  headerTitle: { color: '#3D2B1F', fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  headerTitle: { color: colors.text, fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   headerSpacer: { width: 40 },
-  scrollHint: { alignItems: 'center', backgroundColor: '#E07B3C22', borderBottomColor: '#E07B3C33', borderBottomWidth: 1, paddingVertical: 7 },
-  scrollHintText: { color: '#E07B3C', fontSize: 11, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  scrollHint: { alignItems: 'center', backgroundColor: colors.accent + '22', borderBottomColor: colors.accent + '33', borderBottomWidth: 1, paddingVertical: 7 },
+  scrollHintText: { color: colors.accent, fontSize: 11, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
   content: { padding: 20, paddingBottom: 44 },
-  updated: { color: '#8A6A4E', fontSize: 12, marginBottom: 16 },
+  updated: { color: colors.secondary, fontSize: 12, marginBottom: 16 },
   notice: {
     alignItems: 'flex-start',
     backgroundColor: 'rgba(224, 123, 60,0.12)',
-    borderColor: '#E07B3C55',
+    borderColor: colors.accent + '55',
     borderRadius: 12,
     borderWidth: 1,
     flexDirection: 'row',
@@ -181,13 +185,13 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     padding: 14,
   },
-  noticeText: { color: '#6B5744', flex: 1, fontSize: 14, lineHeight: 21 },
+  noticeText: { color: colors.body, flex: 1, fontSize: 14, lineHeight: 21 },
   section: { marginBottom: 24 },
-  sectionTitle: { color: '#3D2B1F', fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 8 },
-  sectionBody: { color: '#8A6A4E', fontSize: 14, lineHeight: 22 },
-  footer: { backgroundColor: '#FDF6F0', borderTopColor: '#F0E2D4', borderTopWidth: 1, padding: 16 },
-  footerHint: { color: '#B09A86', fontSize: 11, marginBottom: 8, textAlign: 'center' },
-  acceptBtn: { alignItems: 'center', backgroundColor: '#E07B3C', borderRadius: 14, height: 52, justifyContent: 'center' },
-  acceptBtnDisabled: { backgroundColor: '#C98B65', opacity: 0.6 },
-  acceptBtnText: { color: '#fff', fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  sectionTitle: { color: colors.text, fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 8 },
+  sectionBody: { color: colors.secondary, fontSize: 14, lineHeight: 22 },
+  footer: { backgroundColor: colors.background, borderTopColor: colors.border, borderTopWidth: 1, padding: 16 },
+  footerHint: { color: colors.muted, fontSize: 11, marginBottom: 8, textAlign: 'center' },
+  acceptBtn: { alignItems: 'center', backgroundColor: colors.brand, borderRadius: 14, height: 52, justifyContent: 'center' },
+  acceptBtnDisabled: { backgroundColor: colors.disabled, opacity: 0.6 },
+  acceptBtnText: { color: colors.onBrand, fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 });
