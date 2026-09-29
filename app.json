@@ -5,10 +5,10 @@
     "version": "1.0.0",
     "scheme": "adchronotype",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon-orange.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/icon.png",
+      "image": "./assets/icon-orange.png",
       "resizeMode": "contain",
       "backgroundColor": "#FDF6F0"
     },
@@ -23,16 +23,10 @@
     "android": {
       "package": "com.adchronotype.app",
       "versionCode": 1,
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
-      },
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon-orange.png"
     },
     "plugins": [
       "@react-native-community/datetimepicker",
