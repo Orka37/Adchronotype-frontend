@@ -1,8 +1,8 @@
-import { useTheme, useThemedStyles } from '../context/ThemeContext';
+import { useTheme, useThemedStyles } from '../theme/designTheme';
 import React, { useEffect, useState } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity,
-  SafeAreaView, Platform, Image, Modal, Linking,
+  SafeAreaView, ScrollView, Platform, Image, Modal, Linking,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather, Ionicons } from '@expo/vector-icons';
@@ -82,9 +82,9 @@ export default function SleepTypeScreen({ navigation, route }) {
   }
 
   const options = [
-    { id: 'Definite Morning', title: 'Definite Morning', icon: <Feather name="sun"     size={24} color="#fcd53f" /> },
+    { id: 'Definite Morning', title: 'Definite Morning', icon: <Feather name="sun"     size={24} color={colors.accent} /> },
     { id: 'Moderate Morning', title: 'Moderate Morning', icon: <Feather name="sunrise" size={24} color={colors.accentSoft} /> },
-    { id: 'Intermediate',     title: 'Intermediate',     icon: <Ionicons name="person" size={24} color="#ffd25c" /> },
+    { id: 'Intermediate',     title: 'Intermediate',     icon: <Ionicons name="person" size={24} color={colors.accent} /> },
     { id: 'Moderate Evening', title: 'Moderate Evening', icon: <Feather name="sunset"  size={24} color={colors.accent} /> },
     { id: 'Definite Evening', title: 'Definite Evening', icon: <Feather name="moon"    size={24} color={colors.accentSoft} /> },
   ];
@@ -93,7 +93,7 @@ export default function SleepTypeScreen({ navigation, route }) {
     <>
       <SafeAreaView style={styles.safeAreaTop} />
       <SafeAreaView style={styles.safeAreaBottom}>
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={[styles.container,{flexGrow:1,flex:undefined}]} showsVerticalScrollIndicator={false}>
           <LinearGradient colors={[colors.background, colors.background]} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
           <View style={styles.imageContainer}>
             <Image source={require('../assets/home1.png')} style={styles.heroImage} resizeMode="cover" />
@@ -105,7 +105,6 @@ export default function SleepTypeScreen({ navigation, route }) {
               <Feather name="chevron-left" size={28} color={colors.secondary} />
             </TouchableOpacity>
             <StepIndicator currentStep={1} totalSteps={5} />
-            <View style={{ width: 32 }} />
           </View>
 
           <View style={styles.contentWrapper}>
@@ -156,7 +155,7 @@ export default function SleepTypeScreen({ navigation, route }) {
               <Text style={styles.nextButtonText}>Next</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
 
       {/* Welcome popup — first visit only */}
@@ -218,40 +217,42 @@ const createStyles = (colors) => StyleSheet.create({
   safeAreaTop:    { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
   safeAreaBottom: { flex: 1, backgroundColor: colors.background, position: 'relative' },
   container:      { flex: 1, backgroundColor: colors.background, paddingHorizontal: 20 },
-  imageContainer: { position: 'absolute', top: 0, left: 0, right: 0, height: '50%', zIndex: -1 },
+  imageContainer: {display:'none'},
   heroImage:      { width: '100%', height: '100%', opacity: 0.9 },
   imageOverlay:   { position: 'absolute', bottom: 0, left: 0, right: 0, height: 180 },
-  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 24 },
-  backButton:     { padding: 4 },
-  contentWrapper: { flex: 1, paddingTop: 8 },
-  textContainer:  { alignItems: 'center', marginBottom: 14, paddingHorizontal: 10 },
-  title:          { fontSize: 26, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: colors.text, textAlign: 'center', lineHeight: 32, marginBottom: 8 },
-  subtitle:       { fontSize: 14, color: colors.secondary, textAlign: 'center', lineHeight: 20 },
+  header:         {flexDirection:'row',alignItems:'center',gap:12,paddingTop:16,paddingBottom:20},
+  backButton:     {width:44,height:44,alignItems:'center',justifyContent:'center'},
+  contentWrapper: {flex:1},
+  textContainer:  {marginBottom:20},
+  title:          {color:colors.text,fontSize:26,fontFamily:'Lexend_800ExtraBold',lineHeight:31.2,marginBottom:6,textAlign:'left'},
+  subtitle:       {color:colors.secondary,fontSize:14,fontFamily:'Lexend_400Regular',lineHeight:21},
   optionsContainer:    { gap: 10 },
-  optionCard:          { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: 14, padding: 12, borderWidth: 1.5, borderColor: 'transparent', minHeight: 72 },
-  optionCardActive:    { backgroundColor: colors.tint, borderColor: colors.accent },
-  optionIconContainer: { width: 40, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
+  optionCard:          {flexDirection:'row',alignItems:'center',gap:14,minHeight:64,padding:12,paddingHorizontal:14,backgroundColor:colors.surface,borderWidth:1.5,borderColor:colors.border,borderRadius:16},
+  optionCardDisabled: { opacity: 0.55 },
+  optionCardActive:    {backgroundColor:colors.tint,borderColor:colors.accent},
+  optionIconContainer: {width:40,height:40,borderRadius:20,backgroundColor:colors.tint,alignItems:'center',justifyContent:'center'},
   optionTextContainer: { flex: 1 },
-  optionTitle:    { fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: colors.text, marginBottom: 3 },
-  optionSubtitle: { fontSize: 12, color: colors.secondary, lineHeight: 16 },
+  optionTitle:    {color:colors.text,fontSize:16,fontFamily:'Lexend_700Bold'},
+
   checkContainer: { width: 24, alignItems: 'flex-end' },
-  checkCircle:    { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
-  bottomContainer:{ marginBottom: 20, marginTop: 10 },
-  nextButton:     { backgroundColor: colors.brandSoft, paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
+  checkCircle:    {width:24,height:24,borderRadius:12,backgroundColor:colors.brand,alignItems:'center',justifyContent:'center'},
+  bottomContainer:{paddingTop:20,paddingBottom:20},
+  nextButton:     {backgroundColor:colors.brand,minHeight:56,borderRadius:16,alignItems:'center',justifyContent:'center'},
   nextButtonDisabled: { opacity: 0.5 },
-  nextButtonText: { color: colors.onBrand, fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  nextButtonText: {color:colors.onBrand,fontSize:18,fontFamily:'Lexend_700Bold'},
 
   // Modals
   overlay:        { flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', alignItems: 'center', justifyContent: 'center', padding: 24 },
   popup:          { backgroundColor: colors.surface, borderRadius: 18, padding: 24, width: '100%', maxWidth: 380, borderWidth: 1, borderColor: colors.border, position: 'relative' },
   popupClose:     { position: 'absolute', top: 14, right: 18, zIndex: 10 },
-  popupCloseText: { color: colors.secondary, fontSize: 22, fontWeight: '400', lineHeight: 24 },
+  popupCloseText: {fontFamily:'Lexend_400Regular', color: colors.secondary, fontSize: 22, fontWeight: '400', lineHeight: 24 },
   popupTitle:     { color: colors.text, fontSize: 20, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 14, paddingRight: 20 },
-  popupBody:      { color: colors.secondary, fontSize: 14, lineHeight: 22 },
-  popupLink:      { color: colors.accent, fontSize: 11, lineHeight: 18, textDecorationLine: 'underline', flexWrap: 'wrap', flexShrink: 1 },
+  popupBody:      {fontFamily:'Lexend_400Regular', color: colors.secondary, fontSize: 14, lineHeight: 22 },
+
   popupBtnRow:    { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 20 },
   popupBtn:       { backgroundColor: colors.brand, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20, alignSelf: 'flex-start' },
   popupBtnText:   { color: colors.onBrand, fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', textAlign: 'center' },
   popupBtnSecondary:     { borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, borderWidth: 1, borderColor: colors.border, alignSelf: 'flex-start', maxWidth: '100%' },
   popupBtnSecondaryText: { color: colors.secondary, fontSize: 15, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', textAlign: 'center' },
+
 });

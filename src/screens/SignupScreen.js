@@ -1,4 +1,4 @@
-import { useTheme, useThemedStyles } from '../context/ThemeContext';
+import { useTheme, useThemedStyles } from '../theme/designTheme';
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
@@ -128,10 +128,8 @@ export default function SignupScreen({ navigation }) {
             <Text style={styles.title}>Create account</Text>
             <Text style={styles.subtitle}>Explore sleep patterns and cognitive health research.</Text>
 
-            <SignupField id="fn" label="First Name" value={firstName} onChange={setFirstName} icon="user" opts={{ autoComplete: 'given-name', textContentType: 'givenName' }} focused={focused} setFocused={setFocused} error={errs.fn} clearErr={clearErr} />
-            <SignupField id="ln" label="Last Name" value={lastName} onChange={setLastName} icon="user" opts={{ marginTop: 18, autoComplete: 'family-name', textContentType: 'familyName' }} focused={focused} setFocused={setFocused} error={errs.ln} clearErr={clearErr} />
-            <SignupField id="un" label="Username" value={username} onChange={setUsername} icon="at-sign" opts={{ cap: 'none', ph: 'e.g. brain_health_99', autoComplete: 'username', textContentType: 'username' }} focused={focused} setFocused={setFocused} error={errs.un} clearErr={clearErr} />
-            <SignupField id="em" label="Email Address" value={email} onChange={setEmail} icon="mail" opts={{ cap: 'none', kb: 'email-address', ph: 'you@example.com', autoComplete: 'email', textContentType: 'emailAddress' }} focused={focused} setFocused={setFocused} error={errs.em} clearErr={clearErr} />
+<View style={{flexDirection:'row',gap:12,marginBottom:12}}><View style={{flex:1}}><SignupField id="fn" label="First Name" value={firstName} onChange={setFirstName} icon="user" opts={{ autoComplete: 'given-name', textContentType: 'givenName' }} focused={focused} setFocused={setFocused} error={errs.fn} clearErr={clearErr} /></View><View style={{flex:1}}><SignupField id="ln" label="Last Name" value={lastName} onChange={setLastName} icon="user" opts={{ marginTop: 18, autoComplete: 'family-name', textContentType: 'familyName' }} focused={focused} setFocused={setFocused} error={errs.ln} clearErr={clearErr} /></View></View>
+<View style={{gap:12,marginBottom:12}}><SignupField id="em" label="Email Address" value={email} onChange={setEmail} icon="mail" opts={{ cap: 'none', kb: 'email-address', ph: 'you@example.com', autoComplete: 'email', textContentType: 'emailAddress' }} focused={focused} setFocused={setFocused} error={errs.em} clearErr={clearErr} /><SignupField id="un" label="Username" value={username} onChange={setUsername} icon="at-sign" opts={{ cap: 'none', ph: 'e.g. brain_health_99', autoComplete: 'username', textContentType: 'username' }} focused={focused} setFocused={setFocused} error={errs.un} clearErr={clearErr} /></View>
 
             {/* Password — manual because of eye toggle */}
             <Text style={[styles.label, { marginTop: 4 }]}>Password</Text>
@@ -161,7 +159,7 @@ export default function SignupScreen({ navigation }) {
                 <Feather name={secureText ? 'eye-off' : 'eye'} size={18} color={colors.secondary} />
               </Pressable>
             </View>
-            {hasErr('pw') && <Text style={styles.errText}>{errs.pw}</Text>}
+            {hasErr('pw') ? <Text style={styles.errText}>{errs.pw}</Text> : <Text style={{fontFamily:'Lexend_400Regular',fontSize:11.5,color:colors.muted,marginTop:6}}>Use at least 8 characters.</Text>}
 
             {!!submitError && (
               <View style={styles.submitErrorBox}>
@@ -199,22 +197,17 @@ export default function SignupScreen({ navigation }) {
 const createStyles = (colors) => StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
   safeTop: { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  scroll: { flexGrow: 1, paddingHorizontal: 24, paddingTop: height * 0.08, paddingBottom: 40 },
-  logoWrap: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
-  logoBold: { fontSize: 30, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', color: colors.text, letterSpacing: -0.5 },
-  logoLight: { fontSize: 30, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', color: colors.accent, letterSpacing: -0.5 },
-  title: { fontSize: 24, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: colors.text, marginBottom: 6 },
-  subtitle: { fontSize: 14, color: colors.secondary, lineHeight: 21, marginBottom: 28 },
-  label: { color: colors.text, fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 7, marginTop: 14 },
-  inputRow: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: colors.surface, borderRadius: 14,
-    borderWidth: 1.5, borderColor: 'transparent',
-    paddingHorizontal: 14, height: 52, marginBottom: 2,
-  },
+  scroll: {flexGrow:1,paddingHorizontal:24,paddingTop:28,paddingBottom:36},
+  logoWrap: {flexDirection:'row',justifyContent:'center',alignItems:'baseline',marginBottom:28},
+  logoBold: {color:colors.text,fontSize:26,fontFamily:'Lexend_800ExtraBold'},
+  logoLight: {color:colors.accent,fontSize:26,fontFamily:'Lexend_600SemiBold'},
+  title: {color:colors.text,fontSize:28,fontFamily:'Lexend_800ExtraBold',lineHeight:33.6,marginBottom:6},
+  subtitle: {color:colors.secondary,fontSize:15,fontFamily:'Lexend_400Regular',lineHeight:22.5,marginBottom:28},
+  label: {color:colors.secondary,fontSize:13,fontFamily:'Lexend_600SemiBold',marginBottom:6},
+  inputRow: {flexDirection:'row',alignItems:'center',backgroundColor:colors.surface,borderRadius:14,borderWidth:1,borderColor:colors.border,paddingHorizontal:16,minHeight:52},
   inputFocused: { borderColor: colors.accent },
   inputErr: { borderColor: '#D9694F' },
-  errText: { color: '#D9694F', fontSize: 11, marginBottom: 2, marginLeft: 2 },
+  errText: {fontFamily:'Lexend_400Regular', color: '#D9694F', fontSize: 11, marginBottom: 2, marginLeft: 2 },
   submitErrorBox: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -228,16 +221,13 @@ const createStyles = (colors) => StyleSheet.create({
   },
   submitErrorIcon: { marginRight: 10, marginTop: 1 },
   submitErrorTitle: { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 3 },
-  submitErrorText: { color: '#fca5a5', fontSize: 12, lineHeight: 17 },
-  icon: { marginRight: 10 },
-  input: { flex: 1, color: colors.text, fontSize: 15 },
-  btn: {
-    backgroundColor: colors.brand, borderRadius: 14,
-    height: 54, alignItems: 'center', justifyContent: 'center', marginTop: 28,
-  },
+  submitErrorText: {fontFamily:'Lexend_400Regular', color: '#fca5a5', fontSize: 12, lineHeight: 17 },
+  icon: {display:'none'},
+  input: {flex:1,color:colors.text,fontSize:16,fontFamily:'Lexend_400Regular',minHeight:50},
+  btn: {backgroundColor:colors.brand,borderRadius:16,minHeight:54,alignItems:'center',justifyContent:'center',marginTop:14},
   btnDisabled: { backgroundColor: colors.disabled },
-  btnText: { color: colors.onBrand, fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  linkRow: { marginTop: 22, alignItems: 'center' },
-  linkText: { color: colors.secondary, fontSize: 14 },
+  btnText: {color:colors.onBrand,fontSize:17,fontFamily:'Lexend_700Bold'},
+  linkRow: {marginTop:'auto',paddingTop:28,alignItems:'center'},
+  linkText: {fontFamily:'Lexend_400Regular', color: colors.secondary, fontSize: 14 },
   linkAccent: { color: colors.accent, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 });

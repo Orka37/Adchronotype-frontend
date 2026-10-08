@@ -1,4 +1,5 @@
-import { useTheme, useThemedStyles } from '../context/ThemeContext';
+import Svg, { Circle } from 'react-native-svg';
+import { useTheme, useThemedStyles } from '../theme/designTheme';
 import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
@@ -14,7 +15,7 @@ import {
   View,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { getCognitiveTests } from '../api/cognitive';
 import { getPredictions } from '../api/predict';
@@ -75,6 +76,12 @@ function modelInputRows(prediction, fallbackInputs = {}) {
     ['Sleep duration', source.sleep_duration == null ? '—' : `${Number(source.sleep_duration).toFixed(1)} hours`],
     ['Ethnicity', displayValue(source.ethnicity)],
   ];
+}
+
+function durationLabel(hours) { const mins=Math.round(Number(hours)*60); return Math.floor(mins/60)+'h '+mins%60+'m'; }
+function compactInputRows(prediction,fallback) {
+ const p={...fallback,...(prediction||{})};
+ return [['Chronotype',displayValue(p.chronotype)],['Sleep time · Wake time',displayTime(p.sleep_time)+' · '+displayTime(p.wake_time)],['Sleep duration',p.sleep_duration==null?'—':durationLabel(p.sleep_duration)],['Age · BMI',displayValue(p.age)+' · '+displayValue(p.bmi)],['Family history',displayValue(p.family_history)],['Ethnicity',displayValue(p.ethnicity)]];
 }
 
 function reportText({ profile, latestPrediction, sleepLogs, cognitiveTests, fallbackInputs }) {
@@ -146,6 +153,7 @@ export default function DoctorReportScreen({ navigation }) {
     familyHistory,
   } = useOnboarding();
   const [loading, setLoading] = useState(true);
+  const [showDetails, setShowDetails] = useState(false);
   const [profile, setProfile] = useState(null);
   const [predictions, setPredictions] = useState([]);
   const [sleepLogs, setSleepLogs] = useState([]);
@@ -162,7 +170,8 @@ export default function DoctorReportScreen({ navigation }) {
       ]);
       setProfile(profileData);
       setPredictions(Array.isArray(predictionData) ? predictionData : []);
-      setSleepLogs(Array.isArray(sleepData) ? sleepData.slice(0, 30) : []);
+      const cutoff = new Date(); cutoff.setHours(0,0,0,0); cutoff.setDate(cutoff.getDate()-29);
+      setSleepLogs(Array.isArray(sleepData) ? sleepData.filter(item => new Date(item.logged_date?.length===10?item.logged_date+'T00:00:00':item.logged_date) >= cutoff && new Date(item.logged_date?.length===10?item.logged_date+'T00:00:00':item.logged_date) <= new Date()) : []);
       setCognitiveTests(Array.isArray(cognitiveData) ? cognitiveData : []);
       log.info('DoctorReportScreen: report data loaded');
     } catch (err) {
@@ -242,10 +251,8 @@ export default function DoctorReportScreen({ navigation }) {
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.75}>
             <Feather name="chevron-left" size={28} color={colors.secondary} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Doctor Report</Text>
-          <TouchableOpacity style={styles.iconBtn} onPress={handleExport} activeOpacity={0.75}>
-            <Feather name={Platform.OS === 'web' ? 'printer' : 'share-2'} size={18} color={colors.accent} />
-          </TouchableOpacity>
+          <View style={{flex:1}}><Text style={styles.headerTitle}>Doctor Report</Text><Text style={styles.muted}>Monthly Summary · {new Date().toLocaleDateString(undefined,{month:'long',year:'numeric'})}</Text></View>
+
         </View>
 
         {loading ? (
@@ -254,53 +261,17 @@ export default function DoctorReportScreen({ navigation }) {
           </View>
         ) : (
           <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-            <View style={styles.heroCard}>
-              <View style={styles.heroIcon}>
-                <MaterialCommunityIcons name="file-chart-outline" size={30} color={colors.accent} />
-              </View>
-              <Text style={styles.title}>Monthly Summary</Text>
-              <Text style={styles.subtitle}>
-                A monthly summary you can review or bring to an appointment with your physician.
-              </Text>
-              <Text style={styles.generated}>Generated {fmtDate(new Date().toISOString())}</Text>
+            <TouchableOpacity accessibilityRole="button" onPress={()=>setShowDetails(v=>!v)} style={styles.noticeCard}>
+              <Feather name="alert-triangle" size={18} color={colors.warningStrong}/><View style={{flex:1}}><Text style={styles.noticeTitle}>Important — Research Use Only</Text><Text style={styles.noticeText}>For context in a conversation with a general physician. Not a diagnostic report.</Text><Text style={[styles.noticeText,{textDecorationLine:'underline',marginTop:4}]}>{showDetails?'Hide':'Read'} full disclaimer and sources</Text></View>
+            </TouchableOpacity>
+            <Text style={styles.sectionTitle}>SIMILARITY SCORE</Text>
+            <View style={[styles.section,styles.scoreRow]}>
+              <View style={{width:72,height:72}}><Svg width={72} height={72} viewBox="0 0 72 72"><Circle cx="36" cy="36" r="30" fill="none" stroke={colors.tint} strokeWidth="7"/><Circle cx="36" cy="36" r="30" fill="none" stroke={colors.accent} strokeWidth="7" strokeLinecap="round" strokeDasharray={2*Math.PI*30} strokeDashoffset={2*Math.PI*30*(1-Math.min(100,Math.max(0,Number(latestPrediction?.prediction)||0))/100)} rotation="-90" origin="36,36"/></Svg><View style={{position:'absolute',top:0,left:0,right:0,bottom:0,alignItems:'center',justifyContent:'center'}}><Text style={{fontFamily:'Lexend_800ExtraBold',fontSize:17,color:colors.accent}}>{fmtPercent(latestPrediction?.prediction)}</Text></View></View>
+              <View style={{flex:1,gap:3}}><Text style={[styles.scoreBadgeText,{color:latestPrediction?.prediction>=30?colors.warningStrong:colors.successText}]}>{scoreLabel(latestPrediction?.prediction)}</Text><Text style={styles.muted}>Compared with patterns in published Alzheimer's research data.</Text></View>
             </View>
-
-            <View style={styles.noticeCard}>
-              <Feather name="alert-triangle" size={18} color="#E9A94A" />
-              <View style={styles.noticeContent}>
-                <Text style={styles.noticeTitle}>Important — Research Use Only</Text>
-                <Text style={styles.noticeText}>{RESEARCH_DISCLAIMER}</Text>
-                <Text style={styles.noticeText}>{RESEARCH_METHODOLOGY}</Text>
-              </View>
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Similarity Score</Text>
-              <View style={styles.scoreRow}>
-                <Text style={styles.scoreValue}>{fmtPercent(latestPrediction?.prediction)}</Text>
-                <View style={styles.scoreBadge}>
-                  <Text style={styles.scoreBadgeText}>{scoreLabel(latestPrediction?.prediction)}</Text>
-                </View>
-              </View>
-              <Text style={styles.muted}>Baseline: {fmtPercent(latestPrediction?.baseline)}</Text>
-              <Text style={styles.explainText}>
-                The score is a statistical similarity measure. The baseline is the starting model value for this profile, and the factor values below show which inputs moved the score up or down.
-              </Text>
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Inputs Used for This Score</Text>
-              {modelInputRows(latestPrediction, fallbackInputs).map(([label, value]) => (
-                <View key={label} style={styles.inputRow}>
-                  <Text style={styles.inputLabel}>{label}</Text>
-                  <Text style={styles.inputValue}>{value}</Text>
-                </View>
-              ))}
-              <Text style={styles.explainText}>
-                Height and weight are converted into BMI before prediction. These are the values the model uses for the score shown above.
-              </Text>
-            </View>
-
+            <Text style={styles.sectionTitle}>INPUTS USED FOR THIS SCORE</Text>
+            <View style={styles.section}>{compactInputRows(latestPrediction,fallbackInputs).map(([label,value],i,rows)=><View key={label} style={[styles.inputRow,i===rows.length-1&&{borderBottomWidth:0}]}><Text style={styles.inputLabel}>{label}</Text><Text style={styles.inputValue}>{value}</Text></View>)}</View>
+            {showDetails && <><View style={[styles.section,{paddingVertical:14,gap:10}]}><Text style={styles.noticeText}>{RESEARCH_DISCLAIMER}</Text><Text style={styles.explainText}>{RESEARCH_METHODOLOGY}</Text><Text style={styles.muted}>Baseline: {fmtPercent(latestPrediction?.baseline)}</Text></View>
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Factor Breakdown</Text>
               <Text style={[styles.explainText, { marginTop: -4 }]}>
@@ -338,38 +309,16 @@ export default function DoctorReportScreen({ navigation }) {
               ))}
             </View>
 
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Sleep Summary</Text>
-              <View style={styles.metricRow}>
-                <Metric label="Logged nights" value={sleepLogs.length} />
-                <Metric label="Avg duration" value={sleepAvg == null ? '—' : `${sleepAvg.toFixed(1)}h`} />
-                <Metric label="Avg quality" value={sleepQuality == null ? '—' : `${sleepQuality.toFixed(1)}/21`} />
-              </View>
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Recent Cognitive Results</Text>
-              {cognitiveTests.length ? (
-                cognitiveTests.slice(0, 6).map(item => (
-                  <View key={item.id || `${item.test_type}-${item.tested_at}`} style={styles.resultRow}>
-                    <View>
-                      <Text style={styles.resultTitle}>{item.test_type?.replace(/_/g, ' ') || 'Cognitive test'}</Text>
-                      <Text style={styles.muted}>Attempt {item.attempt_number || 1} · {fmtDate(item.tested_at)}</Text>
-                    </View>
-                    <Text style={styles.resultScore}>{item.score} {item.unit || ''}</Text>
-                  </View>
-                ))
-              ) : (
-                <Text style={styles.emptyText}>No saved cognitive test results yet.</Text>
-              )}
-            </View>
-
+            </>}
+            <Text style={styles.sectionTitle}>SLEEP SUMMARY · LAST 30 DAYS</Text>
+            <View style={styles.metricRow}><Metric label="AVG SLEEP" value={sleepAvg==null?'—':durationLabel(sleepAvg)}/><Metric label="QUALITY" value={sleepQuality==null?'—':sleepQuality.toFixed(1)+'/21'}/><Metric label="NIGHTS LOGGED" value={sleepLogs.length}/></View>
+            <Text style={styles.sectionTitle}>RECENT COGNITIVE RESULTS</Text>
+            <View style={styles.section}>{cognitiveTests.length?cognitiveTests.slice(0,6).map(item=><View key={item.id||item.test_type+'-'+item.tested_at} style={styles.resultRow}><Text style={[styles.resultTitle,{flex:1}]}>{item.test_type?.replace(/_/g,' ')||'Cognitive test'}</Text><Text style={styles.resultScore}>{item.score} {item.unit||''}</Text></View>):<Text style={[styles.emptyText,{paddingVertical:14}]}>No saved cognitive test results yet.</Text>}</View>
             <TouchableOpacity style={styles.exportBtn} onPress={handleExport} activeOpacity={0.85}>
               <Feather name={Platform.OS === 'web' ? 'printer' : 'share-2'} size={18} color={colors.onBrand} />
-              <Text style={styles.exportText}>Export Report for Your Physician</Text>
+              <Text style={styles.exportText}>Export Report for General Physician</Text>
             </TouchableOpacity>
 
-            <View style={{ height: 40 }} />
           </ScrollView>
         )}
       </View>
@@ -392,104 +341,40 @@ function Metric({ label, value }) {
 const createStyles = (colors) => StyleSheet.create({
   safeTop: { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
   root: { flex: 1, backgroundColor: colors.background },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  iconBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: { color: colors.text, fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  header: {flexDirection:'row',alignItems:'center',gap:12,paddingHorizontal:20,paddingTop:16,paddingBottom:14},
+  backBtn: {width:44,height:44,alignItems:'center',justifyContent:'center'},
+
+  headerTitle: {color:colors.text,fontSize:22,fontFamily:'Lexend_800ExtraBold'},
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  scroll: { padding: 18, paddingBottom: 42 },
-  heroCard: {
-    backgroundColor: colors.background,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 18,
-    marginBottom: 12,
-  },
-  heroIcon: {
-    width: 58,
-    height: 58,
-    borderRadius: 18,
-    backgroundColor: colors.accent + '22',
-    borderWidth: 1,
-    borderColor: colors.accent + '44',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 14,
-  },
-  title: { color: colors.text, fontSize: 24, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 8 },
-  subtitle: { color: colors.secondary, fontSize: 13, lineHeight: 20, marginBottom: 12 },
-  generated: { color: colors.secondary, fontSize: 11, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  noticeCard: {
-    flexDirection: 'row',
-    gap: 10,
-    backgroundColor: colors.warningSurface,
-    borderWidth: 1,
-    borderColor: '#E9A94A66',
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 12,
-  },
-  noticeContent: { flex: 1 },
-  noticeTitle: { color: '#ffcf66', fontSize: 12, lineHeight: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 4 },
-  noticeText: { color: colors.warningText, fontSize: 11, lineHeight: 17, marginBottom: 5 },
-  section: {
-    backgroundColor: colors.background,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 15,
-    marginBottom: 12,
-  },
-  sectionTitle: { color: colors.text, fontSize: 15, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 12 },
-  scoreRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
-  scoreValue: { color: '#7EC49A', fontSize: 36, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  scoreBadge: { backgroundColor: '#7EC49A22', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6 },
-  scoreBadgeText: { color: '#7EC49A', fontSize: 12, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  muted: { color: colors.secondary, fontSize: 11, lineHeight: 16 },
-  explainText: { color: colors.secondary, fontSize: 11, lineHeight: 17, marginTop: 10 },
-  inputRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border },
-  inputLabel: { color: colors.secondary, fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  inputValue: { color: colors.text, fontSize: 12, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'right', flexShrink: 1 },
+  scroll: {paddingHorizontal:20,paddingBottom:28,gap:14},
+
+  noticeCard: {flexDirection:'row',gap:10,backgroundColor:colors.warningSurface,borderWidth:1,borderColor:colors.warningBorder,borderRadius:14,paddingVertical:12,paddingHorizontal:14},
+
+  noticeTitle: {color:colors.warningStrong,fontSize:12.5,fontFamily:'Lexend_800ExtraBold',marginBottom:3},
+  noticeText: {color:colors.warningBody,fontSize:12,fontFamily:'Lexend_400Regular',lineHeight:18},
+  section: {backgroundColor:colors.surface,borderRadius:16,borderWidth:1,borderColor:colors.border,paddingVertical:2,paddingHorizontal:16},
+  sectionTitle: {color:colors.accent,fontSize:11,fontFamily:'Lexend_800ExtraBold',letterSpacing:1.1,textTransform:'uppercase'},
+  scoreRow: {flexDirection:'row',alignItems:'center',gap:16,paddingVertical:14},
+
+  scoreBadgeText: {color:colors.successText,fontSize:16,fontFamily:'Lexend_800ExtraBold'},
+  muted: {color:colors.secondary,fontSize:12.5,fontFamily:'Lexend_400Regular',lineHeight:18.125},
+  explainText: {fontFamily:'Lexend_400Regular', color: colors.secondary, fontSize: 11, lineHeight: 17, marginTop: 10 },
+  inputRow: {flexDirection:'row',justifyContent:'space-between',alignItems:'center',gap:12,minHeight:42,paddingVertical:8,borderBottomWidth:1,borderBottomColor:colors.border},
+  inputLabel: {color:colors.secondary,fontSize:13.5,fontFamily:'Lexend_400Regular',flexShrink:1},
+  inputValue: {color:colors.text,fontSize:13.5,fontFamily:'Lexend_700Bold',textAlign:'right',flexShrink:1},
   factorRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border },
   factorLabel: { color: colors.secondary, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   factorValue: { fontSize: 17, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   sourceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: colors.border },
-  sourceText: { color: colors.accent, fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
+  sourceText: {fontFamily:'Lexend_400Regular', color: colors.accent, fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
   metricRow: { flexDirection: 'row', gap: 8 },
-  metricCard: { flex: 1, backgroundColor: colors.background, borderRadius: 12, borderWidth: 1, borderColor: colors.border, padding: 12 },
-  metricValue: { color: colors.accent, fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 4 },
-  metricLabel: { color: colors.secondary, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  resultRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.border },
-  resultTitle: { color: colors.text, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textTransform: 'capitalize' },
-  resultScore: { color: colors.accent, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  emptyText: { color: colors.secondary, fontSize: 12, lineHeight: 18 },
-  exportBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    backgroundColor: colors.brand,
-    borderRadius: 14,
-    paddingVertical: 15,
-    paddingHorizontal: 14,
-  },
-  exportText: { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'center' },
+  metricCard: {flex:1,backgroundColor:colors.surface,borderRadius:14,borderWidth:1,borderColor:colors.border,paddingVertical:12,paddingHorizontal:6,alignItems:'center'},
+  metricValue: {color:colors.text,fontSize:17,fontFamily:'Lexend_800ExtraBold',marginBottom:2},
+  metricLabel: {color:colors.secondary,fontSize:10,fontFamily:'Lexend_700Bold',textAlign:'center'},
+  resultRow: {flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:42,paddingVertical:8,borderBottomWidth:1,borderBottomColor:colors.border},
+  resultTitle: {color:colors.secondary,fontSize:13.5,fontFamily:'Lexend_400Regular',textTransform:'capitalize'},
+  resultScore: {color:colors.text,fontSize:13.5,fontFamily:'Lexend_700Bold'},
+  emptyText: {fontFamily:'Lexend_400Regular', color: colors.secondary, fontSize: 12, lineHeight: 18 },
+  exportBtn: {flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,backgroundColor:colors.brand,borderRadius:16,minHeight:54,paddingHorizontal:14,paddingVertical:10},
+  exportText: {color:colors.onBrand,fontSize:15,fontFamily:'Lexend_700Bold',textAlign:'center'},
 });

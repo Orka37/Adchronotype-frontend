@@ -1,231 +1,75 @@
-import { useTheme, useThemedStyles } from '../context/ThemeContext';
-import React, { useState } from 'react';
-import {
-  View, Text, TouchableOpacity, StyleSheet,
-  SafeAreaView, ScrollView, Platform, Linking,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Feather } from '@expo/vector-icons';
-import { useCaregiverRequestCount } from '../hooks/useCaregiverRequestCount';
-import { log } from '../utils/logger';
-
-const TIPS = [
+import React from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Linking, Alert } from 'react-native';
+import {SafeAreaView as InsetSafeAreaView} from 'react-native-safe-area-context';
+import {Feather} from '@expo/vector-icons';
+import {useTheme} from '../theme/designTheme';
+import DesignNav from '../components/DesignNav';
+import {useCaregiverRequestCount} from '../hooks/useCaregiverRequestCount';
+const selected = [
   {
-    cat: 'CHRONOTYPE',
-    icon: '🌙',
-    title: 'Understanding Your Chronotype',
-    body: 'Your chronotype is your body\'s natural sleep-wake preference. It directly affects when your brain performs best and is linked to Alzheimer\'s risk.',
-    links: [
-      { label: "What's Your Chronotype? — Sleep Foundation", url: 'https://www.sleepfoundation.org/circadian-rhythm/chronotype' },
-      { label: 'Can You Change Your Chronotype? — Healthline', url: 'https://www.healthline.com/health/sleep/chronotype' },
-      { label: 'Take the Chronotype Quiz (MEQ)', url: 'https://www.cet-surveys.com/index.php?sid=61524' },
-    ],
+    "cat": "CHRONOTYPE",
+    "icon": "moon",
+    "title": "Understanding Your Chronotype",
+    "links": [
+      {
+        "label": "Can You Change Your Chronotype? — Healthline",
+        "url": "https://www.healthline.com/health/sleep/chronotype"
+      },
+      {
+        "label": "Take the Chronotype Quiz (MEQ)",
+        "url": "https://www.cet-surveys.com/index.php?sid=61524"
+      }
+    ]
   },
   {
-    cat: 'SLEEP QUALITY',
-    icon: '😴',
-    title: 'Sleep & Brain Health',
-    body: 'During deep sleep your brain flushes out toxic proteins linked to Alzheimer\'s disease. Consistent quality sleep is one of the most powerful protective factors.',
-    links: [
-      { label: "Sleep and Alzheimer's — Alzheimer's Association", url: 'https://www.alz.org/alzheimers-dementia/research_progress/sleep-and-alzheimers' },
-      { label: 'How Sleep Clears the Brain — NIH', url: 'https://newsinhealth.nih.gov/2013/11/sleep-your-brain' },
-      { label: 'Sleep Tips — CDC', url: 'https://www.cdc.gov/sleep/about_sleep/sleep_hygiene.html' },
-      { label: 'Sleep Restriction & Amyloid — ScienceDaily (2025)', url: 'https://www.sciencedaily.com/releases/2025/01/250127124458.htm' },
-    ],
+    "cat": "SLEEP",
+    "icon": "cloud",
+    "title": "Sleep & Brain Health",
+    "links": [
+      {
+        "label": "How Sleep Clears the Brain — NIH",
+        "url": "https://newsinhealth.nih.gov/2013/11/sleep-your-brain"
+      },
+      {
+        "label": "Sleep Tips — CDC",
+        "url": "https://www.cdc.gov/sleep/about_sleep/sleep_hygiene.html"
+      }
+    ]
   },
   {
-    cat: 'BMI & DIET',
-    icon: '⚖️',
-    title: 'Weight, Diet and Brain Risk',
-    body: 'Body weight and diet are modifiable factors studied in relation to dementia risk.',
-    links: [
-      { label: "BMI & Dementia Risk — Alzheimer's Society", url: 'https://www.alzheimers.org.uk/about-dementia/managing-the-risk-of-dementia/reduce-your-risk-of-dementia/obesity' },
-      { label: 'Healthy Weight — CDC', url: 'https://www.cdc.gov/healthyweight/index.html' },
-      { label: 'Mediterranean Diet & Brain Health — Harvard', url: 'https://www.health.harvard.edu/mind-and-mood/the-mind-diet' },
-    ],
+    "cat": "BMI & DIET",
+    "icon": "heart",
+    "title": "Weight, Diet and Brain Risk",
+    "links": [
+      {
+        "label": "Mediterranean Diet & Brain Health — Harvard",
+        "url": "https://www.health.harvard.edu/mind-and-mood/the-mind-diet"
+      }
+    ]
   },
   {
-    cat: 'FAMILY HISTORY',
-    icon: '👪',
-    title: 'Genetics Is Not Destiny',
-    body: 'Having a family history raises risk but does not determine your outcome. The Lancet Commission found up to 45% of dementia cases are preventable through lifestyle changes.',
-    links: [
-      { label: "Family History & Alzheimer's — Alzheimer's Association", url: 'https://www.alz.org/alzheimers-dementia/what-is-alzheimers/causes-and-risk-factors/genetics' },
-      { label: 'APOE Gene Explained — NIA', url: 'https://www.nia.nih.gov/health/alzheimers-causes-and-risk-factors/genetics-alzheimers-disease' },
-      { label: 'Lancet 2024 — 45% Dementia Is Preventable', url: 'https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)01296-0/fulltext' },
-    ],
-  },
-  {
-    cat: 'AGE & MIDLIFE',
-    icon: '🧠',
-    title: 'Why Midlife Is the Critical Window',
-    body: 'Changes that lead to Alzheimer\'s begin decades before symptoms appear. Taking action in your 40s and 50s has the greatest impact on your long-term brain health.',
-    links: [
-      { label: "Early Detection — Alzheimer's Association", url: 'https://www.alz.org/alzheimers-dementia/diagnosis/early-detection' },
-      { label: 'Modifiable Risk Factors — NIA', url: 'https://www.nia.nih.gov/health/alzheimers-and-dementia/what-do-we-know-about-diet-and-prevention-alzheimers-disease' },
-      { label: 'Brain Health in Midlife — CDC', url: 'https://www.cdc.gov/aging/data/dementia.htm' },
-    ],
-  },
+    "cat": "FAMILY",
+    "icon": "users",
+    "title": "Genetics Is Not Destiny",
+    "links": [
+      {
+        "label": "Lancet 2024 — 45% Dementia Is Preventable",
+        "url": "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)01296-0/fulltext"
+      }
+    ]
+  }
 ];
-
-export default function TipsScreen({ navigation }) {
-  const { colors } = useTheme();
-  const styles = useThemedStyles(createStyles);
-
-  const [expanded, setExpanded] = useState(null);
-  const caregiverRequestCount = useCaregiverRequestCount();
-
-  function openLink(url) {
-    Linking.openURL(url).catch(() => {
-      log.warn('TipsScreen: could not open URL', url);
-    });
-  }
-
-  function toggle(idx) {
-    setExpanded(prev => (prev === idx ? null : idx));
-  }
-
-  return (
-    <>
-      <SafeAreaView style={styles.safeTop} />
-      <SafeAreaView style={styles.safeBottom}>
-        <View style={styles.root}>
-          <LinearGradient
-            colors={[colors.background, colors.background]}
-            style={StyleSheet.absoluteFillObject}
-          />
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scroll}
-          >
-            <View style={styles.headerRow}>
-              <TouchableOpacity
-                style={styles.backBtn}
-                onPress={() => navigation.navigate('Report')}
-                activeOpacity={0.8}
-              >
-                <Feather name="chevron-left" size={26} color={colors.secondary} />
-              </TouchableOpacity>
-              <Text style={styles.heading}>Research Tips</Text>
-              <View style={styles.headerSpacer} />
-            </View>
-            <Text style={styles.sub}>
-              Research resources on the factors used to calculate your research score.
-            </Text>
-
-            {TIPS.map((tip, idx) => {
-              const open = expanded === idx;
-              return (
-                <View key={idx} style={styles.card}>
-                  <TouchableOpacity
-                    style={styles.cardHeader}
-                    onPress={() => toggle(idx)}
-                    activeOpacity={0.8}
-                  >
-                    <View style={styles.catRow}>
-                      <Text style={styles.catIcon}>{tip.icon}</Text>
-                      <View>
-                        <Text style={styles.catLabel}>{tip.cat}</Text>
-                        <Text style={styles.catTitle}>{tip.title}</Text>
-                      </View>
-                    </View>
-                    <Feather
-                      name={open ? 'chevron-up' : 'chevron-down'}
-                      size={18}
-                      color={colors.secondary}
-                    />
-                  </TouchableOpacity>
-
-                  {open && (
-                    <View style={styles.cardBody}>
-                      <Text style={styles.bodyText}>{tip.body}</Text>
-                      <View style={styles.links}>
-                        {tip.links.map((lnk, i) => (
-                          <TouchableOpacity
-                            key={i}
-                            style={styles.linkRow}
-                            onPress={() => openLink(lnk.url)}
-                            activeOpacity={0.7}
-                          >
-                            <Feather name="external-link" size={12} color={colors.accent} style={{ marginRight: 7, marginTop: 2 }} />
-                            <Text style={styles.linkText}>{lnk.label}</Text>
-                          </TouchableOpacity>
-                        ))}
-                      </View>
-                    </View>
-                  )}
-                </View>
-              );
-            })}
-
-            <View style={{ height: 80 }} />
-          </ScrollView>
-
-          {/* Bottom nav — Tips active */}
-          <View style={styles.navWrap}>
-            <View style={styles.nav}>
-              {[
-                { label: 'Home',    icon: 'home',         active: false, onPress: () => navigation.navigate('Report') },
-                { label: 'Sleep',   icon: 'moon',         active: false, onPress: () => navigation.navigate('SleepLog') },
-                { label: 'Tips',    icon: 'book-open',    active: true,  onPress: null },
-                { label: 'Caregiver', icon: 'users',      active: false, onPress: () => navigation.navigate('Caregiver'), badgeCount: caregiverRequestCount },
-                { label: 'Profile', icon: 'user',         active: false, onPress: () => navigation.navigate('Profile') },
-              ].map(t => (
-                <TouchableOpacity
-                  key={t.label}
-                  style={styles.navItem}
-                  onPress={t.onPress}
-                  disabled={t.active}
-                  activeOpacity={0.7}
-                >
-                  {t.badgeCount > 0 && (
-                    <View style={styles.navBadge}>
-                      <Text style={styles.navBadgeText}>{t.badgeCount > 9 ? '9+' : t.badgeCount}</Text>
-                    </View>
-                  )}
-                  <Feather name={t.icon} size={22} color={t.active ? colors.accentSoft : colors.secondary} />
-                  <Text style={[styles.navLabel, t.active && { color: colors.accentSoft }]}>{t.label}</Text>
-                  {t.active && <View style={styles.activeDot} />}
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        </View>
-      </SafeAreaView>
-    </>
-  );
+export default function TipsScreen({navigation}) {
+ const {colors}=useTheme();const badgeCount=useCaregiverRequestCount();
+ const open=url=>Linking.openURL(url).catch(()=>Alert.alert('Link unavailable','Please try again later.'));
+ return <InsetSafeAreaView edges={['top']} style={{flex:1,backgroundColor:colors.background}}>
+  <ScrollView contentContainerStyle={{paddingTop:16,paddingHorizontal:20,paddingBottom:20,gap:14}}>
+   <Text style={{fontFamily:'Lexend_800ExtraBold',fontSize:26,color:colors.text}}>Research Tips</Text>
+   {selected.map(tip=><View key={tip.cat} style={{paddingVertical:14,paddingHorizontal:16,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:16,gap:10}}>
+    <View style={{flexDirection:'row',alignItems:'center',gap:10}}><View style={{width:36,height:36,borderRadius:18,backgroundColor:colors.tint,alignItems:'center',justifyContent:'center'}}><Feather name={tip.icon} size={18} color={colors.accent}/></View><Text style={{flex:1,fontFamily:'Lexend_700Bold',fontSize:15,color:colors.text}}>{tip.title}</Text><Text style={{fontFamily:'Lexend_800ExtraBold',fontSize:10,letterSpacing:0.6,paddingVertical:3,paddingHorizontal:8,borderRadius:8,backgroundColor:colors.tint,color:colors.accent}}>{tip.cat}</Text></View>
+    {tip.links.map(link=><TouchableOpacity key={link.url} onPress={()=>open(link.url)} accessibilityRole="link" style={{flexDirection:'row',alignItems:'center',gap:6,minHeight:32}}><Text style={{flexShrink:1,fontFamily:'Lexend_600SemiBold',fontSize:13,lineHeight:19.5,color:colors.accent}}>{link.label}</Text><Feather name="external-link" size={14} color={colors.accent}/></TouchableOpacity>)}
+   </View>)}
+  </ScrollView>
+  <DesignNav navigation={navigation} active="Tips" badgeCount={badgeCount}/>
+ </InsetSafeAreaView>;
 }
-
-const createStyles = (colors) => StyleSheet.create({
-  safeTop:    { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: colors.background },
-  root:       { flex: 1 },
-  scroll:     { padding: 20, paddingTop: 32 },
-  headerRow:  { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  backBtn:    { alignItems: 'center', height: 40, justifyContent: 'center', width: 40 },
-  headerSpacer: { width: 40 },
-  heading:    { color: colors.text, fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  sub:        { color: colors.secondary, fontSize: 13, lineHeight: 20, marginBottom: 24 },
-
-  card:       { backgroundColor: colors.surface, borderRadius: 16, borderWidth: 1, borderColor: colors.border, marginBottom: 12, overflow: 'hidden' },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
-  catRow:     { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
-  catIcon:    { fontSize: 22 },
-  catLabel:   { color: colors.accent, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', letterSpacing: 0.8, marginBottom: 2 },
-  catTitle:   { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-
-  cardBody:   { borderTopWidth: 1, borderTopColor: colors.border, padding: 16, paddingTop: 14 },
-  bodyText:   { color: colors.secondary, fontSize: 13, lineHeight: 20, marginBottom: 14 },
-  links:      { gap: 10 },
-  linkRow:    { flexDirection: 'row', alignItems: 'flex-start' },
-  linkText:   { color: colors.accent, fontSize: 12, lineHeight: 18, flex: 1, textDecorationLine: 'underline' },
-
-  navWrap:    { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.background, borderTopWidth: 1, borderTopColor: colors.border },
-  nav:        { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
-  navItem:    { alignItems: 'center', width: 64 },
-  navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
-  navBadgeText: { color: colors.onBrand, fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  navLabel:   { color: colors.secondary, fontSize: 10, marginTop: 4, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  navLabelDisabled: { color: colors.disabledText },
-  activeDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: colors.brandSoft, position: 'absolute', bottom: -8 },
-});

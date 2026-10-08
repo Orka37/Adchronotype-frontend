@@ -1,4 +1,6 @@
-import { useTheme, useThemedStyles } from '../context/ThemeContext';
+import DesignNav from '../components/DesignNav';
+import appConfig from '../../app.json';
+import { useTheme, useThemedStyles } from '../theme/designTheme';
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
@@ -202,7 +204,7 @@ export default function ProfileScreen({ navigation }) {
           <View style={styles.card}>
             <View style={styles.chronoRow}>
               <View style={styles.chronoIconWrap}>
-                <Text style={{ fontSize: 20 }}>🌙</Text>
+                <Feather name="moon" size={20} color={colors.accent} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.chronoTitle}>Know Your Sleep Type</Text>
@@ -258,33 +260,11 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.logoutText}>Log Out</Text>
           </TouchableOpacity>
 
-          <Text style={styles.version}>ADChronotype v1.0.0</Text>
-          <View style={{ height: 100 }} />
+          <Text style={styles.version}>ADChronotype v{appConfig.expo.version}</Text>
+          <View style={{ height: 16 }} />
         </ScrollView>
 
-        {/* Bottom nav */}
-        <View style={styles.navWrap}>
-          <View style={styles.nav}>
-            {[
-              { label: 'Home',    icon: 'home',      active: false, onPress: () => navigation.navigate('Report') },
-              { label: 'Sleep',   icon: 'moon',      active: false, onPress: () => navigation.navigate('SleepLog') },
-              { label: 'Tips',    icon: 'book-open', active: false, onPress: () => navigation.navigate('Tips') },
-              { label: 'Caregiver', icon: 'users',   active: false, onPress: () => navigation.navigate('Caregiver'), badgeCount: caregiverRequestCount },
-              { label: 'Profile', icon: 'user',      active: true,  onPress: null },
-            ].map(t => (
-              <TouchableOpacity key={t.label} style={styles.navItem} onPress={t.onPress} disabled={t.active} activeOpacity={0.7}>
-                {t.badgeCount > 0 && (
-                  <View style={styles.navBadge}>
-                    <Text style={styles.navBadgeText}>{t.badgeCount > 9 ? '9+' : t.badgeCount}</Text>
-                  </View>
-                )}
-                <Feather name={t.icon} size={22} color={t.active ? colors.accentSoft : colors.secondary} />
-                <Text style={[styles.navLabel, t.active && { color: colors.accentSoft }]}>{t.label}</Text>
-                {t.active && <View style={styles.activeDot} />}
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+        <DesignNav navigation={navigation} active="Profile" badgeCount={caregiverRequestCount} />
       </View>
 
       <AppearancePicker visible={showAppearance} onClose={() => setShowAppearance(false)} />
@@ -385,31 +365,31 @@ function MenuItem({ icon, label, onPress, badge, disabled = false, danger = fals
 const createStyles = (colors) => StyleSheet.create({
   root:        { flex: 1, backgroundColor: colors.background },
   safeTop:     { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  headerRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 20, paddingBottom: 8 },
-  headerTitle: { color: colors.text, fontSize: 22, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  editBtn:     { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, backgroundColor: colors.accent + '22', borderRadius: 20, borderWidth: 1, borderColor: colors.accent + '44' },
+  headerRow:   {flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingHorizontal:20,paddingTop:16,paddingBottom:14},
+  headerTitle: {color:colors.text,fontSize:24,fontFamily:'Lexend_800ExtraBold'},
+  editBtn:     {flexDirection:'row',alignItems:'center',gap:6,paddingHorizontal:14,minHeight:40,backgroundColor:colors.tint,borderRadius:20},
   editBtnText: { color: colors.accent, fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  avatarSection: { alignItems: 'center', paddingVertical: 20 },
-  avatarRing:  { width: 82, height: 82, borderRadius: 41, borderWidth: 3, borderColor: colors.accent, padding: 3, marginBottom: 12 },
-  avatar:      { flex: 1, borderRadius: 38, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
+  avatarSection: {alignItems:'center',gap:4,marginBottom:14},
+  avatarRing:  {width:84,height:84,borderRadius:42,borderWidth:3,borderColor:colors.accent,padding:3,marginBottom:4},
+  avatar:      {flex:1,borderRadius:38,backgroundColor:colors.tint,alignItems:'center',justifyContent:'center'},
   initials:    { color: colors.accent, fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  displayName: { color: colors.text, fontSize: 19, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 3 },
+  displayName: {color:colors.text,fontSize:18,fontFamily:'Lexend_700Bold'},
   nameEditRow: { flexDirection: 'row', marginBottom: 4, paddingHorizontal: 24 },
   nameInput:   { flex: 1, color: colors.text, fontSize: 15, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', backgroundColor: colors.surface, borderRadius: 10, borderWidth: 1.5, borderColor: colors.accent, paddingHorizontal: 12, paddingVertical: 8 },
-  username:    { color: colors.secondary, fontSize: 13, marginBottom: 2 },
-  email:       { color: colors.muted, fontSize: 12 },
-  statsRow:    { flexDirection: 'row', gap: 8, marginHorizontal: 18, marginBottom: 20 },
-  statCard:    { flex: 1, minHeight: 76, backgroundColor: colors.surface, borderRadius: 13, paddingVertical: 11, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border },
-  statVal:     { color: colors.accent, fontSize: 17, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 2 },
-  statLevelVal:{ color: '#E9A94A', fontSize: 13, lineHeight: 17, minHeight: 34, textAlign: 'center', textAlignVertical: 'center' },
-  statKey:     { color: colors.secondary, fontSize: 9, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', letterSpacing: 0.3 },
-  sectionLabel:{ color: colors.muted, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', letterSpacing: 1, marginHorizontal: 20, marginBottom: 7, marginTop: 4 },
-  card:        { marginHorizontal: 18, backgroundColor: colors.surface, borderRadius: 16, borderWidth: 1, borderColor: colors.border, marginBottom: 16, overflow: 'hidden' },
+  username:    {color:colors.secondary,fontSize:12,fontFamily:'Lexend_400Regular'},
+  email:       {color:colors.muted,fontSize:11.5,fontFamily:'Lexend_400Regular'},
+  statsRow:    {flexDirection:'row',gap:8,marginHorizontal:20,marginBottom:14},
+  statCard:    {flex:1,minHeight:64,backgroundColor:colors.surface,borderRadius:14,paddingVertical:12,paddingHorizontal:6,alignItems:'center',justifyContent:'center',borderWidth:1,borderColor:colors.border},
+  statVal:     {color:colors.accent,fontSize:18,fontFamily:'Lexend_800ExtraBold',marginBottom:3},
+  statLevelVal:{color:colors.warningStrong,fontSize:12,fontFamily:'Lexend_800ExtraBold',textAlign:'center'},
+  statKey:     {color:colors.secondary,fontSize:9.5,fontFamily:'Lexend_700Bold',textTransform:'uppercase',letterSpacing:0.3},
+  sectionLabel:{color:colors.muted,fontSize:11,fontFamily:'Lexend_800ExtraBold',letterSpacing:1.1,marginHorizontal:20,marginBottom:10,marginTop:0},
+  card:        {marginHorizontal:20,backgroundColor:colors.surface,borderRadius:16,borderWidth:1,borderColor:colors.border,marginBottom:14,overflow:'hidden'},
   divider:     { height: 1, backgroundColor: colors.border, marginLeft: 48 },
-  menuItem:    { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 14 },
+  menuItem:    {flexDirection:'row',alignItems:'center',minHeight:52,paddingHorizontal:14,paddingVertical:10},
   menuItemDisabled: { opacity: 0.8 },
   menuIcon:    { width: 34, alignItems: 'center' },
-  menuLabel:   { flex: 1, color: colors.text, fontSize: 14, fontFamily: 'Lexend_500Medium', fontWeight: 'normal' },
+  menuLabel:   {flex:1,color:colors.text,fontSize:14,fontFamily:'Lexend_600SemiBold'},
   menuLabelDanger: { color: '#D9694F', fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   menuLabelDisabled: { color: colors.secondary },
   badgeWrap:   { backgroundColor: colors.border, borderRadius: 9, paddingHorizontal: 7, paddingVertical: 2 },
@@ -417,36 +397,28 @@ const createStyles = (colors) => StyleSheet.create({
 
   // Chronotype section
   chronoRow:     { flexDirection: 'row', alignItems: 'flex-start', gap: 12, padding: 14, paddingBottom: 10 },
-  chronoIconWrap:{ width: 36, height: 36, borderRadius: 10, backgroundColor: colors.accent + '22', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  chronoIconWrap:{width:38,height:38,borderRadius:19,backgroundColor:colors.tint,alignItems:'center',justifyContent:'center'},
   chronoTitle:   { color: colors.text, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 4 },
-  chronoSub:     { color: colors.secondary, fontSize: 11, lineHeight: 16 },
-  meqBtn:        { flexDirection: 'row', alignItems: 'center', gap: 7, marginHorizontal: 14, marginBottom: 12, backgroundColor: colors.accent + '15', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, borderWidth: 1, borderColor: colors.accent + '33' },
-  meqBtnText:    { color: colors.accent, fontSize: 12, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', flex: 1 },
-  updateBtn:     { flexDirection: 'row', alignItems: 'center', margin: 14, marginTop: 12, backgroundColor: colors.brand, borderRadius: 12, paddingVertical: 13, paddingHorizontal: 14, justifyContent: 'center' },
-  updateBtnText: { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', textAlign: 'center', flex: 1 },
-  updateHint:    { color: colors.muted, fontSize: 10, lineHeight: 15, marginHorizontal: 14, marginBottom: 12, textAlign: 'center' },
+  chronoSub:     {color:colors.secondary,fontSize:12,fontFamily:'Lexend_400Regular',lineHeight:17.4},
+  meqBtn:        {flexDirection:'row',alignItems:'center',gap:7,marginHorizontal:14,marginBottom:12,backgroundColor:colors.tint,borderRadius:10,minHeight:44,paddingHorizontal:12},
+  meqBtnText:    {color:colors.accent,fontSize:13,fontFamily:'Lexend_600SemiBold',flex:1},
+  updateBtn:     {flexDirection:'row',alignItems:'center',margin:14,marginTop:12,backgroundColor:colors.brand,borderRadius:12,minHeight:48,paddingVertical:10,paddingHorizontal:14,justifyContent:'center'},
+  updateBtnText: {color:colors.onBrand,fontSize:13.5,fontFamily:'Lexend_700Bold',textAlign:'center',flex:1},
+  updateHint:    {color:colors.muted,fontSize:11,fontFamily:'Lexend_400Regular',lineHeight:16.5,marginHorizontal:14,marginBottom:12,textAlign:'center'},
 
-  logoutBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginHorizontal: 18, borderRadius: 14, borderWidth: 1.5, borderColor: '#D9694F44', paddingVertical: 14, backgroundColor: '#D9694F11', marginBottom: 14 },
+  logoutBtn:   {flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,marginHorizontal:20,borderRadius:14,borderWidth:1,borderColor:colors.border,minHeight:50,backgroundColor:colors.surface,marginBottom:14},
   logoutText:  { color: '#D9694F', fontSize: 14, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  version:     { color: colors.muted, fontSize: 11, textAlign: 'center', marginBottom: 8 },
+  version:     {fontFamily:'Lexend_400Regular', color: colors.muted, fontSize: 11, textAlign: 'center', marginBottom: 8 },
 
   // nav
-  navWrap:    { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.background, borderTopWidth: 1, borderTopColor: colors.border },
-  nav:        { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
-  navItem:    { alignItems: 'center', width: 64 },
-  navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
-  navBadgeText: { color: colors.onBrand, fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  navLabel:   { color: colors.secondary, fontSize: 10, marginTop: 4, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  navLabelDisabled: { color: colors.disabledText },
-  activeDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: colors.brandSoft, position: 'absolute', bottom: -8 },
 
   // MEQ modal
   overlay:        { flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', alignItems: 'center', justifyContent: 'center', padding: 24 },
   popup:          { backgroundColor: colors.surface, borderRadius: 18, padding: 22, width: '100%', borderWidth: 1, borderColor: colors.border, position: 'relative' },
   popupClose:     { position: 'absolute', top: 14, right: 18, zIndex: 10 },
-  popupCloseText: { color: colors.secondary, fontSize: 22 },
+  popupCloseText: {fontFamily:'Lexend_400Regular', color: colors.secondary, fontSize: 22 },
   popupTitle:     { color: colors.text, fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 12, paddingRight: 20 },
-  popupBody:      { color: colors.secondary, fontSize: 13, lineHeight: 20 },
+  popupBody:      {fontFamily:'Lexend_400Regular', color: colors.secondary, fontSize: 13, lineHeight: 20 },
   popupBtn:       { backgroundColor: colors.brand, borderRadius: 12, paddingVertical: 11, paddingHorizontal: 20 },
   popupBtnText:   { color: colors.onBrand, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   popupBtnSecondary:     { borderRadius: 12, paddingVertical: 11, paddingHorizontal: 16, borderWidth: 1, borderColor: colors.border },

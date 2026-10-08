@@ -1,15 +1,16 @@
-import { useTheme, useThemedStyles } from '../context/ThemeContext';
-import React, { useCallback, useRef, useState } from 'react';
+import DesignNav from '../components/DesignNav';
+import { useTheme, useThemedStyles } from '../theme/designTheme';
+import React, { useCallback, useState } from 'react';
 import {
   StyleSheet, Text, View, SafeAreaView, TouchableOpacity,
-  ScrollView, Platform, RefreshControl, Animated, Linking, Modal,
+  ScrollView, Platform, RefreshControl, Linking, Modal,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import Svg, { Circle } from 'react-native-svg';
-import { useFocusEffect } from '@react-navigation/native';
 import { useOnboarding } from '../context/OnboardingContext';
 import { useCaregiverRequestCount } from '../hooks/useCaregiverRequestCount';
+import { useAuth } from '../context/AuthContext';
 import { log } from '../utils/logger';
 import {
   RESEARCH_DISCLAIMER,
@@ -17,63 +18,6 @@ import {
   RESEARCH_METHODOLOGY,
   RESEARCH_SOURCES,
 } from '../constants/researchDisclosure';
-
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-
-const SUGGESTIONS = [
-  {
-    cat: 'CHRONOTYPE',
-    icon: '🌙',
-    title: "What's Your Chronotype?",
-    body: "Your sleep timing is tied to your biological clock. Learn how your chronotype affects brain health.",
-    links: [
-      { label: 'Sleep Foundation — Chronotype Guide', url: 'https://www.sleepfoundation.org/circadian-rhythm/chronotype' },
-      { label: 'Healthline — Can You Change Your Chronotype?', url: 'https://www.healthline.com/health/sleep/chronotype' },
-      { label: 'Take the Chronotype Quiz (MEQ)', url: 'https://www.cet-surveys.com/index.php?sid=61524' },
-    ],
-  },
-  {
-    cat: 'SLEEP QUALITY',
-    icon: '😴',
-    title: 'How Sleep Protects Your Brain',
-    body: "During deep sleep your brain flushes out toxic proteins linked to Alzheimer's. Consistent quality sleep is one of the most powerful protective factors.",
-    links: [
-      { label: "Alzheimer's Association — Sleep & Alzheimer's", url: 'https://www.alz.org/alzheimers-dementia/research_progress/sleep-and-alzheimers' },
-      { label: 'NIH — How Sleep Clears the Brain', url: 'https://newsinhealth.nih.gov/2013/11/sleep-your-brain' },
-      { label: 'CDC — Sleep Hygiene Tips', url: 'https://www.cdc.gov/sleep/about_sleep/sleep_hygiene.html' },
-    ],
-  },
-  {
-    cat: 'BMI & DIET',
-    icon: '⚖️',
-    title: 'Weight, Diet and Brain Risk',
-    body: 'Body weight and diet are modifiable factors studied in relation to dementia risk.',
-    links: [
-      { label: "Alzheimer's Society — BMI & Dementia Risk", url: 'https://www.alzheimers.org.uk/about-dementia/managing-the-risk-of-dementia/reduce-your-risk-of-dementia/obesity' },
-      { label: 'Harvard — Mediterranean Diet & Brain Health', url: 'https://www.health.harvard.edu/mind-and-mood/the-mind-diet' },
-    ],
-  },
-  {
-    cat: 'FAMILY HISTORY',
-    icon: '👪',
-    title: 'Genetics Is Not Destiny',
-    body: 'Having a family history raises risk but does not determine outcome. Up to 45% of dementia cases are preventable through lifestyle.',
-    links: [
-      { label: "Alzheimer's Association — Genetics & Risk", url: 'https://www.alz.org/alzheimers-dementia/what-is-alzheimers/causes-and-risk-factors/genetics' },
-      { label: 'Lancet 2024 — 45% Dementia Is Preventable', url: 'https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)01296-0/fulltext' },
-    ],
-  },
-  {
-    cat: 'AGE & MIDLIFE',
-    icon: '🧠',
-    title: 'Why Midlife Is the Critical Window',
-    body: "Changes that lead to Alzheimer's begin decades before symptoms. Taking action in your 40s and 50s has the greatest impact.",
-    links: [
-      { label: "Early Detection — Alzheimer's Association", url: 'https://www.alz.org/alzheimers-dementia/diagnosis/early-detection' },
-      { label: 'Brain Health in Midlife — CDC', url: 'https://www.cdc.gov/aging/data/dementia.htm' },
-    ],
-  },
-];
 
 function impactLabel(val) {
   const abs = Math.abs(val);
@@ -84,22 +28,19 @@ function impactLabel(val) {
 
 export default function ReportScreen({ navigation }) {
   const { colors } = useTheme();
+  const { signOut } = useAuth();
   const styles = useThemedStyles(createStyles);
 
   const {
-    predictionResult,
+    predictionResult, refreshPredictionState,
     heightFt, heightIn, heightCm, weight, unit,
   } = useOnboarding();
-  const scoreAnim = useRef(new Animated.Value(0)).current;
   const [refreshing, setRefreshing] = useState(false);
-  const [sugOpen,    setSugOpen]    = useState(false);
-  const [sugIdx,     setSugIdx]     = useState(0);
   const [showResearchDetails, setShowResearchDetails] = useState(false);
   const caregiverRequestCount = useCaregiverRequestCount();
 
   const score      = predictionResult?.prediction ?? 0;
   const similarityLabel = score >= 60 ? 'Higher Similarity' : score >= 30 ? 'Moderate Similarity' : 'Lower Similarity';
-  const riskColor  = score >= 60 ? '#D9694F' : score >= 30 ? '#E9A94A' : '#7EC49A';
   const getHeightCmValue = () => {
     if (unit === 'kg' && heightCm) return Number(heightCm);
     if (heightFt) return Math.round(((Number(heightFt || 0) * 12) + Number(heightIn || 0)) * 2.54);
@@ -117,31 +58,14 @@ export default function ReportScreen({ navigation }) {
   const bmi        = predictionResult?.bmi ?? localBmi;
   const baseline   = predictionResult?.baseline ?? null;
   const factors    = predictionResult?.factor_contributions ?? null;
-  useFocusEffect(
-    useCallback(() => {
-      scoreAnim.setValue(0);
-      Animated.timing(scoreAnim, { toValue: score, duration: 1500, useNativeDriver: false }).start();
-      log.debug('ReportScreen focused', { score, similarityLabel });
-      return () => scoreAnim.stopAnimation();
-    }, [score, similarityLabel])
-  );
-
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    scoreAnim.setValue(0);
-    setTimeout(() => {
-      setRefreshing(false);
-      Animated.timing(scoreAnim, { toValue: score, duration: 1500, useNativeDriver: false }).start();
-    }, 600);
-  }, [score]);
+    try { await refreshPredictionState(); } finally { setRefreshing(false); }
+  }, [refreshPredictionState]);
 
   function openLink(url) {
     Linking.openURL(url).catch(() => log.warn('ReportScreen: could not open URL', url));
   }
-
-  const CIRC = 2 * Math.PI * 36;
-  const dashOffset = scoreAnim.interpolate({ inputRange: [0, 100], outputRange: [-CIRC, 0] });
-  const sug = SUGGESTIONS[sugIdx];
 
   const FACTOR_KEYS = [
     { key: 'chronotype', label: 'Chronotype' },
@@ -163,12 +87,13 @@ export default function ReportScreen({ navigation }) {
   return (
     <>
       <SafeAreaView style={styles.safeTop} />
-      <SafeAreaView style={styles.safeBottom}>
+      <View style={styles.safeBottom}>
         <View style={styles.root}>
           <LinearGradient colors={[colors.background, colors.background]} style={StyleSheet.absoluteFillObject} />
 
           <ScrollView
-            style={styles.scroll}
+            style={{flex:1}}
+            contentContainerStyle={styles.scroll}
             showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accentSoft} colors={[colors.brandSoft]} progressBackgroundColor={colors.surface} />
@@ -176,7 +101,7 @@ export default function ReportScreen({ navigation }) {
           >
             {/* Header */}
             <View style={styles.header}>
-              <Text style={styles.appTitle}>ADChronotype</Text>
+              <Text style={styles.appTitle}>ADChronotype</Text><TouchableOpacity accessibilityLabel="Log out" onPress={signOut} style={{width:44,height:44,borderRadius:22,backgroundColor:colors.tint,alignItems:'center',justifyContent:'center'}}><Feather name="log-out" size={20} color={colors.accent}/></TouchableOpacity>
             </View>
 
             <TouchableOpacity
@@ -184,155 +109,32 @@ export default function ReportScreen({ navigation }) {
               onPress={() => navigation.navigate('CognitiveTest')}
               activeOpacity={0.85}
             >
-              <MaterialCommunityIcons name="brain" size={17} color={colors.accent} />
+              <Feather name="activity" size={18} color={colors.accent} />
               <Text style={styles.cognitiveBtnText}>Take Cognitive Test</Text>
             </TouchableOpacity>
 
-            {/* Main content — two column layout matching image 4 */}
-            <View style={styles.mainRow}>
-
-              {/* LEFT — Score */}
-              <View style={styles.leftCol}>
-                <Text style={styles.colTitle}>Score</Text>
-                <Text style={styles.scoreLabel}>Research Similarity Score</Text>
-
-                <View style={styles.ringWrap}>
-                  <Svg width={100} height={100} viewBox="0 0 100 100">
-                    <Circle cx="50" cy="50" r="44" stroke={colors.border} strokeWidth="8" fill="transparent" />
-                    <AnimatedCircle
-                      cx="50" cy="50" r="44"
-                      stroke={riskColor}
-                      strokeWidth="8" fill="transparent"
-                      strokeDasharray={2 * Math.PI * 44}
-                      strokeDashoffset={scoreAnim.interpolate({ inputRange: [0, 100], outputRange: [-(2 * Math.PI * 44), 0] })}
-                      strokeLinecap="round"
-                      rotation="-90" origin="50,50"
-                    />
-                  </Svg>
-                  <View style={styles.ringCenter}>
-                    <Text style={[styles.scoreNum, { color: riskColor }]}>{score}%</Text>
-                  </View>
-                </View>
-
-                <View style={[styles.riskBadge, { borderColor: riskColor }]}>
-                  <Text style={styles.riskIcon}>{score >= 60 ? '⚠️' : score >= 30 ? '⚠️' : '✅'}</Text>
-                  <Text style={[styles.riskText, { color: riskColor }]}>{similarityLabel}</Text>
-                </View>
-
-                {/* Disclaimer */}
-                <View style={styles.disclaimer}>
-                  <Text style={styles.disclaimerTitle}>IMPORTANT — NOT A CLINICAL DIAGNOSIS</Text>
-                  <Text style={styles.disclaimerBody}>{RESEARCH_DISCLAIMER_SHORT}</Text>
-                  <TouchableOpacity
-                    style={styles.researchToggle}
-                    onPress={() => setShowResearchDetails(true)}
-                    activeOpacity={0.75}
-                  >
-                    <Text style={styles.researchToggleText}>
-                      View full disclaimer and research sources
-                    </Text>
-                    <Feather name="info" size={12} color={colors.accent} />
-                  </TouchableOpacity>
-                </View>
-
-                {/* BMI */}
-                {bmiStatus && (
-                  <View style={[styles.bmiCard, { borderColor: bmiStatus.color }]}>
-                    <Text style={[styles.bmiText, { color: bmiStatus.color }]}>
-                      Current BMI: {bmi.toFixed(1)} — {bmiStatus.label}
-                    </Text>
-                  </View>
-                )}
-
-                {/* View Tips button */}
-                <TouchableOpacity
-                  style={styles.tipsBtn}
-                  onPress={() => navigation.navigate('Tips')}
-                  activeOpacity={0.85}
-                >
-                  <Text style={styles.tipsBtnText}>View Tips</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.reportBtn}
-                  onPress={() => navigation.navigate('DoctorReport')}
-                  activeOpacity={0.85}
-                >
-                  <Feather name="file-text" size={14} color={colors.accent} />
-                  <Text style={styles.reportBtnText}>Doctor Report</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* RIGHT — Factor Contribution */}
-              <View style={styles.rightCol}>
-                <Text style={styles.colTitle}>Factor Contribution</Text>
-                {baseline != null && (
-                  <Text style={styles.baselineText}>Baseline: {baseline}% — shifted by factors below</Text>
-                )}
-
-                {factors ? (
-                  <View style={styles.factorGrid}>
-                    {FACTOR_KEYS.map(({ key, label }) => {
-                      const val = factors[key];
-                      if (val === undefined || val === null) return null;
-                      const impact = impactLabel(val);
-                      const sign = val > 0 ? '+' : '';
-                      return (
-                        <View key={key} style={styles.factorCell}>
-                          <Text style={styles.factorLabel}>{label}</Text>
-                          <Text style={[styles.factorVal, { color: impact.color }]}>{sign}{val.toFixed(1)}%</Text>
-                          <View style={[styles.impactBadge, { backgroundColor: impact.color + '22' }]}>
-                            <Text style={styles.impactIcon}>{impact.icon}</Text>
-                            <Text style={[styles.impactText, { color: impact.color }]}>{impact.text}</Text>
-                          </View>
-                        </View>
-                      );
-                    })}
-                  </View>
-                ) : (
-                  <View style={styles.factorPlaceholder}>
-                    <Text style={styles.factorPlaceholderText}>
-                      Factor contribution information is unavailable for this result.
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </View>
-
-            <View style={{ height: 100 }} />
+<View style={styles.scoreCard}>
+ <Text style={styles.scoreLabel}>Cognitive Similarity Score</Text>
+ <View style={styles.ringWrap}>
+  <Svg width={160} height={160} viewBox="0 0 160 160"><Circle cx="80" cy="80" r="68" stroke={colors.border} strokeWidth="14" fill="none"/><Circle cx="80" cy="80" r="68" stroke={colors.accent} strokeWidth="14" fill="none" strokeDasharray={2*Math.PI*68} strokeDashoffset={2*Math.PI*68*(1-Math.min(100,Math.max(0,score))/100)} strokeLinecap="round" rotation="-90" origin="80,80"/></Svg>
+  <View style={styles.ringCenter}><Text style={[styles.scoreNum,{color:colors.accent}]}>{score}%</Text></View>
+ </View>
+ <View style={[styles.riskBadge,{backgroundColor:score<30?colors.successSurface:colors.warningSurface}]}><Feather name={score<30?'check':'alert-triangle'} size={16} color={score<30?colors.successText:colors.warningStrong}/><Text style={[styles.riskText,{color:score<30?colors.successText:colors.warningStrong}]}>{similarityLabel}</Text></View>
+</View>
+<View style={styles.disclaimer}><Text style={styles.disclaimerTitle}>IMPORTANT — NOT A CLINICAL DIAGNOSIS</Text><Text style={styles.disclaimerBody}>{RESEARCH_DISCLAIMER_SHORT}</Text><TouchableOpacity onPress={()=>setShowResearchDetails(true)}><Text style={styles.researchToggleText}>View full disclaimer and research sources</Text></TouchableOpacity></View>
+{bmiStatus&&<View style={[styles.bmiCard,{backgroundColor:bmi>=18.5&&bmi<25?colors.successSurface:colors.warningSurface}]}><Text style={[styles.bmiText,{color:bmi>=18.5&&bmi<25?colors.successText:colors.warningStrong}]}>{bmiStatus.label} · BMI {Number(bmi).toFixed(1)}</Text></View>}
+<View style={{marginBottom:14}}><Text style={styles.colTitle}>Factor Contribution</Text><Text style={styles.baselineText}>{baseline!=null ? 'Baseline: '+baseline+'% — shifted by the factors below' : 'Baseline shifted by the factors below'}</Text></View>
+<View style={styles.factorGrid}>{factors?FACTOR_KEYS.map(({key,label})=>{const val=factors[key];if(val==null)return null;const impact=impactLabel(val);return <View key={key} style={styles.factorCell}>
+ <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8}}><Text style={styles.factorLabel}>{label}</Text><View style={{flexDirection:'row',alignItems:'center',gap:8}}><Text style={[styles.factorVal,{color:val<0?colors.successText:'#B8432F'}]}>{val>0?'+':''}{Number(val).toFixed(1)}%</Text><View style={[styles.impactBadge,{backgroundColor:impact.color+'22'}]}><Text style={[styles.impactText,{color:Math.abs(val)>=10?'#8F3220':Math.abs(val)>=5?colors.warningStrong:colors.successText}]}>{impact.text}</Text></View></View></View>
+ <View style={{height:8,borderRadius:4,backgroundColor:colors.border}}><View style={{height:8,borderRadius:4,width:Math.min(100,Math.abs(val)/Math.max(1,...Object.values(factors).map(v=>Math.abs(Number(v)||0)))*100)+'%',backgroundColor:val<0?'#5FA77A':Math.abs(val)>=10?'#D9694F':'#E3A24A'}}/></View>
+ </View>}):<Text style={styles.factorPlaceholderText}>Factor contribution information is unavailable for this result.</Text>}</View>
+<View style={{flexDirection:'row',gap:10,marginTop:18}}><TouchableOpacity style={styles.tipsBtn} onPress={()=>navigation.navigate('Tips')}><Text style={styles.tipsBtnText}>View Tips</Text></TouchableOpacity><TouchableOpacity style={styles.reportBtn} onPress={()=>navigation.navigate('DoctorReport')}><Text style={styles.reportBtnText}>Doctor Report</Text></TouchableOpacity></View>
+            <View style={{height:20}}/>
           </ScrollView>
 
-          {/* Bottom nav — Home | Sleep | Tips | Profile */}
-          <View style={styles.navWrap}>
-            <View style={styles.nav}>
-              {[
-                { label: 'Home',    icon: 'home',      active: true,  onPress: null },
-                { label: 'Sleep',   icon: 'moon',      active: false, onPress: () => navigation.navigate('SleepLog') },
-                { label: 'Tips',    icon: 'book-open', active: false, onPress: () => navigation.navigate('Tips') },
-                { label: 'Caregiver', icon: 'users',   active: false, onPress: () => navigation.navigate('Caregiver'), badgeCount: caregiverRequestCount },
-                { label: 'Profile', icon: 'user',      active: false, onPress: () => navigation.navigate('Profile') },
-              ].map(t => (
-                <TouchableOpacity
-                  key={t.label}
-                  style={styles.navItem}
-                  onPress={t.onPress}
-                  disabled={t.active}
-                  activeOpacity={0.7}
-                >
-                  {t.badgeCount > 0 && (
-                    <View style={styles.navBadge}>
-                      <Text style={styles.navBadgeText}>{t.badgeCount > 9 ? '9+' : t.badgeCount}</Text>
-                    </View>
-                  )}
-                  <Feather name={t.icon} size={22} color={t.active ? colors.accentSoft : colors.secondary} />
-                  <Text style={[styles.navLabel, t.active && { color: colors.accentSoft }]}>{t.label}</Text>
-                  {t.active && <View style={styles.activeDot} />}
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
+<DesignNav navigation={navigation} active="Report" badgeCount={caregiverRequestCount}/>
         </View>
-      </SafeAreaView>
+      </View>
 
       <Modal
         visible={showResearchDetails}
@@ -375,92 +177,63 @@ const createStyles = (colors) => StyleSheet.create({
   safeTop:    { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
   safeBottom: { flex: 1, backgroundColor: colors.background },
   root:       { flex: 1 },
-  scroll:     { flex: 1, paddingHorizontal: 16 },
+  scroll:     {paddingHorizontal:20},
 
-  header:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 28, marginBottom: 20 },
+  header:     {flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginTop:16,marginBottom:14},
   appTitle:   { color: colors.text, fontSize: 22, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  headerCognitiveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.accent + '77', borderRadius: 12, paddingVertical: 13, marginBottom: 18 },
+  headerCognitiveBtn: {flexDirection:'row',gap:8,minHeight:50,borderRadius:14,backgroundColor:colors.tint,alignItems:'center',justifyContent:'center',marginBottom:14},
 
-  mainRow:    { flexDirection: 'row', gap: 14 },
+  colTitle:   {color:colors.text,fontSize:16,fontFamily:'Lexend_800ExtraBold',marginBottom:2},
 
-  leftCol:    { flex: 1 },
-  rightCol:   { flex: 1 },
-  colTitle:   { color: colors.text, fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 6 },
-
-  scoreLabel: { color: colors.secondary, fontSize: 11, marginBottom: 14 },
-  ringWrap:   { width: 100, height: 100, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
+  scoreLabel: {color:colors.secondary,fontSize:13,fontFamily:'Lexend_700Bold'},
+  ringWrap:   {width:160,height:160,alignItems:'center',justifyContent:'center'},
   ringCenter: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
-  scoreNum:   { fontSize: 22, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  scoreNum:   {fontSize:40,fontFamily:'Lexend_800ExtraBold'},
 
-  riskBadge:  { flexDirection: 'row', alignItems: 'center', gap: 5, borderWidth: 1.5, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 4, alignSelf: 'flex-start', marginBottom: 14 },
-  riskIcon:   { fontSize: 12 },
-  riskText:   { fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  riskBadge:  {flexDirection:'row',gap:6,paddingVertical:7,paddingHorizontal:16,borderRadius:20,alignItems:'center'},
 
-  disclaimer:      { backgroundColor: colors.warningSurface, borderRadius: 10, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: colors.warningBorder },
-  disclaimerTitle: { color: colors.warningStrong, fontSize: 11, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 6 },
-  disclaimerBody:  { color: colors.warningBody, fontSize: 10, lineHeight: 15 },
-  researchToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4, marginTop: 7, paddingTop: 6, borderTopWidth: 1, borderTopColor: colors.warningBorder },
-  researchToggleText: { color: colors.accent, fontSize: 9, lineHeight: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', flex: 1 },
+  riskText:   {fontSize:14,fontFamily:'Lexend_700Bold'},
+
+  disclaimer:      {backgroundColor:colors.warningSurface,borderWidth:1,borderColor:colors.warningBorder,borderRadius:14,paddingVertical:12,paddingHorizontal:14,gap:6,marginBottom:14},
+  disclaimerTitle: {color:colors.warningStrong,fontSize:12,fontFamily:'Lexend_800ExtraBold'},
+  disclaimerBody:  {color:colors.warningBody,fontSize:12.5,fontFamily:'Lexend_400Regular',lineHeight:18.75},
+
+  researchToggleText: {color:colors.accent,fontSize:12.5,fontFamily:'Lexend_700Bold'},
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', alignItems: 'center', justifyContent: 'center', padding: 20 },
   researchModal: { width: '100%', maxWidth: 520, maxHeight: '82%', backgroundColor: colors.surface, borderRadius: 16, borderWidth: 1, borderColor: colors.accent + '66', padding: 18 },
   modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 },
   modalTitle: { color: colors.text, fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', flex: 1 },
   modalScroll: { flexGrow: 0 },
   modalSectionTitle: { color: colors.text, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 10, marginBottom: 5 },
-  modalBody: { color: colors.secondary, fontSize: 12, lineHeight: 19 },
+  modalBody: {fontFamily:'Lexend_400Regular', color: colors.secondary, fontSize: 12, lineHeight: 19 },
   modalLinkRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, paddingVertical: 7 },
-  modalLink: { color: colors.accent, fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
+  modalLink: {fontFamily:'Lexend_400Regular', color: colors.accent, fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
   modalCloseButton: { backgroundColor: colors.brand, borderRadius: 10, alignItems: 'center', paddingVertical: 11, marginTop: 14 },
   modalCloseText: { color: colors.onBrand, fontSize: 14, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 
-  bmiCard:    { borderWidth: 1.5, borderRadius: 10, padding: 10, marginBottom: 12 },
-  bmiText:    { fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', textAlign: 'center' },
+  bmiCard:    {backgroundColor:colors.successSurface,borderRadius:14,padding:12,alignItems:'center',marginBottom:14},
+  bmiText:    {color:colors.successText,fontSize:14,fontFamily:'Lexend_700Bold'},
 
-  tipsBtn:    { backgroundColor: colors.brand, borderRadius: 12, paddingVertical: 12, alignItems: 'center', marginTop: 4 },
-  tipsBtnText:{ color: colors.onBrand, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  reportBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: colors.surface, borderRadius: 12, borderWidth: 1, borderColor: colors.accent + '55', paddingVertical: 11, marginTop: 10 },
-  reportBtnText:{ color: colors.accent, fontSize: 12, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  cognitiveBtnText: { color: colors.accent, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  tipsBtn:    {flex:1,minHeight:52,backgroundColor:colors.brand,borderRadius:14,alignItems:'center',justifyContent:'center'},
+  tipsBtnText:{color:colors.onBrand,fontSize:15,fontFamily:'Lexend_700Bold'},
+  reportBtn:  {flex:1,minHeight:52,backgroundColor:colors.surface,borderRadius:14,borderWidth:1.5,borderColor:colors.accent,alignItems:'center',justifyContent:'center'},
+  reportBtnText:{color:colors.accent,fontSize:15,fontFamily:'Lexend_700Bold'},
+  cognitiveBtnText: {color:colors.accent,fontSize:14,fontFamily:'Lexend_700Bold'},
 
-  baselineText: { color: colors.secondary, fontSize: 10, marginBottom: 12, lineHeight: 15 },
-  factorGrid:   { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  factorCell:   { width: '47%', gap: 2, minHeight: 84 },
-  factorLabel:  { color: colors.secondary, fontSize: 11, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  factorVal:    { fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  impactBadge:  { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 8, paddingHorizontal: 6, paddingVertical: 3, alignSelf: 'flex-start', marginTop: 2 },
-  impactIcon:   { fontSize: 10 },
-  impactText:   { fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  baselineText: {color:colors.secondary,fontSize:12,fontFamily:'Lexend_400Regular'},
+  factorGrid:   {gap:9},
+  factorCell:   {backgroundColor:colors.surface,borderRadius:14,paddingVertical:12,paddingHorizontal:14,gap:8},
+  factorLabel:  {color:colors.text,fontSize:14,fontFamily:'Lexend_700Bold',flexShrink:1},
+  factorVal:    {fontSize:14,fontFamily:'Lexend_800ExtraBold'},
+  impactBadge:  {paddingVertical:3,paddingHorizontal:8,borderRadius:8},
 
-  factorPlaceholder:     { padding: 12, backgroundColor: colors.surface, borderRadius: 12, borderWidth: 1, borderColor: colors.border },
-  factorPlaceholderText: { color: colors.muted, fontSize: 11, lineHeight: 17 },
+  impactText:   {fontSize:10.5,fontFamily:'Lexend_700Bold'},
+
+  factorPlaceholderText: {fontFamily:'Lexend_400Regular', color: colors.muted, fontSize: 11, lineHeight: 17 },
 
   // suggestion bubble
-  sugWrap:      { position: 'absolute', bottom: 70, right: 14, zIndex: 100, alignItems: 'flex-end' },
-  sugDot:       { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: colors.accent, shadowOpacity: 0.7, shadowRadius: 8 },
-  sugBadge:     { position: 'absolute', top: -4, right: -4, width: 18, height: 18, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.background },
-  sugBadgeText: { color: colors.onBrand, fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  sugPanel:     { position: 'absolute', bottom: 56, right: 0, width: 255, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.accent + '55', borderRadius: 16, borderBottomRightRadius: 4, padding: 14 },
-  sugClose:     { position: 'absolute', top: -12, left: -12, width: 28, height: 28, borderRadius: 14, backgroundColor: '#D9694F', borderWidth: 2, borderColor: colors.background, alignItems: 'center', justifyContent: 'center', zIndex: 10 },
-  sugCloseText: { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', lineHeight: 16 },
-  sugTag:       { backgroundColor: colors.accent + '33', borderRadius: 8, paddingHorizontal: 7, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 7 },
-  sugTagText:   { color: colors.accent, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', letterSpacing: 0.4 },
-  sugTitle:     { color: colors.text, fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 5, lineHeight: 17 },
-  sugBody:      { color: colors.secondary, fontSize: 10, lineHeight: 15, marginBottom: 9 },
-  linkList:     { marginBottom: 10, gap: 7 },
-  linkRow:      { flexDirection: 'row', alignItems: 'flex-start' },
-  linkText:     { color: colors.accent, fontSize: 10, lineHeight: 14, flex: 1, textDecorationLine: 'underline' },
-  sugNav:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 8 },
-  sugCount:     { color: colors.grayStrong, fontSize: 9 },
-  sugArrow:     { width: 26, height: 26, borderRadius: 7, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' },
-  sugArrowText: { color: colors.gray, fontSize: 14, lineHeight: 18 },
 
   // bottom nav
-  navWrap:   { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.background, borderTopWidth: 1, borderTopColor: colors.border },
-  nav:       { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
-  navItem:   { alignItems: 'center', width: 64 },
-  navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
-  navBadgeText: { color: colors.onBrand, fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  navLabel:  { color: colors.secondary, fontSize: 10, marginTop: 4, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  navLabelDisabled: { color: colors.disabledText },
-  activeDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: colors.brandSoft, position: 'absolute', bottom: -8 },
+
+scoreCard: {backgroundColor:colors.surface,borderRadius:22,paddingTop:22,paddingBottom:18,paddingHorizontal:16,alignItems:'center',gap:8,marginBottom:14,shadowColor:'#78461E',shadowOpacity:0.08,shadowRadius:20,shadowOffset:{width:0,height:6},elevation:2},
 });

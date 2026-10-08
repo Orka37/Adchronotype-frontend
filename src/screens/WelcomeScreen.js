@@ -1,196 +1,27 @@
-import { useTheme, useThemedStyles } from '../context/ThemeContext';
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, Dimensions, Platform } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Svg, { Ellipse } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
+import { useTheme } from '../theme/designTheme';
 
-const { width } = Dimensions.get('window');
-
-export default function WelcomeScreen({ navigation }) {
-  const { colors } = useTheme();
-  const styles = useThemedStyles(createStyles);
-
-  return (
-    <>
-      <SafeAreaView style={styles.safeAreaTop} />
-      <SafeAreaView style={styles.safeAreaBottom}>
-        <View style={styles.container}>
-        <LinearGradient
-          colors={[colors.background, colors.background]}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }}
-        />
-        
-        {/* Hero Image area */}
-        <View style={styles.imageContainer}>
-          <Image 
-            source={require('../assets/home1.png')} 
-            style={styles.heroImage} 
-            resizeMode="cover"
-          />
-          {/* An overlay to fade the bottom of the image into the background */}
-          <LinearGradient
-            colors={['transparent', colors.background]}
-            style={styles.imageOverlay}
-          />
-        </View>
-
-        {/* Content Area */}
-        <View style={styles.contentContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.titleBold}>AD</Text>
-            <Text style={styles.titleRegular}>Chronotype</Text>
-          </View>
-
-          <Text style={styles.subtitle}>
-            Learn how sleep and lifestyle factors relate to cognitive health.
-          </Text>
-
-          <View style={styles.buttonsContainer}>
-            {/* Get Started Button */}
-            <TouchableOpacity 
-              style={styles.buttonContainer} 
-              activeOpacity={0.8}
-              onPress={() => navigation.navigate('SleepType')}
-            >
-              <LinearGradient
-                colors={[colors.brandSoft, colors.brand]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.primaryButton}
-              >
-                <Text style={styles.primaryButtonText}>Get Started</Text>
-                <Feather name="arrow-right" size={20} color={colors.onBrand} />
-              </LinearGradient>
-            </TouchableOpacity>
-
-            {/* About the Project Button */}
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              activeOpacity={0.8}
-              onPress={() => navigation.navigate('ProjectInfo')}
-            >
-              <Text style={styles.secondaryButtonText}>About the Project</Text>
-              <View style={styles.iconCircle}>
-                <Feather name="info" size={14} color={colors.accent} />
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-        </View>
-      </SafeAreaView>
-    </>
-  );
+export default function WelcomeScreen({navigation}) {
+ const {colors}=useTheme();
+ return <ScrollView style={{flex:1,backgroundColor:colors.background}} contentContainerStyle={{flexGrow:1}}>
+  <View style={{height:400,backgroundColor:'#E8A062',overflow:'hidden'}}>
+   <View style={{position:'absolute',top:120,left:'50%',marginLeft:-70,width:140,height:140,borderRadius:70,backgroundColor:'#FFE3B8'}} />
+   <View style={{position:'absolute',left:-40,right:-40,bottom:60,height:160}}><Svg width="100%" height="160" viewBox="0 0 470 160" preserveAspectRatio="none"><Ellipse cx="235" cy="80" rx="235" ry="80" fill="#D07C3C"/></Svg></View>
+   <View style={{position:'absolute',left:-60,right:-60,bottom:-40,height:160}}><Svg width="100%" height="160" viewBox="0 0 510 160" preserveAspectRatio="none"><Ellipse cx="255" cy="80" rx="255" ry="80" fill="#B8612A"/></Svg></View>
+   <LinearGradient colors={['transparent',colors.background]} style={{position:'absolute',left:0,right:0,bottom:0,height:120}} />
+  </View>
+  <View style={{flexGrow:1,alignItems:'center',gap:16,paddingHorizontal:28,paddingBottom:36,marginTop:-24}}>
+   <View style={{flexDirection:'row',alignItems:'baseline'}}><Text style={[s.brand,{color:colors.text,fontFamily:'Lexend_800ExtraBold'}]}>AD</Text><Text style={[s.brand,{color:colors.accent,fontFamily:'Lexend_600SemiBold'}]}>Chronotype</Text></View>
+   <Text style={{fontFamily:'Lexend_400Regular',fontSize:17,lineHeight:26.35,textAlign:'center',color:colors.secondary,marginBottom:12}}>Learn how sleep and lifestyle factors relate to cognitive health.</Text>
+   <View style={{width:'100%',marginTop:'auto',gap:14,paddingTop:20}}>
+    <TouchableOpacity onPress={()=>navigation.navigate('SleepType')} style={[s.button,{backgroundColor:colors.brand}]}><Text style={{fontFamily:'Lexend_700Bold',fontSize:18,color:colors.onBrand}}>Get Started</Text><Feather name="arrow-right" size={20} color={colors.onBrand}/></TouchableOpacity>
+    <TouchableOpacity onPress={()=>navigation.navigate('ProjectInfo')} style={[s.button,{minHeight:54,backgroundColor:colors.surface,borderWidth:1.5,borderColor:colors.border}]}><Text style={{fontFamily:'Lexend_600SemiBold',fontSize:17,color:colors.text}}>About the Project</Text><Feather name="info" size={18} color={colors.accent}/></TouchableOpacity>
+   </View>
+  </View>
+ </ScrollView>;
 }
-
-const createStyles = (colors) => StyleSheet.create({
-  safeAreaTop: {
-    flex: 0,
-    backgroundColor: colors.background,
-    paddingTop: Platform.OS === 'android' ? 25 : 0,
-  },
-  safeAreaBottom: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  imageContainer: {
-    height: '50%',
-    width: '100%',
-    position: 'relative',
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-    opacity: 0.28,
-  },
-  imageOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 180,
-  },
-  contentContainer: {
-    flex: 1,
-    paddingHorizontal: 30,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginTop: -40,
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    marginBottom: 16,
-    alignItems: 'center',
-  },
-  titleBold: {
-    fontSize: 36,
-    fontFamily: 'Lexend_700Bold', fontWeight: 'normal',
-    color: colors.text,
-    letterSpacing: -0.5,
-  },
-  titleRegular: {
-    fontSize: 36,
-    fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal',
-    color: colors.accent,
-    letterSpacing: -0.5,
-  },
-  subtitle: {
-    fontSize: 17,
-    color: colors.secondary,
-    textAlign: 'center',
-    lineHeight: 26,
-    marginBottom: 40,
-    paddingHorizontal: 10,
-  },
-  buttonsContainer: {
-    width: '100%',
-    gap: 16,
-  },
-  buttonContainer: {
-    width: '100%',
-    borderRadius: 14,
-    overflow: 'hidden',
-  },
-  primaryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 18,
-    paddingHorizontal: 24,
-  },
-  primaryButtonText: {
-    color: colors.onBrand,
-    fontSize: 18,
-    fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal',
-    marginRight: 8,
-  },
-  secondaryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 14,
-    borderWidth: 1.5,
-    borderColor: colors.outline,
-    backgroundColor: colors.surface,
-  },
-  secondaryButtonText: {
-    color: colors.text,
-    fontSize: 18,
-    fontFamily: 'Lexend_500Medium', fontWeight: 'normal',
-    marginRight: 8,
-  },
-  iconCircle: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 1.5,
-    borderColor: colors.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-  }
-});
+const s=StyleSheet.create({brand:{fontFamily:'Lexend_400Regular',fontSize:38,letterSpacing:-0.5},button:{minHeight:56,borderRadius:16,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8}});

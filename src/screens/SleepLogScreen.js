@@ -1,4 +1,5 @@
-import { useTheme, useThemedStyles } from '../context/ThemeContext';
+import DesignNav from '../components/DesignNav';
+import { useTheme, useThemedStyles } from '../theme/designTheme';
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
@@ -77,7 +78,7 @@ function DrumWheel({ items, selected, onSelect }) {
               onPress={() => onSelect(v)}
               activeOpacity={0.7}
             >
-              <Text style={{ color: isSel ? colors.onBrand : colors.muted, fontSize: isSel ? 22 : 17, fontWeight: isSel ? '800' : '500' }}>
+              <Text style={{fontFamily:'Lexend_400Regular', color: isSel ? colors.onBrand : colors.muted, fontSize: isSel ? 22 : 17, fontWeight: isSel ? '800' : '500' }}>
                 {String(v).padStart(2, '0')}
               </Text>
             </TouchableOpacity>
@@ -175,18 +176,6 @@ function mapBackendLogs(records) {
     };
     return acc;
   }, {});
-}
-
-function averageForRange(logs, startDate, dayCount) {
-  const values = [];
-  for (let i = 0; i < dayCount; i += 1) {
-    const date = new Date(startDate);
-    date.setDate(startDate.getDate() + i);
-    const logForDay = logs[toDateKey(date)];
-    if (logForDay) values.push(logForDay.hours);
-  }
-  if (!values.length) return null;
-  return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
 export default function SleepLogScreen({ navigation }) {
@@ -342,26 +331,12 @@ export default function SleepLogScreen({ navigation }) {
     const logForDay = sleepLogs[key];
     return { day, hours: logForDay?.hours ?? 0, logged: !!logForDay };
   });
-  const loggedDays = weekly.filter(d => d.logged);
-  const avgHours = loggedDays.length
-    ? (loggedDays.reduce((sum, d) => sum + d.hours, 0) / loggedDays.length).toFixed(1)
-    : null;
-  const maxH = Math.max(8, ...weekly.map(d => d.hours));
   const todayLog = sleepLogs[toDateKey()];
   const showSleepForm = !todayLog || editingToday;
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayLog = sleepLogs[toDateKey(yesterday)];
-  const sleepChangePct = todayLog && yesterdayLog
-    ? Math.round(((todayLog.hours - yesterdayLog.hours) / yesterdayLog.hours) * 100)
-    : null;
-  const previousWeekStart = new Date(weekStart);
-  previousWeekStart.setDate(weekStart.getDate() - 7);
-  const currentWeekAverage = averageForRange(sleepLogs, weekStart, 7);
-  const previousWeekAverage = averageForRange(sleepLogs, previousWeekStart, 7);
-  const weekChangePct = currentWeekAverage && previousWeekAverage
-    ? Math.round(((currentWeekAverage - previousWeekAverage) / previousWeekAverage) * 100)
-    : null;
+  let streak = 0;
+  const streakDate = new Date();
+  if (!sleepLogs[toDateKey(streakDate)]) streakDate.setDate(streakDate.getDate()-1);
+  while (sleepLogs[toDateKey(streakDate)]) {streak++;streakDate.setDate(streakDate.getDate()-1);}
   const clockItems = pickerStep === 'hour' ? HOURS : MINUTES;
   const selectedClockValue = pickerStep === 'hour' ? tmpH : tmpM;
   const handAngle = clockAngleForValue(selectedClockValue, pickerStep);
@@ -371,223 +346,37 @@ export default function SleepLogScreen({ navigation }) {
   return (
     <>
       <SafeAreaView style={styles.safeTop} />
-      <SafeAreaView style={styles.safeBottom}>
+      <View style={styles.safeBottom}>
         <View style={styles.root}>
           <LinearGradient colors={[colors.background, colors.background]} style={StyleSheet.absoluteFillObject} />
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
 
             {/* Header */}
-            <View style={styles.header}>
-              <Text style={styles.heading}>Sleep Log</Text>
-              <Text style={styles.date}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</Text>
-            </View>
-
-            {/* Weekly chart */}
-            <View style={styles.card}>
-              <View style={styles.cardRow}>
-                <Text style={styles.cardTitle}>This Week</Text>
-                <View style={styles.avgBadge}>
-                  <Text style={styles.avgText}>
-                    {loadingLogs ? 'Loading...' : avgHours ? `Avg ${avgHours}h` : 'No logs yet'}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.bars}>
-                {weekly.map((d, i) => (
-                  <View key={i} style={styles.barCol}>
-                    <View style={styles.barTrack}>
-                      {d.logged
-                        ? <View style={[styles.barFill, { height: `${(d.hours / maxH) * 100}%`, backgroundColor: d.hours >= 7 ? colors.brand : '#E9A94A' }]} />
-                        : <View style={[styles.barFill, { height: '8%', backgroundColor: colors.border }]} />
-                      }
-                    </View>
-                    <Text style={styles.barLabel}>{d.day}</Text>
-                  </View>
-                ))}
-              </View>
-
-              {loadingLogs ? (
-                <View style={styles.statPill}>
-                  <ActivityIndicator color={colors.accent} />
-                </View>
-              ) : loggedDays.length === 0 ? (
-                <View style={styles.statPill}>
-                  <Text style={styles.statPillText}>Save tonight's sleep to start building your weekly chart.</Text>
-                </View>
-              ) : sleepChangePct != null ? (
-                <View style={[styles.statPill, { backgroundColor: sleepChangePct >= 0 ? '#7EC49A11' : '#D9694F11', borderColor: sleepChangePct >= 0 ? '#7EC49A33' : '#D9694F33' }]}>
-                  <Text style={styles.statPillText}>
-                    Sleep duration{' '}
-                    <Text style={{ color: sleepChangePct >= 0 ? '#7EC49A' : '#D9694F', fontFamily: 'Lexend_700Bold', fontWeight: 'normal' }}>
-                      {sleepChangePct >= 0 ? `+${sleepChangePct}%` : `${sleepChangePct}%`}
-                    </Text>
-                    {' '}compared to yesterday
-                  </Text>
-                </View>
-              ) : (
-                <View style={styles.statPill}>
-                  <Text style={styles.statPillText}>Log another day to compare sleep trends.</Text>
-                </View>
-              )}
-
-              <View style={[styles.statPill, styles.weekPill]}>
-                <Text style={styles.statPillText}>
-                  {weekChangePct != null
-                    ? (
-                      <>
-                        Weekly average{' '}
-                        <Text style={{ color: weekChangePct >= 0 ? '#7EC49A' : '#D9694F', fontFamily: 'Lexend_700Bold', fontWeight: 'normal' }}>
-                          {weekChangePct >= 0 ? `+${weekChangePct}%` : `${weekChangePct}%`}
-                        </Text>
-                        {' '}vs last week
-                      </>
-                    )
-                    : 'Log more days to compare this week with last week.'}
-                </Text>
-              </View>
-              {dataSource === 'local' && (
-                <Text style={styles.sourceHint}>Showing sleep logs saved on this device.</Text>
-              )}
-            </View>
-
-            {/* Log tonight */}
-            <View style={styles.card}>
-              <View style={styles.logHeaderRow}>
-                <Text style={styles.cardTitle}>{todayLog ? "Today's Sleep" : "Log Tonight's Sleep"}</Text>
-                {todayLog && !showSleepForm && (
-                  <TouchableOpacity
-                    style={styles.editLogBtn}
-                    onPress={editTodayLog}
-                    activeOpacity={0.8}
-                  >
-                    <Feather name="edit-2" size={13} color={colors.accent} />
-                    <Text style={styles.editLogText}>Edit</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-
-              {!showSleepForm ? (
-                <View style={styles.collapsedLog}>
-                  <View style={styles.collapsedItem}>
-                    <Text style={styles.collapsedLabel}>🌙 Bedtime</Text>
-                    <Text style={styles.collapsedValue}>{todayLog.bedTime}</Text>
-                  </View>
-                  <View style={styles.collapsedDivider} />
-                  <View style={styles.collapsedItem}>
-                    <Text style={styles.collapsedLabel}>☀️ Wake-up</Text>
-                    <Text style={styles.collapsedValue}>{todayLog.wakeTime}</Text>
-                  </View>
-                </View>
-              ) : (
-                <>
-                  {/* Bedtime tap card */}
-                  <Text style={styles.fieldLabel}>🌙  Bedtime</Text>
-                  <TouchableOpacity style={styles.timeCard} onPress={() => openPicker('bed')} activeOpacity={0.8}>
-                    <Text style={styles.timeCardVal}>{fmt(bedH, bedM, bedAP)}</Text>
-                    <Feather name="chevron-down" size={16} color={colors.secondary} />
-                  </TouchableOpacity>
-
-                  {/* Wake time tap card */}
-                  <Text style={[styles.fieldLabel, { marginTop: 12 }]}>☀️  Wake-up Time</Text>
-                  <TouchableOpacity style={[styles.timeCard, styles.wakeTimeCard]} onPress={() => openPicker('wake')} activeOpacity={0.8}>
-                    <Text style={styles.timeCardVal}>{fmt(wakeH, wakeM, wakeAP)}</Text>
-                    <Feather name="chevron-down" size={16} color={colors.secondary} />
-                  </TouchableOpacity>
-
-                  {/* Duration */}
-                  <View style={styles.durRow}>
-                    <Text style={styles.durLabel}>Total sleep:</Text>
-                    <Text style={styles.durVal}>{calcDuration()}</Text>
-                  </View>
-
-                  <Text style={[styles.fieldLabel, { marginTop: 12 }]}>Sleep Quality</Text>
-                  <View style={styles.qualityScale}>
-                    <TouchableOpacity
-                      style={styles.stepperBtn}
-                      onPress={() => setQualityScore(value => Math.max(0, value - 1))}
-                      activeOpacity={0.8}
-                    >
-                      <Feather name="minus" size={16} color={colors.accent} />
-                    </TouchableOpacity>
-                    <View style={styles.qualityValueWrap}>
-                      <Text style={styles.qualityValue}>{qualityScore}</Text>
-                      <Text style={styles.qualityRange}>0-21</Text>
-                    </View>
-                    <TouchableOpacity
-                      style={styles.stepperBtn}
-                      onPress={() => setQualityScore(value => Math.min(21, value + 1))}
-                      activeOpacity={0.8}
-                    >
-                      <Feather name="plus" size={16} color={colors.accent} />
-                    </TouchableOpacity>
-                  </View>
-
-                  <Text style={[styles.fieldLabel, { marginTop: 12 }]}>Awakenings</Text>
-                  <View style={styles.stepperRow}>
-                    <TouchableOpacity
-                      style={styles.stepperBtn}
-                      onPress={() => setAwakenings(value => Math.max(0, value - 1))}
-                      activeOpacity={0.8}
-                    >
-                      <Feather name="minus" size={16} color={colors.accent} />
-                    </TouchableOpacity>
-                    <Text style={styles.stepperVal}>{awakenings}</Text>
-                    <TouchableOpacity
-                      style={styles.stepperBtn}
-                      onPress={() => setAwakenings(value => Math.min(20, value + 1))}
-                      activeOpacity={0.8}
-                    >
-                      <Feather name="plus" size={16} color={colors.accent} />
-                    </TouchableOpacity>
-                  </View>
-
-                  {/* Save */}
-                  <TouchableOpacity
-                    style={[styles.saveBtn, saved && styles.saveBtnOk]}
-                    onPress={handleSave}
-                    disabled={saving}
-                    activeOpacity={0.85}
-                  >
-                    {saving
-                      ? <ActivityIndicator color={colors.onBrand} />
-                      : <Text style={styles.saveBtnText}>{saved ? '✓ Saved!' : todayLog ? 'Update Sleep Log' : 'Save Sleep Log'}</Text>
-                    }
-                  </TouchableOpacity>
-                </>
-              )}
-
-              <Text style={styles.hint}>💡 Logging daily helps you track your sleep patterns over time.</Text>
-            </View>
-
-            <View style={{ height: 80 }} />
+<View style={styles.header}><Text style={styles.heading}>Sleep Log</Text><Text style={styles.date}>This Week</Text></View>
+<View style={styles.streak}><Feather name="zap" size={26} color={colors.warningStrong}/><View><Text style={styles.streakTitle}>{streak}-day streak</Text><Text style={styles.streakBody}>{loadingLogs?'Loading sleep logs…':streak?'Keep logging your sleep each night':'Save tonight’s sleep to start your streak'}</Text></View></View>
+<View style={styles.days}>{weekly.map((day,i)=><View key={day.day} style={{flex:1,alignItems:'center',gap:6}}><Text style={styles.dayLabel}>{day.day}</Text><View style={{width:34,height:34,borderRadius:17,backgroundColor:day.logged?'#5FA77A':i===(new Date().getDay()+6)%7?colors.brand:colors.border,alignItems:'center',justifyContent:'center'}}>{day.logged?<Feather name="check" size={16} color="#FFFFFF"/>:i===(new Date().getDay()+6)%7?<Text style={{color:'#FFFFFF'}}>·</Text>:null}</View></View>)}</View>
+<View style={{gap:10}}><View style={styles.logHeaderRow}><Text style={styles.cardTitle}>Tonight</Text>{!showSleepForm&&<TouchableOpacity style={styles.editLogBtn} onPress={editTodayLog}><Text style={styles.editLogText}>Edit</Text></TouchableOpacity>}</View>
+{[['bed','moon','Bedtime',showSleepForm?fmt(bedH,bedM,bedAP):todayLog?.bedTime],['wake','sun','Wake time',showSleepForm?fmt(wakeH,wakeM,wakeAP):todayLog?.wakeTime]].map(([key,icon,label,value])=><TouchableOpacity key={key} disabled={!showSleepForm} onPress={()=>openPicker(key)} style={styles.timeCard}><View style={{flexDirection:'row',alignItems:'center',gap:12}}><Feather name={icon} size={22} color={key==='bed'?colors.accent:'#C98A12'}/><Text style={styles.timeLabel}>{label}</Text></View><Text style={styles.timeCardVal}>{value}</Text></TouchableOpacity>)}
+<View style={styles.durRow}><Text style={styles.durLabel}>Total sleep</Text><Text style={styles.durVal}>{showSleepForm?calcDuration():todayLog?Math.floor(todayLog.hours)+'h '+Math.round((todayLog.hours%1)*60)+'m':'—'}</Text></View>
+</View>
+<View style={{gap:8,marginTop:16}}>
+  <Text style={styles.fieldLabel}>Sleep Quality</Text>
+  <View style={styles.qualityScale}>
+    <TouchableOpacity accessibilityLabel="Decrease sleep quality score" disabled={!showSleepForm} style={styles.stepperBtn} onPress={()=>setQualityScore(value=>Math.max(0,value-1))}><Feather name="minus" size={16} color={colors.accent}/></TouchableOpacity>
+    <View style={styles.qualityValueWrap}><Text style={styles.qualityValue}>{showSleepForm?qualityScore:todayLog?.qualityScore??'—'}</Text><Text style={styles.qualityRange}>0–21</Text></View>
+    <TouchableOpacity accessibilityLabel="Increase sleep quality score" disabled={!showSleepForm} style={styles.stepperBtn} onPress={()=>setQualityScore(value=>Math.min(21,value+1))}><Feather name="plus" size={16} color={colors.accent}/></TouchableOpacity>
+  </View>
+</View>
+<View style={styles.awakeningCard}><Text style={styles.fieldLabel}>Awakenings</Text><View style={{flexDirection:'row',gap:12,alignItems:'center'}}><TouchableOpacity accessibilityLabel="Fewer awakenings" disabled={!showSleepForm} style={styles.stepperBtn} onPress={()=>setAwakenings(v=>Math.max(0,v-1))}><Text style={styles.stepperVal}>−</Text></TouchableOpacity><Text style={styles.stepperVal}>{showSleepForm?awakenings:todayLog?.awakenings??0}</Text><TouchableOpacity accessibilityLabel="More awakenings" disabled={!showSleepForm} style={styles.stepperBtn} onPress={()=>setAwakenings(v=>Math.min(20,v+1))}><Text style={styles.stepperVal}>+</Text></TouchableOpacity></View></View>
+{showSleepForm&&<TouchableOpacity disabled={saving} onPress={handleSave} style={styles.saveBtn}>{saving?<ActivityIndicator color={colors.onBrand}/>:<Text style={styles.saveBtnText}>{todayLog?'Update Sleep Log':'Save Sleep Log'}</Text>}</TouchableOpacity>}
+<Text style={styles.sourceHint}>{dataSource==='local'?'Showing sleep logs saved on this device.':'Showing sleep logs saved to your account.'}</Text>
+            <View style={{height:20}}/>
           </ScrollView>
 
-          {/* Bottom nav */}
-          <View style={styles.navWrap}>
-            <View style={styles.nav}>
-              {[
-                { label: 'Home',    icon: 'home',      active: false, onPress: () => navigation.navigate('Report') },
-                { label: 'Sleep',   icon: 'moon',      active: true,  onPress: null },
-                { label: 'Tips',    icon: 'book-open', active: false, onPress: () => navigation.navigate('Tips') },
-                { label: 'Caregiver', icon: 'users',   active: false, onPress: () => navigation.navigate('Caregiver'), badgeCount: caregiverRequestCount },
-                { label: 'Profile', icon: 'user',      active: false, onPress: () => navigation.navigate('Profile') },
-              ].map(t => (
-                <TouchableOpacity key={t.label} style={styles.navItem} onPress={t.onPress} disabled={t.active} activeOpacity={0.7}>
-                  {t.badgeCount > 0 && (
-                    <View style={styles.navBadge}>
-                      <Text style={styles.navBadgeText}>{t.badgeCount > 9 ? '9+' : t.badgeCount}</Text>
-                    </View>
-                  )}
-                  <Feather name={t.icon} size={22} color={t.active ? colors.accentSoft : colors.secondary} />
-                  <Text style={[styles.navLabel, t.active && { color: colors.accentSoft }]}>{t.label}</Text>
-                  {t.active && <View style={styles.activeDot} />}
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
+<DesignNav navigation={navigation} active="SleepLog" badgeCount={caregiverRequestCount}/>
         </View>
-      </SafeAreaView>
+      </View>
 
       {/* Time picker modal */}
       <Modal visible={picker !== null} transparent animationType="slide">
@@ -665,69 +454,40 @@ const createStyles = (colors) => StyleSheet.create({
   safeTop:    { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
   safeBottom: { flex: 1, backgroundColor: colors.background },
   root:       { flex: 1 },
-  scroll:     { padding: 18, paddingTop: 28 },
+  scroll:     {paddingHorizontal:20,paddingTop:16,paddingBottom:20},
 
-  header:  { marginBottom: 18 },
-  heading: { color: colors.text, fontSize: 24, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  date:    { color: colors.secondary, fontSize: 12, marginTop: 2 },
+  header:  {marginTop:16,marginBottom:16,gap:4},
+  heading: {color:colors.text,fontSize:26,fontFamily:'Lexend_800ExtraBold'},
+  date:    {color:colors.secondary,fontSize:14,fontFamily:'Lexend_400Regular'},
 
-  card:     { backgroundColor: colors.surface, borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: colors.border },
-  cardRow:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
-  cardTitle:{ color: colors.text, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  avgBadge: { backgroundColor: colors.accent + '22', borderRadius: 9, paddingHorizontal: 9, paddingVertical: 3, borderWidth: 1, borderColor: colors.accent + '44' },
-  avgText:  { color: colors.accent, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  cardTitle:{color:colors.text,fontSize:15,fontFamily:'Lexend_800ExtraBold'},
+
   logHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
   editLogBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 10, borderWidth: 1, borderColor: colors.accent + '44', backgroundColor: colors.accent + '22', paddingHorizontal: 10, paddingVertical: 7 },
   editLogText: { color: colors.accent, fontSize: 12, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  collapsedLog: { backgroundColor: colors.background, borderRadius: 13, borderWidth: 1, borderColor: colors.border, overflow: 'hidden' },
-  collapsedItem: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 14 },
-  collapsedLabel: { color: colors.secondary, fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  collapsedValue: { color: colors.text, fontSize: 16, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  collapsedDivider: { height: 1, backgroundColor: colors.border },
 
-  bars:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 90, marginBottom: 12 },
-  barCol:   { alignItems: 'center', flex: 1 },
-  barTrack: { width: '65%', height: 76, justifyContent: 'flex-end', borderRadius: 4, overflow: 'hidden', backgroundColor: colors.background },
-  barFill:  { width: '100%', borderRadius: 4, position: 'absolute', bottom: 0 },
-  barLabel: { color: colors.muted, fontSize: 8, marginTop: 4, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  sourceHint:  {color:colors.secondary,fontSize:11.5,fontFamily:'Lexend_400Regular',textAlign:'center',marginTop:16},
 
-  statsRow:    { gap: 6 },
-  statPill:    { backgroundColor: '#7EC49A11', borderRadius: 9, paddingVertical: 7, paddingHorizontal: 11, borderWidth: 1, borderColor: '#7EC49A33' },
-  statPillText:{ color: colors.secondary, fontSize: 11, textAlign: 'center' },
-  weekPill:    { marginTop: 8, backgroundColor: colors.accent + '11', borderColor: colors.accent + '33' },
-  sourceHint:  { color: '#E9A94A', fontSize: 9, lineHeight: 14, textAlign: 'center', marginTop: 8 },
+  fieldLabel:  {color:colors.text,fontSize:14,fontFamily:'Lexend_700Bold'},
+  timeCard:    {flexDirection:'row',alignItems:'center',justifyContent:'space-between',minHeight:64,paddingVertical:14,paddingHorizontal:16,borderWidth:1,borderColor:colors.border,borderRadius:16,backgroundColor:colors.surface},
 
-  fieldLabel:  { color: colors.secondary, fontSize: 11, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 7 },
-  timeCard:    { backgroundColor: colors.background, borderRadius: 12, borderWidth: 1.5, borderColor: colors.accent + '44', paddingVertical: 14, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  wakeTimeCard:{ borderColor: '#fcd53f44' },
-  timeCardVal: { color: colors.text, fontSize: 22, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  timeCardVal: {color:colors.text,fontSize:18,fontFamily:'Lexend_800ExtraBold'},
 
-  durRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, backgroundColor: colors.background, borderRadius: 10, padding: 10 },
-  durLabel:{ color: colors.secondary, fontSize: 11 },
-  durVal:  { color: colors.accent, fontSize: 14, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
+  durRow:  {flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingVertical:12,paddingHorizontal:16,backgroundColor:colors.successSurface,borderRadius:14},
+  durLabel:{color:colors.successText,fontSize:13,fontFamily:'Lexend_600SemiBold'},
+  durVal:  {color:colors.successText,fontSize:16,fontFamily:'Lexend_800ExtraBold'},
 
   qualityScale: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.background, borderRadius: 12, borderWidth: 1, borderColor: colors.border, padding: 8 },
   qualityValueWrap: { alignItems: 'center' },
   qualityValue: { color: colors.text, fontSize: 22, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   qualityRange: { color: colors.secondary, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginTop: 2 },
-  stepperRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.background, borderRadius: 12, borderWidth: 1, borderColor: colors.border, padding: 8 },
-  stepperBtn: { width: 38, height: 38, borderRadius: 10, backgroundColor: colors.accent + '22', borderWidth: 1, borderColor: colors.accent + '44', alignItems: 'center', justifyContent: 'center' },
-  stepperVal: { color: colors.text, fontSize: 20, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 
-  saveBtn:    { backgroundColor: colors.brand, borderRadius: 12, height: 46, alignItems: 'center', justifyContent: 'center', marginTop: 14, marginBottom: 10 },
-  saveBtnOk:  { backgroundColor: '#7EC49A' },
-  saveBtnText:{ color: colors.onBrand, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  hint:       { color: colors.muted, fontSize: 10, textAlign: 'center', lineHeight: 16 },
+  stepperBtn: {width:40,height:40,borderRadius:20,borderWidth:1.5,borderColor:colors.border,alignItems:'center',justifyContent:'center',backgroundColor:colors.surface},
+  stepperVal: {color:colors.text,fontSize:18,fontFamily:'Lexend_800ExtraBold'},
 
+  saveBtn:    {backgroundColor:colors.brand,borderRadius:16,minHeight:54,alignItems:'center',justifyContent:'center',marginTop:16},
 
-  navWrap:   { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.background, borderTopWidth: 1, borderTopColor: colors.border },
-  nav:       { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
-  navItem:   { alignItems: 'center', width: 64 },
-  navBadge: { position: 'absolute', top: -5, right: 13, minWidth: 17, height: 17, borderRadius: 9, backgroundColor: '#D9694F', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, zIndex: 2 },
-  navBadgeText: { color: colors.onBrand, fontSize: 9, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  navLabel:  { color: colors.secondary, fontSize: 10, marginTop: 4, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  navLabelDisabled: { color: colors.disabledText },
-  activeDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: colors.brandSoft, position: 'absolute', bottom: -8 },
+  saveBtnText:{color:colors.onBrand,fontSize:16,fontFamily:'Lexend_700Bold'},
 
   // Time picker modal
   modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' },
@@ -749,11 +509,7 @@ const createStyles = (colors) => StyleSheet.create({
   clockNumberTextOn: { color: colors.onBrand },
   clockHandLayer: { position: 'absolute', left: 0, top: 0, zIndex: 1 },
   clockCenter:    { position: 'absolute', left: 124, top: 124, width: 12, height: 12, borderRadius: 6, backgroundColor: colors.brand, zIndex: 3 },
-  pickerBody:   { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: 8 },
-  drumWrap:     { flex: 1, alignItems: 'center' },
-  drumLabel:    { color: colors.muted, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 },
-  colon:        { color: colors.onBrand, fontSize: 28, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 18, paddingHorizontal: 8 },
-  ampmCol:      { alignItems: 'center', gap: 8, marginTop: 18, marginLeft: 10 },
+
   ampmRow:      { flexDirection: 'row', gap: 10, justifyContent: 'center', marginTop: 4 },
   apBtn:        { paddingHorizontal: 12, paddingVertical: 9, borderRadius: 9, borderWidth: 1.5, borderColor: colors.border, backgroundColor: colors.background },
   apBtnOn:      { backgroundColor: colors.brand, borderColor: colors.accent },
@@ -761,4 +517,11 @@ const createStyles = (colors) => StyleSheet.create({
   apTextOn:     { color: colors.onBrand },
   previewRow:   { alignItems: 'center', paddingVertical: 10, borderTopWidth: 1, borderTopColor: colors.border, marginTop: 8, marginHorizontal: 20 },
   previewText:  { color: colors.accent, fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', letterSpacing: 2 },
+awakeningCard: {flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingVertical:12,paddingHorizontal:16,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:14,marginTop:16},
+timeLabel: {color:colors.secondary,fontSize:14,fontFamily:'Lexend_600SemiBold'},
+dayLabel: {color:colors.secondary,fontSize:11,fontFamily:'Lexend_700Bold'},
+days: {flexDirection:'row',gap:6,marginBottom:16},
+streakBody: {color:colors.warningBody,fontSize:12,fontFamily:'Lexend_400Regular'},
+streakTitle: {color:colors.warningStrong,fontSize:17,fontFamily:'Lexend_800ExtraBold'},
+streak: {flexDirection:'row',gap:12,alignItems:'center',paddingVertical:14,paddingHorizontal:16,backgroundColor:colors.warningSurface,borderWidth:1,borderColor:colors.warningBorder,borderRadius:16,marginBottom:16},
 });

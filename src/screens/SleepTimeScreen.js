@@ -1,4 +1,4 @@
-import { useTheme, useThemedStyles } from '../context/ThemeContext';
+import { useTheme, useThemedStyles } from '../theme/designTheme';
 import React, { useState, useRef, useEffect } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity,
@@ -165,7 +165,7 @@ export default function SleepTimeScreen({ navigation }) {
     <>
       <SafeAreaView style={styles.safeAreaTop} />
       <SafeAreaView style={styles.safeAreaBottom}>
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={[styles.container,{flexGrow:1,flex:undefined}]} showsVerticalScrollIndicator={false}>
           <LinearGradient colors={[colors.background, colors.background]} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%' }} />
           <View style={styles.imageContainer}>
             <Image source={require('../assets/home1.png')} style={styles.heroImage} resizeMode="cover" />
@@ -177,7 +177,6 @@ export default function SleepTimeScreen({ navigation }) {
               <Feather name="chevron-left" size={28} color={colors.secondary} />
             </TouchableOpacity>
             <StepIndicator currentStep={2} totalSteps={5} />
-            <View style={{ width: 28 }} />
           </View>
 
           <View style={styles.contentWrapper}>
@@ -204,7 +203,7 @@ export default function SleepTimeScreen({ navigation }) {
               {/* Wake-up card */}
               <TouchableOpacity style={[styles.timeCard, styles.wakeCard]} onPress={() => openPicker('wake')} activeOpacity={0.8}>
                 <View style={styles.timeCardLeft}>
-                  <Feather name="sun" size={22} color="#fcd53f" />
+                  <Feather name="sun" size={24} color="#C98A12" />
                   <View style={styles.timeCardText}>
                     <Text style={styles.timeCardLabel}>Wake-up Time</Text>
                     <Text style={[styles.timeCardValue, !wakeTime && styles.placeholder]}>
@@ -239,7 +238,7 @@ export default function SleepTimeScreen({ navigation }) {
               <Text style={styles.nextButtonText}>Next</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
 
       {/* Custom time picker modal */}
@@ -321,33 +320,33 @@ const createStyles = (colors) => StyleSheet.create({
   safeAreaTop:    { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
   safeAreaBottom: { flex: 1, backgroundColor: colors.background },
   container:      { flex: 1, backgroundColor: colors.background, paddingHorizontal: 20 },
-  imageContainer: { position: 'absolute', top: 0, left: 0, right: 0, height: '50%', zIndex: -1 },
+  imageContainer: {display:'none'},
   heroImage:      { width: '100%', height: '100%', opacity: 0.9 },
   imageOverlay:   { position: 'absolute', bottom: 0, left: 0, right: 0, height: 180 },
-  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 24 },
-  backButton:     { padding: 4 },
-  contentWrapper: { flex: 1, paddingTop: 24 },
-  textContainer:  { alignItems: 'center', marginBottom: 32 },
-  title:          { fontSize: 28, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', color: colors.text, textAlign: 'center', lineHeight: 36, marginBottom: 10 },
-  subtitle:       { fontSize: 15, color: colors.secondary, textAlign: 'center' },
-  inputsContainer:{ gap: 14 },
+  header:         {flexDirection:'row',alignItems:'center',gap:12,paddingTop:16,paddingBottom:20},
+  backButton:     {width:44,height:44,alignItems:'center',justifyContent:'center'},
+  contentWrapper: {flex:1},
+  textContainer:  {marginBottom:22},
+  title:          {color:colors.text,fontSize:26,fontFamily:'Lexend_800ExtraBold',lineHeight:31.2,marginBottom:6,textAlign:'left'},
+  subtitle:       {color:colors.secondary,fontSize:14,fontFamily:'Lexend_400Regular',lineHeight:21},
+  inputsContainer:{gap:12},
 
-  timeCard:      { backgroundColor: colors.surface, borderRadius: 16, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1.5, borderColor: colors.accent + '44' },
-  wakeCard:      { borderColor: '#fcd53f44' },
+  timeCard:      {flexDirection:'row',alignItems:'center',justifyContent:'space-between',minHeight:76,paddingVertical:16,paddingHorizontal:18,backgroundColor:colors.surface,borderWidth:1.5,borderColor:colors.outline,borderRadius:18},
+  wakeCard:      { borderColor: colors.warningBorder },
   timeCardLeft:  { flexDirection: 'row', alignItems: 'center', gap: 14 },
   timeCardText:  {},
-  timeCardLabel: { color: colors.secondary, fontSize: 11, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 4 },
-  timeCardValue: { color: colors.text, fontSize: 24, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  placeholder:   { color: colors.muted, fontSize: 18 },
+  timeCardLabel: {color:colors.secondary,fontSize:12,fontFamily:'Lexend_600SemiBold',marginBottom:2},
+  timeCardValue: {color:colors.text,fontSize:24,fontFamily:'Lexend_800ExtraBold'},
+  placeholder:   {fontFamily:'Lexend_400Regular', color: colors.muted, fontSize: 18 },
 
-  summaryBox:    { backgroundColor: colors.surface, borderRadius: 14, padding: 16, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.border },
-  summaryLabel:  { color: colors.secondary, fontSize: 12 },
-  summaryValue:  { color: colors.text, fontSize: 20, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
+  summaryBox:    {flexDirection:'row',alignItems:'center',paddingVertical:16,paddingHorizontal:18,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:16},
+  summaryLabel:  {color:colors.secondary,fontSize:12,fontFamily:'Lexend_400Regular'},
+  summaryValue:  {color:colors.text,fontSize:20,fontFamily:'Lexend_700Bold'},
 
-  bottomContainer:    { marginBottom: 20, marginTop: 16 },
-  nextButton:         { backgroundColor: colors.brandSoft, paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
+  bottomContainer:    {paddingTop:20,paddingBottom:20},
+  nextButton:         {backgroundColor:colors.brand,minHeight:56,borderRadius:16,alignItems:'center',justifyContent:'center'},
   nextButtonDisabled: { opacity: 0.5 },
-  nextButtonText:     { color: colors.onBrand, fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  nextButtonText:     {color:colors.onBrand,fontSize:18,fontFamily:'Lexend_700Bold'},
 
   // Picker modal
   modalOverlay:   { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' },
@@ -379,4 +378,5 @@ const createStyles = (colors) => StyleSheet.create({
 
   previewRow:  { alignItems: 'center', paddingVertical: 12, borderTopWidth: 1, borderTopColor: colors.border, marginTop: 8, marginHorizontal: 20 },
   previewText: { color: colors.accent, fontSize: 28, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', letterSpacing: 2 },
+
 });

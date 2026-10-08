@@ -1,68 +1,14 @@
-import { useTheme, useThemedStyles } from '../context/ThemeContext';
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  View, Text, TouchableOpacity, StyleSheet,
-  SafeAreaView, ScrollView, Platform,
+  View, Text, TouchableOpacity,
+  ScrollView,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Circle, Path, Line, G } from 'react-native-svg';
+import { StatusBar } from 'expo-status-bar';
+import Svg, { Circle } from 'react-native-svg';
 import { log } from '../utils/logger';
 import { recordPreAuthLegalConsent } from '../utils/legalConsent';
 
-function BrainIllustration() {
-  return (
-    <Svg width={260} height={260} viewBox="0 0 260 260">
-      <Circle cx="130" cy="130" r="110" fill="#F4C9A8" opacity="0.6" />
-      <Circle cx="130" cy="130" r="90" fill="#F6D8BE" opacity="0.4" />
-      <G stroke="#B76334" strokeWidth="1.5" opacity="0.7">
-        <Line x1="20" y1="80"  x2="60"  y2="110" />
-        <Line x1="20" y1="80"  x2="30"  y2="55"  />
-        <Line x1="30" y1="55"  x2="50"  y2="40"  />
-        <Line x1="60" y1="110" x2="45"  y2="130" />
-        <Line x1="45" y1="130" x2="25"  y2="145" />
-        <Line x1="45" y1="130" x2="55"  y2="155" />
-        <Circle cx="20" cy="80"  r="4" fill="#E07B3C" />
-        <Circle cx="30" cy="55"  r="3" fill="#C96F37" />
-        <Circle cx="25" cy="145" r="4" fill="#E07B3C" />
-      </G>
-      <G stroke="#B76334" strokeWidth="1.5" opacity="0.7">
-        <Line x1="240" y1="90"  x2="200" y2="115" />
-        <Line x1="240" y1="90"  x2="245" y2="60"  />
-        <Line x1="245" y1="60"  x2="230" y2="40"  />
-        <Line x1="200" y1="115" x2="220" y2="140" />
-        <Line x1="220" y1="140" x2="245" y2="150" />
-        <Line x1="220" y1="140" x2="215" y2="165" />
-        <Circle cx="240" cy="90"  r="4" fill="#E07B3C" />
-        <Circle cx="245" cy="60"  r="3" fill="#C96F37" />
-        <Circle cx="245" cy="150" r="4" fill="#E07B3C" />
-      </G>
-      <Path
-        d="M130 45 C95 45, 68 68, 65 100 C62 125, 72 148, 85 162 C90 168, 92 178, 92 188 L168 188 C168 178, 170 168, 175 162 C188 148, 198 125, 195 100 C192 68, 165 45, 130 45 Z"
-        fill="#C96F37" stroke="#E07B3C" strokeWidth="2"
-      />
-      <Path d="M108 188 L108 205 L152 205 L152 188 Z" fill="#C96F37" stroke="#E07B3C" strokeWidth="1.5" />
-      <Circle cx="130" cy="115" r="52" fill="#EBA774" opacity="0.8" />
-      <Circle cx="138" cy="112" r="34" fill="#E07B3C" opacity="0.95" />
-      <Circle cx="150" cy="105" r="28" fill="#C96F37" />
-      <Circle cx="110" cy="100" r="2.5" fill="#fff" opacity="0.9" />
-      <Circle cx="155" cy="128" r="2"   fill="#fff" opacity="0.8" />
-      <Circle cx="118" cy="132" r="1.5" fill="#fff" opacity="0.7" />
-      <Circle cx="128" cy="92"  r="1.5" fill="#fff" opacity="0.6" />
-      <Circle cx="142" cy="138" r="1.5" fill="#fff" opacity="0.7" />
-      <Circle cx="138" cy="112" r="38" fill="transparent" stroke="#F0955A" strokeWidth="1" opacity="0.4" />
-      <Circle cx="55"  cy="55"  r="2"   fill="#fff" opacity="0.7" />
-      <Circle cx="205" cy="70"  r="1.5" fill="#fff" opacity="0.6" />
-      <Circle cx="45"  cy="175" r="1.5" fill="#fff" opacity="0.5" />
-      <Circle cx="215" cy="185" r="2"   fill="#fff" opacity="0.6" />
-      <Circle cx="80"  cy="30"  r="1.5" fill="#fff" opacity="0.5" />
-      <Circle cx="185" cy="35"  r="1"   fill="#fff" opacity="0.4" />
-    </Svg>
-  );
-}
-
 export default function SplashScreen({ navigation, route, onDone }) {
-  const { colors } = useTheme();
-  const styles = useThemedStyles(createStyles);
 
   // Both flags come back after the user accepts each legal document.
   const termsAccepted = route?.params?.termsAccepted === true;
@@ -84,129 +30,24 @@ export default function SplashScreen({ navigation, route, onDone }) {
   }
 
   return (
-    <>
-      <SafeAreaView style={styles.safeTop} />
-      <SafeAreaView style={styles.safeBottom}>
-        <View style={styles.root}>
-          <LinearGradient
-            colors={[colors.background, colors.background, colors.background]}
-            style={StyleSheet.absoluteFillObject}
-          />
-          {[
-            [30,60],[80,20],[220,40],[250,90],[15,150],
-            [260,160],[40,220],[200,240],[130,18],[170,250],
-          ].map(([x,y],i) => (
-            <View key={i} style={[styles.star, { left: x, top: y, opacity: 0.3 + (i % 3) * 0.2 }]} />
-          ))}
-
-          <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-            <View style={styles.illustrationWrap}>
-              <BrainIllustration />
-            </View>
-
-            <View style={styles.titleRow}>
-              <Text style={styles.titleBold}>AD</Text>
-              <Text style={styles.titleLight}>Chronotype</Text>
-            </View>
-
-            <Text style={styles.tagline}>
-              Learn how sleep and lifestyle factors relate to cognitive health.
-            </Text>
-
-            <View style={styles.purposeCard}>
-              <Text style={styles.purposeText}>
-                This app is designed to raise awareness about the relationship between sleep chronotype and Alzheimer's risk factors — not to diagnose or predict disease.
-              </Text>
-            </View>
-
-            <View style={styles.disclaimerCard}>
-              <View style={styles.disclaimerHeader}>
-                <Text style={styles.disclaimerIcon}>⚠️</Text>
-                <Text style={styles.disclaimerTitle}>NOT A CLINICAL DIAGNOSIS</Text>
-              </View>
-              <Text style={styles.disclaimerBody}>
-                <Text style={styles.appNameHighlight}>ADChronotype</Text>
-                {' '}is a statistical research tool only. It is{' '}
-                <Text style={styles.notHighlight}>NOT</Text>
-                {' '}a medical diagnostic tool and does{' '}
-                <Text style={styles.notHighlight}>NOT</Text>
-                {' '}predict whether you will develop Alzheimer’s disease. Your score reflects a statistical comparison to research data — nothing more. If you have concerns about your cognitive health, please consult a licensed medical professional.
-              </Text>
-            </View>
-
-            {/* T&C link — replaces checkbox */}
-            <TouchableOpacity style={styles.termsRow} onPress={openTerms} activeOpacity={0.8}>
-              <Text style={styles.termsText}>
-                Review and accept our{' '}
-                <Text style={styles.termsLink}>Terms of Service and Privacy Policy →</Text>
-              </Text>
-            </TouchableOpacity>
-
-            {legalAccepted && (
-              <View style={styles.acceptedBadge}>
-                <Text style={styles.acceptedText}>✓ Terms and Privacy Policy accepted</Text>
-              </View>
-            )}
-
-            <TouchableOpacity
-              style={[styles.btn, !legalAccepted && styles.btnDisabled]}
-              onPress={handleGetStarted}
-              disabled={!legalAccepted}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.btnText}>Get Started  →</Text>
-            </TouchableOpacity>
-
-            {!legalAccepted && (
-              <Text style={styles.readFirst}>
-                Please read and accept both documents first
-              </Text>
-            )}
-
-            <View style={{ height: 20 }} />
-          </ScrollView>
+    <View style={{flex:1,backgroundColor:'#C2571E'}}><StatusBar style="light" />
+      <ScrollView contentContainerStyle={{flexGrow:1,paddingTop:96,paddingHorizontal:28,paddingBottom:40}}>
+        <View style={{flexGrow:1,alignItems:'center',justifyContent:'center',gap:20,paddingBottom:40}}>
+          <View style={{width:112,height:112,borderRadius:28,backgroundColor:'#FDF6F0',alignItems:'center',justifyContent:'center'}}>
+            <Svg width={64} height={64} viewBox="0 0 120 120"><Circle cx="52" cy="60" r="30" fill="#C2571E"/><Circle cx="67" cy="51" r="25" fill="#FDF6F0"/></Svg>
+          </View>
+          <View style={{flexDirection:'row',alignItems:'baseline'}}><Text style={{fontFamily:'Lexend_800ExtraBold',fontSize:36,letterSpacing:-0.5,color:'#FFFFFF'}}>AD</Text><Text style={{fontFamily:'Lexend_600SemiBold',fontSize:36,letterSpacing:-0.5,color:'#FFFFFF',opacity:0.92}}>Chronotype</Text></View>
+          <Text style={{fontFamily:'Lexend_400Regular',fontSize:16,lineHeight:24,textAlign:'center',maxWidth:280,color:'#FFFFFF',opacity:0.95}}>Learn how sleep and lifestyle factors relate to cognitive health.</Text>
         </View>
-      </SafeAreaView>
-    </>
+        <View style={{gap:14}}>
+          <TouchableOpacity onPress={openTerms} accessibilityRole="checkbox" accessibilityState={{checked:legalAccepted}} style={{flexDirection:'row',alignItems:'flex-start',gap:12,backgroundColor:'rgba(255,255,255,0.14)',borderRadius:14,padding:14}}>
+            <View style={{width:20,height:20,marginTop:1,borderWidth:1.5,borderColor:'#FFFFFF',borderRadius:3,alignItems:'center',justifyContent:'center'}}>{legalAccepted && <Text style={{color:'#FFFFFF'}}>✓</Text>}</View>
+            <Text style={{flex:1,fontFamily:'Lexend_400Regular',fontSize:13,lineHeight:18.85,color:'#FFFFFF'}}>{legalAccepted ? 'I have read and accept the ' : 'Read and accept the '}<Text style={{textDecorationLine:'underline'}}>Terms &amp; Conditions and Privacy Policy →</Text></Text>
+          </TouchableOpacity>
+          <TouchableOpacity disabled={!legalAccepted} onPress={handleGetStarted} style={{minHeight:54,borderRadius:16,backgroundColor:'#FDF6F0',alignItems:'center',justifyContent:'center',opacity:legalAccepted?1:0.6}}><Text style={{fontFamily:'Lexend_700Bold',fontSize:17,color:'#9E4414'}}>Get Started  →</Text></TouchableOpacity>
+          <Text style={{fontFamily:'Lexend_600SemiBold',fontSize:11,letterSpacing:0.66,textAlign:'center',color:'#FFFFFF',marginTop:4}}>NOT A CLINICAL DIAGNOSIS</Text>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
-
-const createStyles = (colors) => StyleSheet.create({
-  safeTop:    { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
-  safeBottom: { flex: 1, backgroundColor: colors.background },
-  root:       { flex: 1, overflow: 'hidden' },
-  star:       { position: 'absolute', width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.onBrand },
-  scroll:     { alignItems: 'center', paddingHorizontal: 22, paddingTop: 16 },
-
-  illustrationWrap: { marginBottom: 8 },
-
-  titleRow:   { flexDirection: 'row', alignItems: 'baseline', marginBottom: 10 },
-  titleBold:  { color: colors.text, fontSize: 38, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-  titleLight: { color: colors.accentSoft, fontSize: 38, fontWeight: '300' },
-
-  tagline:    { color: colors.secondary, fontSize: 14, textAlign: 'center', lineHeight: 22, marginBottom: 20, paddingHorizontal: 10 },
-
-  purposeCard: { backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: 18, marginBottom: 14, width: '100%', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
-  purposeText: { color: colors.text, fontSize: 14, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', textAlign: 'center', lineHeight: 22 },
-
-  disclaimerCard:   { backgroundColor: colors.warningSurface, borderRadius: 14, padding: 16, marginBottom: 20, width: '100%', borderWidth: 1.5, borderColor: '#E9A94A66' },
-  disclaimerHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
-  disclaimerIcon:   { fontSize: 16 },
-  disclaimerTitle:  { color: '#E9A94A', fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', letterSpacing: 0.5 },
-  disclaimerBody:   { color: colors.body, fontSize: 12, lineHeight: 20 },
-  appNameHighlight: { color: '#E9A94A', fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  notHighlight:     { color: '#E9A94A', fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
-
-  termsRow:   { width: '100%', marginBottom: 10, paddingHorizontal: 4 },
-  termsText:  { color: colors.secondary, fontSize: 13, textAlign: 'center', lineHeight: 20 },
-  termsLink:  { color: colors.accent, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', textDecorationLine: 'underline' },
-
-  acceptedBadge: { backgroundColor: '#7EC49A22', borderRadius: 10, paddingVertical: 7, paddingHorizontal: 14, marginBottom: 10, alignSelf: 'center', borderWidth: 1, borderColor: '#7EC49A44' },
-  acceptedText:  { color: '#7EC49A', fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-
-  readFirst:  { color: colors.muted, fontSize: 11, textAlign: 'center', marginTop: 8 },
-
-  btn:          { backgroundColor: colors.brand, borderRadius: 16, height: 54, alignItems: 'center', justifyContent: 'center', width: '100%' },
-  btnDisabled:  { backgroundColor: colors.disabled, opacity: 0.6 },
-  btnText:      { color: colors.onBrand, fontSize: 17, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-});

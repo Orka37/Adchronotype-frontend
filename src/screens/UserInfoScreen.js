@@ -1,11 +1,11 @@
-import { useTheme, useThemedStyles } from '../context/ThemeContext';
+import { useTheme, useThemedStyles } from '../theme/designTheme';
 import React, { useState, useRef, useEffect } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity,
   SafeAreaView, Platform, Image, ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import StepIndicator from '../components/StepIndicator';
 import { useOnboarding } from '../context/OnboardingContext';
 
@@ -93,7 +93,7 @@ function DrumWheel({ items, selected, onSelect, labelFn }) {
               }}
               activeOpacity={0.7}
             >
-              <Text style={{ color: isSel ? colors.text : colors.muted, fontSize: isSel ? 20 : 16, fontWeight: isSel ? '800' : '500' }}>
+              <Text style={{fontFamily:'Lexend_400Regular', color: isSel ? colors.text : colors.muted, fontSize: isSel ? 20 : 16, fontWeight: isSel ? '800' : '500' }}>
                 {label(v)}
               </Text>
             </TouchableOpacity>
@@ -195,6 +195,9 @@ export default function UserInfoScreen({ navigation }) {
 
   const isFormValid = age && weight && (unit === 'lbs' ? (heightFt && heightIn) : heightCm);
 
+  const heightMeters = (unit === 'kg' ? Number(heightCm) : (Number(heightFt) * 12 + Number(heightIn || 0)) * 2.54) / 100;
+  const bmi = heightMeters > 0 && Number(weight) > 0 ? (unit === 'kg' ? Number(weight) : Number(weight) * 0.453592) / (heightMeters * heightMeters) : null;
+  const bmiLabel = bmi == null ? '' : bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Healthy weight' : bmi < 30 ? 'Overweight' : 'Obese';
   const PICKER_TITLE = { age: 'Select Age', height: unit === 'kg' ? 'Select Height (cm)' : 'Select Height (ft / in)', weight: `Select Weight (${unit})` };
 
   function renderInlinePicker(type) {
@@ -249,7 +252,6 @@ export default function UserInfoScreen({ navigation }) {
               <Feather name="chevron-left" size={28} color={colors.secondary} />
             </TouchableOpacity>
             <StepIndicator currentStep={3} totalSteps={5} />
-            <View style={{ width: 28 }} />
           </View>
 
           <ScrollView
@@ -261,44 +263,40 @@ export default function UserInfoScreen({ navigation }) {
             scrollEnabled
           >
             <Text style={styles.title}>Tell us about you</Text>
-            <Text style={styles.sub}>These details are used to calculate your BMI and research score.</Text>
-
-            {/* Age */}
-            <Text style={styles.label}>Age</Text>
-            <TouchableOpacity style={styles.field} onPress={() => openPicker('age')} activeOpacity={0.8}>
-              <Text style={[styles.fieldVal, !age && styles.placeholder]}>{displayAge}</Text>
-              <Feather name="chevron-down" size={18} color={colors.secondary} />
-            </TouchableOpacity>
-            {renderInlinePicker('age')}
+            <Text style={styles.sub}>Used to calculate your BMI and factors.</Text>
 
             {/* Unit toggle */}
-            <Text style={styles.label}>Units</Text>
+
             <View style={styles.toggle}>
               <TouchableOpacity style={[styles.toggleBtn, unit === 'lbs' && styles.toggleBtnOn]} onPress={() => toggleUnit('lbs')}>
-                <Text style={[styles.toggleText, unit === 'lbs' && styles.toggleTextOn]}>US customary units</Text>
-                <Text style={[styles.toggleSubText, unit === 'lbs' && styles.toggleSubTextOn]}>ft / in · lbs</Text>
+                <Text style={[styles.toggleText, unit === 'lbs' && styles.toggleTextOn]}>ft / lbs</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.toggleBtn, unit === 'kg' && styles.toggleBtnOn]} onPress={() => toggleUnit('kg')}>
-                <Text style={[styles.toggleText, unit === 'kg' && styles.toggleTextOn]}>Metric units</Text>
-                <Text style={[styles.toggleSubText, unit === 'kg' && styles.toggleSubTextOn]}>cm · kg</Text>
+                <Text style={[styles.toggleText, unit === 'kg' && styles.toggleTextOn]}>cm / kg</Text>
               </TouchableOpacity>
             </View>
 
+            {/* Age */}
+            <TouchableOpacity style={styles.field} onPress={() => openPicker('age')} activeOpacity={0.8}><Text style={styles.label}>Age</Text>
+              <Text style={[styles.fieldVal, !age && styles.placeholder]}>{displayAge}</Text>
+
+            </TouchableOpacity>
+            {renderInlinePicker('age')}
+
             {/* Height */}
-            <Text style={styles.label}>Height</Text>
-            <TouchableOpacity style={styles.field} onPress={() => openPicker('height')} activeOpacity={0.8}>
+            <TouchableOpacity style={styles.field} onPress={() => openPicker('height')} activeOpacity={0.8}><Text style={styles.label}>Height</Text>
               <Text style={[styles.fieldVal, !heightCm && !heightFt && styles.placeholder]}>{displayHeight}</Text>
-              <Feather name="chevron-down" size={18} color={colors.secondary} />
+
             </TouchableOpacity>
             {renderInlinePicker('height')}
 
             {/* Weight */}
-            <Text style={styles.label}>Weight</Text>
-            <TouchableOpacity style={styles.field} onPress={() => openPicker('weight')} activeOpacity={0.8}>
+            <TouchableOpacity style={styles.field} onPress={() => openPicker('weight')} activeOpacity={0.8}><Text style={styles.label}>Weight</Text>
               <Text style={[styles.fieldVal, !weight && styles.placeholder]}>{displayWeight}</Text>
-              <Feather name="chevron-down" size={18} color={colors.secondary} />
+
             </TouchableOpacity>
             {renderInlinePicker('weight')}
+            {bmi != null && <View style={{flexDirection:'row',gap:12,padding:16,borderRadius:14,backgroundColor:bmi>=18.5&&bmi<25?colors.successSurface:colors.warningSurface,alignItems:'center'}}><Text style={{fontFamily:'Lexend_700Bold',fontSize:12,color:bmi>=18.5&&bmi<25?colors.successText:colors.warningStrong}}>BMI</Text><Text style={{fontFamily:'Lexend_800ExtraBold',fontSize:18,color:bmi>=18.5&&bmi<25?colors.successText:colors.warningStrong}}>{bmi.toFixed(1)}</Text><Text style={{fontFamily:'Lexend_400Regular',fontSize:13,color:bmi>=18.5&&bmi<25?colors.successText:colors.warningStrong}}>· {bmiLabel}</Text></View>}
           </ScrollView>
 
           <View style={styles.bottom}>
@@ -322,30 +320,29 @@ const createStyles = (colors) => StyleSheet.create({
   safeTop:   { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
   safeBottom:{ flex: 1, backgroundColor: colors.background },
   container: { flex: 1, backgroundColor: colors.background, paddingHorizontal: 20 },
-  imgWrap:   { position: 'absolute', top: 0, left: 0, right: 0, height: '50%', zIndex: -1 },
+  imgWrap:   {display:'none'},
   heroImg:   { width: '100%', height: '100%', opacity: 0.9 },
   imgOverlay:{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 180 },
-  header:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 24 },
-  backBtn:   { padding: 4 },
-  content:   { flex: 1 },
-  contentInner: { paddingTop: 20, paddingBottom: 140 },
-  title:     { color: colors.text, fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 4 },
-  sub:       { color: colors.secondary, fontSize: 13, marginBottom: 20 },
-  label:     { color: colors.text, fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 8 },
-  field:     { backgroundColor: colors.surface, borderRadius: 14, height: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 16, borderWidth: 1.5, borderColor: colors.border },
-  fieldVal:  { color: colors.text, fontSize: 18, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  placeholder:{ color: colors.muted, fontSize: 16 },
-  toggle:    { flexDirection: 'row', backgroundColor: colors.tint, borderRadius: 14, padding: 4, marginBottom: 16, gap: 4 },
-  toggleBtn: { flex: 1, minHeight: 54, borderRadius: 11, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
-  toggleBtnOn: { backgroundColor: colors.brand },
-  toggleText:  { color: colors.secondary, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', textAlign: 'center' },
-  toggleTextOn:{ color: colors.onBrand },
-  toggleSubText: { color: colors.muted, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginTop: 3, textAlign: 'center' },
-  toggleSubTextOn: { color: colors.subtleSurface },
-  bottom:    { marginBottom: 20, marginTop: 12 },
-  nextBtn:   { backgroundColor: colors.brandSoft, paddingVertical: 18, borderRadius: 14, alignItems: 'center' },
+  header:    {flexDirection:'row',alignItems:'center',gap:12,paddingTop:16,paddingBottom:20},
+  backBtn:   {width:44,height:44,alignItems:'center',justifyContent:'center'},
+  content:   {flex:1},
+  contentInner: {paddingBottom:20},
+  title:     {color:colors.text,fontSize:26,fontFamily:'Lexend_800ExtraBold',lineHeight:31.2,marginBottom:6,textAlign:'left'},
+  sub:       {color:colors.secondary,fontSize:14,fontFamily:'Lexend_400Regular',marginBottom:22,lineHeight:21},
+  label:     {color:colors.secondary,fontSize:15,fontFamily:'Lexend_600SemiBold',flexShrink:1},
+  field:     {backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:16,minHeight:64,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingVertical:14,paddingHorizontal:18,marginBottom:12,gap:8},
+  fieldVal:  {color:colors.text,fontSize:20,fontFamily:'Lexend_800ExtraBold',textAlign:'right',flexShrink:1},
+  placeholder:{fontFamily:'Lexend_400Regular', color: colors.muted, fontSize: 16 },
+  toggle:    {flexDirection:'row',gap:8,backgroundColor:colors.segmentSurface,borderRadius:14,padding:4,marginBottom:22},
+  toggleBtn: {flex:1,minHeight:44,borderRadius:11,alignItems:'center',justifyContent:'center'},
+  toggleBtnOn: {backgroundColor:colors.surface},
+  toggleText:  {color:colors.secondary,fontSize:14,fontFamily:'Lexend_700Bold'},
+  toggleTextOn:{color:colors.text},
+
+  bottom:    {paddingTop:20,paddingBottom:20},
+  nextBtn:   {backgroundColor:colors.brand,minHeight:56,borderRadius:16,alignItems:'center',justifyContent:'center'},
   nextBtnOff:{ opacity: 0.5 },
-  nextBtnText:{ color: colors.onBrand, fontSize: 18, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
+  nextBtnText:{color:colors.onBrand,fontSize:18,fontFamily:'Lexend_700Bold'},
   inlinePicker:{ backgroundColor: colors.surface, borderRadius: 14, borderWidth: 1, borderColor: colors.accent + '44', marginTop: -8, marginBottom: 14, overflow: 'hidden', maxHeight: 300 },
   inlinePickerHeader:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderBottomWidth: 1, borderBottomColor: colors.border },
   pickerTitle: { color: colors.text, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
@@ -353,4 +350,5 @@ const createStyles = (colors) => StyleSheet.create({
   doneBtnText: { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   pickerBody:  { flexDirection: 'row', paddingHorizontal: 20, paddingTop: 8 },
   drumSep:     { width: 20, alignItems: 'center', justifyContent: 'center' },
+
 });
