@@ -81,7 +81,7 @@ function modelInputRows(prediction, fallbackInputs = {}) {
 function durationLabel(hours) { const mins=Math.round(Number(hours)*60); return Math.floor(mins/60)+'h '+mins%60+'m'; }
 function compactInputRows(prediction,fallback) {
  const p={...fallback,...(prediction||{})};
- return [['Chronotype',displayValue(p.chronotype)],['Sleep time · Wake time',displayTime(p.sleep_time)+' · '+displayTime(p.wake_time)],['Sleep duration',p.sleep_duration==null?'—':durationLabel(p.sleep_duration)],['Age · BMI',displayValue(p.age)+' · '+displayValue(p.bmi)],['Family history',displayValue(p.family_history)],['Ethnicity',displayValue(p.ethnicity)]];
+ return [['Chronotype',displayValue(p.chronotype)],['Sleep time — Wake time',displayTime(p.sleep_time)+' — '+displayTime(p.wake_time)],['Sleep duration',p.sleep_duration==null?'—':durationLabel(p.sleep_duration)],['Age — BMI',displayValue(p.age)+' — '+displayValue(p.bmi)],['Family history',displayValue(p.family_history)],['Ethnicity',displayValue(p.ethnicity)]];
 }
 
 function reportText({ profile, latestPrediction, sleepLogs, cognitiveTests, fallbackInputs }) {
@@ -251,7 +251,7 @@ export default function DoctorReportScreen({ navigation }) {
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.75}>
             <Feather name="chevron-left" size={28} color={colors.secondary} />
           </TouchableOpacity>
-          <View style={{flex:1}}><Text style={styles.headerTitle}>Doctor Report</Text><Text style={styles.muted}>Monthly Summary · {new Date().toLocaleDateString(undefined,{month:'long',year:'numeric'})}</Text></View>
+          <View style={{flex:1}}><Text style={styles.headerTitle}>Doctor Report</Text><Text style={styles.muted}>Monthly Summary — {new Date().toLocaleDateString(undefined,{month:'long',year:'numeric'})}</Text></View>
 
         </View>
 
@@ -310,7 +310,7 @@ export default function DoctorReportScreen({ navigation }) {
             </View>
 
             </>}
-            <Text style={styles.sectionTitle}>SLEEP SUMMARY · LAST 30 DAYS</Text>
+            <Text style={styles.sectionTitle}>SLEEP SUMMARY — LAST 30 DAYS</Text>
             <View style={styles.metricRow}><Metric label="AVG SLEEP" value={sleepAvg==null?'—':durationLabel(sleepAvg)}/><Metric label="QUALITY" value={sleepQuality==null?'—':sleepQuality.toFixed(1)+'/21'}/><Metric label="NIGHTS LOGGED" value={sleepLogs.length}/></View>
             <Text style={styles.sectionTitle}>RECENT COGNITIVE RESULTS</Text>
             <View style={styles.section}>{cognitiveTests.length?cognitiveTests.slice(0,6).map(item=><View key={item.id||item.test_type+'-'+item.tested_at} style={styles.resultRow}><Text style={[styles.resultTitle,{flex:1}]}>{item.test_type?.replace(/_/g,' ')||'Cognitive test'}</Text><Text style={styles.resultScore}>{item.score} {item.unit||''}</Text></View>):<Text style={[styles.emptyText,{paddingVertical:14}]}>No saved cognitive test results yet.</Text>}</View>
@@ -348,11 +348,11 @@ const createStyles = (colors) => StyleSheet.create({
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll: {paddingHorizontal:20,paddingBottom:28,gap:14},
 
-  noticeCard: {flexDirection:'row',gap:10,backgroundColor:colors.warningSurface,borderWidth:1,borderColor:colors.warningBorder,borderRadius:14,paddingVertical:12,paddingHorizontal:14},
+  noticeCard: {flexDirection:'row',gap:10,backgroundColor:colors.warningSurface,borderWidth:1,borderColor:colors.warningBorder,borderRadius:6,paddingVertical:12,paddingHorizontal:14},
 
   noticeTitle: {color:colors.warningStrong,fontSize:12.5,fontFamily:'Lexend_800ExtraBold',marginBottom:3},
   noticeText: {color:colors.warningBody,fontSize:12,fontFamily:'Lexend_400Regular',lineHeight:18},
-  section: {backgroundColor:colors.surface,borderRadius:16,borderWidth:1,borderColor:colors.border,paddingVertical:2,paddingHorizontal:16},
+  section: {backgroundColor:colors.surface,borderRadius:6,borderWidth:1,borderColor:colors.border,paddingVertical:2,paddingHorizontal:16},
   sectionTitle: {color:colors.accent,fontSize:11,fontFamily:'Lexend_800ExtraBold',letterSpacing:1.1,textTransform:'uppercase'},
   scoreRow: {flexDirection:'row',alignItems:'center',gap:16,paddingVertical:14},
 
@@ -368,13 +368,13 @@ const createStyles = (colors) => StyleSheet.create({
   sourceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: colors.border },
   sourceText: {fontFamily:'Lexend_400Regular', color: colors.accent, fontSize: 12, lineHeight: 17, textDecorationLine: 'underline', flex: 1 },
   metricRow: { flexDirection: 'row', gap: 8 },
-  metricCard: {flex:1,backgroundColor:colors.surface,borderRadius:14,borderWidth:1,borderColor:colors.border,paddingVertical:12,paddingHorizontal:6,alignItems:'center'},
+  metricCard: {flex:1,backgroundColor:colors.surface,borderRadius:6,borderWidth:1,borderColor:colors.border,paddingVertical:12,paddingHorizontal:6,alignItems:'center'},
   metricValue: {color:colors.text,fontSize:17,fontFamily:'Lexend_800ExtraBold',marginBottom:2},
   metricLabel: {color:colors.secondary,fontSize:10,fontFamily:'Lexend_700Bold',textAlign:'center'},
   resultRow: {flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:42,paddingVertical:8,borderBottomWidth:1,borderBottomColor:colors.border},
   resultTitle: {color:colors.secondary,fontSize:13.5,fontFamily:'Lexend_400Regular',textTransform:'capitalize'},
   resultScore: {color:colors.text,fontSize:13.5,fontFamily:'Lexend_700Bold'},
   emptyText: {fontFamily:'Lexend_400Regular', color: colors.secondary, fontSize: 12, lineHeight: 18 },
-  exportBtn: {flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,backgroundColor:colors.brand,borderRadius:16,minHeight:54,paddingHorizontal:14,paddingVertical:10},
+  exportBtn: {flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,backgroundColor:colors.brand,borderRadius:6,minHeight:54,paddingHorizontal:14,paddingVertical:10},
   exportText: {color:colors.onBrand,fontSize:15,fontFamily:'Lexend_700Bold',textAlign:'center'},
 });

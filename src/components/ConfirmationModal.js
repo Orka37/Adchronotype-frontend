@@ -58,13 +58,13 @@ export default function ConfirmationModal({
 
 const createStyles = (colors) => StyleSheet.create({
   overlay: { alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.72)', flex: 1, justifyContent: 'center', padding: 24 },
-  card: { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 20, borderWidth: 1, maxWidth: 440, padding: 24, width: '100%' },
+  card: { backgroundColor: colors.surface, borderColor: colors.border, borderRadius:6, borderWidth: 1, maxWidth: 440, padding: 24, width: '100%' },
   iconWrap: { alignItems: 'center', alignSelf: 'center', backgroundColor: colors.accent + '22', borderRadius: 24, height: 48, justifyContent: 'center', marginBottom: 16, width: 48 },
   iconWrapDanger: { backgroundColor: '#D9694F22' },
   title: { color: colors.text, fontSize: 21, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 10, textAlign: 'center' },
   message: { color: colors.secondary, fontSize: 14, lineHeight: 22, textAlign: 'center' },
   actions: { flexDirection: 'row', gap: 12, marginTop: 24 },
-  button: { alignItems: 'center', borderRadius: 12, flex: 1, height: 48, justifyContent: 'center' },
+  button: { alignItems: 'center', borderRadius:6, flex: 1, height: 48, justifyContent: 'center' },
   cancelButton: { backgroundColor: colors.background, borderColor: colors.border, borderWidth: 1 },
   confirmButton: { backgroundColor: colors.brand },
   dangerButton: { backgroundColor: '#dc2626' },

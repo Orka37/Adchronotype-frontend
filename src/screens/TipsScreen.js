@@ -65,8 +65,8 @@ export default function TipsScreen({navigation}) {
  return <InsetSafeAreaView edges={['top']} style={{flex:1,backgroundColor:colors.background}}>
   <ScrollView contentContainerStyle={{paddingTop:16,paddingHorizontal:20,paddingBottom:20,gap:14}}>
    <Text style={{fontFamily:'Lexend_800ExtraBold',fontSize:26,color:colors.text}}>Research Tips</Text>
-   {selected.map(tip=><View key={tip.cat} style={{paddingVertical:14,paddingHorizontal:16,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:16,gap:10}}>
-    <View style={{flexDirection:'row',alignItems:'center',gap:10}}><View style={{width:36,height:36,borderRadius:18,backgroundColor:colors.tint,alignItems:'center',justifyContent:'center'}}><Feather name={tip.icon} size={18} color={colors.accent}/></View><Text style={{flex:1,fontFamily:'Lexend_700Bold',fontSize:15,color:colors.text}}>{tip.title}</Text><Text style={{fontFamily:'Lexend_800ExtraBold',fontSize:10,letterSpacing:0.6,paddingVertical:3,paddingHorizontal:8,borderRadius:8,backgroundColor:colors.tint,color:colors.accent}}>{tip.cat}</Text></View>
+   {selected.map(tip=><View key={tip.cat} style={{paddingVertical:14,paddingHorizontal:16,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:6,gap:10}}>
+    <View style={{flexDirection:'row',alignItems:'center',gap:10}}><Feather name="book-open" size={18} color={colors.accent}/><Text style={{flex:1,fontFamily:'Lexend_700Bold',fontSize:15,color:colors.text}}>{tip.title}</Text></View>
     {tip.links.map(link=><TouchableOpacity key={link.url} onPress={()=>open(link.url)} accessibilityRole="link" style={{flexDirection:'row',alignItems:'center',gap:6,minHeight:32}}><Text style={{flexShrink:1,fontFamily:'Lexend_600SemiBold',fontSize:13,lineHeight:19.5,color:colors.accent}}>{link.label}</Text><Feather name="external-link" size={14} color={colors.accent}/></TouchableOpacity>)}
    </View>)}
   </ScrollView>

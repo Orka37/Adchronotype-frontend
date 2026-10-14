@@ -76,6 +76,6 @@ const createStyles = (colors) => StyleSheet.create({
   point:      { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 22 },
   bullet:     { width: 7, height: 7, borderRadius: 4, backgroundColor: colors.surface, marginTop: 7, marginRight: 14, flexShrink: 0 },
   pointText:  { color: colors.body, fontSize: 15, lineHeight: 24, flex: 1 },
-  btn:        { backgroundColor: colors.brand, borderRadius: 14, paddingVertical: 16, paddingHorizontal: 32, alignSelf: 'flex-start', marginTop: 16 },
+  btn:        { backgroundColor: colors.brand, borderRadius:6, paddingVertical: 16, paddingHorizontal: 32, alignSelf: 'flex-start', marginTop: 16 },
   btnText:    { color: colors.onBrand, fontSize: 16, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 });

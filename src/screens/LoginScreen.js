@@ -7,7 +7,8 @@ import {
   Keyboard, Dimensions, Pressable,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { loginUser } from '../api/auth';
+import { loginUser, loginWithGoogle } from '../api/auth';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 import { parseApiError } from '../utils/errors';
 import { log } from '../utils/logger';
 import { useAuth } from '../context/AuthContext';
@@ -161,6 +162,12 @@ export default function LoginScreen({ navigation }) {
               }
             </TouchableOpacity>
 
+            <GoogleLoginButton disabled={submitting} onError={err=>setFormError(err?.response ? parseApiError(err) : 'Google sign-in could not finish. Please try again or use email and password.')} onToken={async token=>{
+              setSubmitting(true);setFormError('');
+              try {const result=await loginWithGoogle(token,password);await signIn(result.user,result.tokens);}
+              catch(err){setFormError(parseApiError(err));}
+              finally{setSubmitting(false);}
+            }}/>
             <TouchableOpacity onPress={() => navigation.navigate('Signup')} style={styles.linkRow}>
               <Text style={styles.linkText}>
                 New here? <Text style={styles.linkAccent}>Create an account</Text>
@@ -182,7 +189,7 @@ const createStyles = (colors) => StyleSheet.create({
   title: {color:colors.text,fontSize:28,fontFamily:'Lexend_800ExtraBold',lineHeight:33.6,marginBottom:6},
   subtitle: {color:colors.secondary,fontSize:15,fontFamily:'Lexend_400Regular',lineHeight:22.5,marginBottom:28},
   label: {color:colors.secondary,fontSize:13,fontFamily:'Lexend_600SemiBold',marginBottom:6},
-  inputRow: {flexDirection:'row',alignItems:'center',backgroundColor:colors.surface,borderRadius:14,borderWidth:1,borderColor:colors.border,paddingHorizontal:16,minHeight:52},
+  inputRow: {flexDirection:'row',alignItems:'center',backgroundColor:colors.surface,borderRadius:6,borderWidth:1,borderColor:colors.border,paddingHorizontal:16,minHeight:52},
   inputFocused: { borderColor: colors.accent },
   inputErr: { borderColor: '#D9694F' },
   errText: {fontFamily:'Lexend_400Regular', color: '#D9694F', fontSize: 12, marginBottom: 4, marginLeft: 4 },
@@ -191,7 +198,7 @@ const createStyles = (colors) => StyleSheet.create({
   input: {flex:1,color:colors.text,fontSize:16,fontFamily:'Lexend_400Regular',minHeight:50},
   forgotLink: {alignSelf:'flex-end',minHeight:44,justifyContent:'center',marginTop:14},
   forgotText: { color: colors.accent, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  btn: {backgroundColor:colors.brand,borderRadius:16,minHeight:54,alignItems:'center',justifyContent:'center',marginTop:14},
+  btn: {backgroundColor:colors.brand,borderRadius:6,minHeight:54,alignItems:'center',justifyContent:'center',marginTop:14},
   btnDisabled: { backgroundColor: colors.disabled },
   btnText: {color:colors.onBrand,fontSize:17,fontFamily:'Lexend_700Bold'},
   linkRow: {marginTop:'auto',paddingTop:28,alignItems:'center'},

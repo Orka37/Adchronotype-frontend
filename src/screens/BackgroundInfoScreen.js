@@ -120,7 +120,7 @@ export default function BackgroundInfoScreen({ navigation }) {
             <TouchableOpacity style={styles.field} onPress={() => setOpenPicker('fam')} activeOpacity={0.8}><Text style={styles.label}>Family history of Alzheimer’s</Text>
               <Text style={[styles.fieldVal, !familyHistory && styles.placeholder]}>{familyHistory || 'Tap to select'}</Text>
               <Feather name="chevron-right" size={18} color={colors.secondary} />
-            </TouchableOpacity><View style={{flexDirection:'row',gap:10,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:14,paddingVertical:14,paddingHorizontal:16,marginTop:8}}><Feather name="shield" size={20} color={colors.secondary}/><Text style={{flex:1,fontFamily:'Lexend_400Regular',fontSize:12.5,lineHeight:18.75,color:colors.secondary}}>These answers are saved with your profile. You can select “Prefer not to say” for ethnicity.</Text></View>
+            </TouchableOpacity><View style={{flexDirection:'row',gap:10,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:6,paddingVertical:14,paddingHorizontal:16,marginTop:8}}><Feather name="shield" size={20} color={colors.secondary}/><Text style={{flex:1,fontFamily:'Lexend_400Regular',fontSize:12.5,lineHeight:18.75,color:colors.secondary}}>These answers are saved with your profile. You can select “Prefer not to say” for ethnicity.</Text></View>
           </View>
 
           <View style={styles.bottom}>
@@ -156,11 +156,11 @@ const createStyles = (colors) => StyleSheet.create({
   title:      {color:colors.text,fontSize:26,fontFamily:'Lexend_800ExtraBold',lineHeight:31.2,marginBottom:6,textAlign:'left'},
   sub:        {color:colors.secondary,fontSize:14,fontFamily:'Lexend_400Regular',marginBottom:22,lineHeight:21},
   label:      {color:colors.secondary,fontSize:15,fontFamily:'Lexend_600SemiBold',flex:1},
-  field:      {backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:16,minHeight:64,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingVertical:14,paddingHorizontal:18,marginBottom:12,gap:8},
+  field:      {backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:6,minHeight:64,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingVertical:14,paddingHorizontal:18,marginBottom:12,gap:8},
   fieldVal:   {color:colors.text,fontSize:16,fontFamily:'Lexend_800ExtraBold',textAlign:'right',flexShrink:1,maxWidth:'50%'},
   placeholder:{fontFamily:'Lexend_400Regular', color: colors.muted, fontSize: 15 },
   bottom:     {paddingTop:20,paddingBottom:20},
-  nextBtn:    {backgroundColor:colors.brand,minHeight:56,borderRadius:16,alignItems:'center',justifyContent:'center'},
+  nextBtn:    {backgroundColor:colors.brand,minHeight:56,borderRadius:6,alignItems:'center',justifyContent:'center'},
   nextBtnOff: { opacity: 0.5 },
   nextBtnText:{color:colors.onBrand,fontSize:18,fontFamily:'Lexend_700Bold'},
 

@@ -55,14 +55,14 @@ export default function AppearancePicker({ visible, onClose }) {
 
 const createStyles = colors => StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', justifyContent: 'center', alignItems: 'center', padding: 24 },
-  panel: { width: '100%', maxWidth: 440, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 20, padding: 22 },
+  panel: { width: '100%', maxWidth: 440, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius:6, padding: 22 },
   title: { color: colors.text, fontFamily: 'Lexend_700Bold', fontSize: 22, marginBottom: 8 },
   description: { color: colors.secondary, fontSize: 13, lineHeight: 21, marginBottom: 20 },
   options: { flexDirection: 'row', gap: 12, marginBottom: 16 },
-  option: { flex: 1, alignItems: 'center', gap: 12, paddingVertical: 20, backgroundColor: colors.background, borderColor: colors.border, borderWidth: 2, borderRadius: 14 },
+  option: { flex: 1, alignItems: 'center', gap: 12, paddingVertical: 20, backgroundColor: colors.background, borderColor: colors.border, borderWidth: 2, borderRadius:6 },
   selected: { borderColor: colors.accent, backgroundColor: colors.tint },
   optionText: { color: colors.text, fontFamily: 'Lexend_600SemiBold', fontSize: 15 },
   error: { color: colors.errorText, fontSize: 13, lineHeight: 20, marginBottom: 12 },
-  done: { backgroundColor: colors.brand, borderRadius: 12, alignItems: 'center', paddingVertical: 14 },
+  done: { backgroundColor: colors.brand, borderRadius:6, alignItems: 'center', paddingVertical: 14 },
   doneText: { color: colors.onBrand, fontFamily: 'Lexend_600SemiBold', fontSize: 15 },
 });

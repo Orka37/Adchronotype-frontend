@@ -178,7 +178,7 @@ const createStyles = (colors) => StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: 'rgba(224, 123, 60,0.12)',
     borderColor: colors.accent + '55',
-    borderRadius: 12,
+    borderRadius:6,
     borderWidth: 1,
     flexDirection: 'row',
     gap: 10,
@@ -191,7 +191,7 @@ const createStyles = (colors) => StyleSheet.create({
   sectionBody: { color: colors.secondary, fontSize: 14, lineHeight: 22 },
   footer: { backgroundColor: colors.background, borderTopColor: colors.border, borderTopWidth: 1, padding: 16 },
   footerHint: { color: colors.muted, fontSize: 11, marginBottom: 8, textAlign: 'center' },
-  acceptBtn: { alignItems: 'center', backgroundColor: colors.brand, borderRadius: 14, height: 52, justifyContent: 'center' },
+  acceptBtn: { alignItems: 'center', backgroundColor: colors.brand, borderRadius:6, height: 52, justifyContent: 'center' },
   acceptBtnDisabled: { backgroundColor: colors.disabled, opacity: 0.6 },
   acceptBtnText: { color: colors.onBrand, fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 });

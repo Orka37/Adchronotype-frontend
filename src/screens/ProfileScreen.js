@@ -1,3 +1,4 @@
+import { scorePresentation } from '../utils/scorePresentation';
 import DesignNav from '../components/DesignNav';
 import appConfig from '../../app.json';
 import { useTheme, useThemedStyles } from '../theme/designTheme';
@@ -124,6 +125,7 @@ export default function ProfileScreen({ navigation }) {
   }
 
   const score     = predictionResult?.prediction ?? null;
+  const scoreStyle = scorePresentation(score, colors);
   const similarityLabel = score == null
     ? null
     : score >= 60 ? 'Higher Similarity' : score >= 30 ? 'Moderate Similarity' : 'Lower Similarity';
@@ -178,17 +180,17 @@ export default function ProfileScreen({ navigation }) {
               <Text style={styles.displayName}>{profile?.firstName} {profile?.lastName}</Text>
             )}
             <Text style={styles.username}>@{profile?.username}</Text>
-            <Text style={styles.email}>{profile?.email}</Text>
+
           </View>
 
           {/* Stats */}
           <View style={styles.statsRow}>
             <View style={styles.statCard}>
-              <Text style={styles.statVal}>{score != null ? `${score}%` : '—'}</Text>
-              <Text style={styles.statKey}>Research Score</Text>
+              <Text style={[styles.statVal,{color:scoreStyle.textColor || colors.text}]}>{scoreStyle.value}</Text>
+              <Text style={styles.statKey}>Similarity score</Text>
             </View>
             <View style={styles.statCard}>
-              <Text style={[styles.statVal, styles.statLevelVal]}>
+              <Text style={[styles.statVal, styles.statLevelVal, {color:scoreStyle.textColor || colors.text}]}>
                 {similarityLabel ?? '—'}
               </Text>
               <Text style={styles.statKey}>Score Level</Text>
@@ -202,27 +204,16 @@ export default function ProfileScreen({ navigation }) {
           {/* Chronotype / Factor Details section */}
           <Text style={styles.sectionLabel}>YOUR CHRONOTYPE</Text>
           <View style={styles.card}>
-            <View style={styles.chronoRow}>
-              <View style={styles.chronoIconWrap}>
-                <Feather name="moon" size={20} color={colors.accent} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.chronoTitle}>Know Your Sleep Type</Text>
-                <Text style={styles.chronoSub}>Your chronotype is your body's natural sleep-wake preference. It is one of the factors used to calculate your research score.</Text>
-              </View>
-            </View>
             <TouchableOpacity style={styles.meqBtn} onPress={() => setShowMEQ(true)} activeOpacity={0.85}>
               <Feather name="external-link" size={14} color={colors.accent} />
-              <Text style={styles.meqBtnText}>Take the Chronotype Quiz (MEQ)</Text>
+              <Text style={styles.meqBtnText}>Know sleep type through chronotype quiz</Text>
             </TouchableOpacity>
             <View style={styles.divider} />
             <TouchableOpacity style={styles.updateBtn} onPress={handleUpdateFactors} activeOpacity={0.85}>
-              <Feather name="refresh-cw" size={16} color={colors.onBrand} style={{ marginRight: 8 }} />
-              <Text style={styles.updateBtnText}>Update My Factors & Get New Research Score</Text>
+
+              <Text style={styles.updateBtnText}>Update factors</Text>
             </TouchableOpacity>
-            <Text style={styles.updateHint}>
-              If your sleep type or lifestyle has changed, update your factors to get an updated research score.
-            </Text>
+
           </View>
 
           {/* Account */}
@@ -367,7 +358,7 @@ const createStyles = (colors) => StyleSheet.create({
   safeTop:     { flex: 0, backgroundColor: colors.background, paddingTop: Platform.OS === 'android' ? 25 : 0 },
   headerRow:   {flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingHorizontal:20,paddingTop:16,paddingBottom:14},
   headerTitle: {color:colors.text,fontSize:24,fontFamily:'Lexend_800ExtraBold'},
-  editBtn:     {flexDirection:'row',alignItems:'center',gap:6,paddingHorizontal:14,minHeight:40,backgroundColor:colors.tint,borderRadius:20},
+  editBtn:     {flexDirection:'row',alignItems:'center',gap:6,paddingHorizontal:14,minHeight:40,backgroundColor:colors.tint,borderRadius:6},
   editBtnText: { color: colors.accent, fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
   avatarSection: {alignItems:'center',gap:4,marginBottom:14},
   avatarRing:  {width:84,height:84,borderRadius:42,borderWidth:3,borderColor:colors.accent,padding:3,marginBottom:4},
@@ -375,16 +366,16 @@ const createStyles = (colors) => StyleSheet.create({
   initials:    { color: colors.accent, fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   displayName: {color:colors.text,fontSize:18,fontFamily:'Lexend_700Bold'},
   nameEditRow: { flexDirection: 'row', marginBottom: 4, paddingHorizontal: 24 },
-  nameInput:   { flex: 1, color: colors.text, fontSize: 15, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', backgroundColor: colors.surface, borderRadius: 10, borderWidth: 1.5, borderColor: colors.accent, paddingHorizontal: 12, paddingVertical: 8 },
+  nameInput:   { flex: 1, color: colors.text, fontSize: 15, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', backgroundColor: colors.surface, borderRadius:6, borderWidth: 1.5, borderColor: colors.accent, paddingHorizontal: 12, paddingVertical: 8 },
   username:    {color:colors.secondary,fontSize:12,fontFamily:'Lexend_400Regular'},
   email:       {color:colors.muted,fontSize:11.5,fontFamily:'Lexend_400Regular'},
   statsRow:    {flexDirection:'row',gap:8,marginHorizontal:20,marginBottom:14},
-  statCard:    {flex:1,minHeight:64,backgroundColor:colors.surface,borderRadius:14,paddingVertical:12,paddingHorizontal:6,alignItems:'center',justifyContent:'center',borderWidth:1,borderColor:colors.border},
+  statCard:    {flex:1,minHeight:64,backgroundColor:colors.surface,borderRadius:6,paddingVertical:12,paddingHorizontal:6,alignItems:'center',justifyContent:'center',borderWidth:1,borderColor:colors.border},
   statVal:     {color:colors.accent,fontSize:18,fontFamily:'Lexend_800ExtraBold',marginBottom:3},
   statLevelVal:{color:colors.warningStrong,fontSize:12,fontFamily:'Lexend_800ExtraBold',textAlign:'center'},
   statKey:     {color:colors.secondary,fontSize:9.5,fontFamily:'Lexend_700Bold',textTransform:'uppercase',letterSpacing:0.3},
   sectionLabel:{color:colors.muted,fontSize:11,fontFamily:'Lexend_800ExtraBold',letterSpacing:1.1,marginHorizontal:20,marginBottom:10,marginTop:0},
-  card:        {marginHorizontal:20,backgroundColor:colors.surface,borderRadius:16,borderWidth:1,borderColor:colors.border,marginBottom:14,overflow:'hidden'},
+  card:        {marginHorizontal:20,backgroundColor:colors.surface,borderRadius:6,borderWidth:1,borderColor:colors.border,marginBottom:14,overflow:'hidden'},
   divider:     { height: 1, backgroundColor: colors.border, marginLeft: 48 },
   menuItem:    {flexDirection:'row',alignItems:'center',minHeight:52,paddingHorizontal:14,paddingVertical:10},
   menuItemDisabled: { opacity: 0.8 },
@@ -400,13 +391,13 @@ const createStyles = (colors) => StyleSheet.create({
   chronoIconWrap:{width:38,height:38,borderRadius:19,backgroundColor:colors.tint,alignItems:'center',justifyContent:'center'},
   chronoTitle:   { color: colors.text, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 4 },
   chronoSub:     {color:colors.secondary,fontSize:12,fontFamily:'Lexend_400Regular',lineHeight:17.4},
-  meqBtn:        {flexDirection:'row',alignItems:'center',gap:7,marginHorizontal:14,marginBottom:12,backgroundColor:colors.tint,borderRadius:10,minHeight:44,paddingHorizontal:12},
+  meqBtn:        {flexDirection:'row',alignItems:'center',gap:7,marginHorizontal:14,marginBottom:12,backgroundColor:colors.tint,borderRadius:6,minHeight:44,paddingHorizontal:12},
   meqBtnText:    {color:colors.accent,fontSize:13,fontFamily:'Lexend_600SemiBold',flex:1},
-  updateBtn:     {flexDirection:'row',alignItems:'center',margin:14,marginTop:12,backgroundColor:colors.brand,borderRadius:12,minHeight:48,paddingVertical:10,paddingHorizontal:14,justifyContent:'center'},
+  updateBtn:     {flexDirection:'row',alignItems:'center',margin:14,marginTop:12,backgroundColor:colors.brand,borderRadius:6,minHeight:48,paddingVertical:10,paddingHorizontal:14,justifyContent:'center'},
   updateBtnText: {color:colors.onBrand,fontSize:13.5,fontFamily:'Lexend_700Bold',textAlign:'center',flex:1},
   updateHint:    {color:colors.muted,fontSize:11,fontFamily:'Lexend_400Regular',lineHeight:16.5,marginHorizontal:14,marginBottom:12,textAlign:'center'},
 
-  logoutBtn:   {flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,marginHorizontal:20,borderRadius:14,borderWidth:1,borderColor:colors.border,minHeight:50,backgroundColor:colors.surface,marginBottom:14},
+  logoutBtn:   {flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,marginHorizontal:20,borderRadius:6,borderWidth:1,borderColor:colors.border,minHeight:50,backgroundColor:colors.surface,marginBottom:14},
   logoutText:  { color: '#D9694F', fontSize: 14, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
   version:     {fontFamily:'Lexend_400Regular', color: colors.muted, fontSize: 11, textAlign: 'center', marginBottom: 8 },
 
@@ -414,16 +405,16 @@ const createStyles = (colors) => StyleSheet.create({
 
   // MEQ modal
   overlay:        { flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  popup:          { backgroundColor: colors.surface, borderRadius: 18, padding: 22, width: '100%', borderWidth: 1, borderColor: colors.border, position: 'relative' },
+  popup:          { backgroundColor: colors.surface, borderRadius:6, padding: 22, width: '100%', borderWidth: 1, borderColor: colors.border, position: 'relative' },
   popupClose:     { position: 'absolute', top: 14, right: 18, zIndex: 10 },
   popupCloseText: {fontFamily:'Lexend_400Regular', color: colors.secondary, fontSize: 22 },
   popupTitle:     { color: colors.text, fontSize: 18, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginBottom: 12, paddingRight: 20 },
   popupBody:      {fontFamily:'Lexend_400Regular', color: colors.secondary, fontSize: 13, lineHeight: 20 },
-  popupBtn:       { backgroundColor: colors.brand, borderRadius: 12, paddingVertical: 11, paddingHorizontal: 20 },
+  popupBtn:       { backgroundColor: colors.brand, borderRadius:6, paddingVertical: 11, paddingHorizontal: 20 },
   popupBtnText:   { color: colors.onBrand, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  popupBtnSecondary:     { borderRadius: 12, paddingVertical: 11, paddingHorizontal: 16, borderWidth: 1, borderColor: colors.border },
+  popupBtnSecondary:     { borderRadius:6, paddingVertical: 11, paddingHorizontal: 16, borderWidth: 1, borderColor: colors.border },
   popupBtnSecondaryText: { color: colors.secondary, fontSize: 14, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal' },
-  supportIcon: { width: 46, height: 46, borderRadius: 14, backgroundColor: colors.accent + '22', borderWidth: 1, borderColor: colors.accent + '44', alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
+  supportIcon: { width: 46, height: 46, borderRadius:6, backgroundColor: colors.accent + '22', borderWidth: 1, borderColor: colors.accent + '44', alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
   supportEmail: { color: colors.accent, fontSize: 14, lineHeight: 20, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', marginTop: 6 },
-  supportCloseBtn: { backgroundColor: colors.brand, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20, alignItems: 'center', marginTop: 20 },
+  supportCloseBtn: { backgroundColor: colors.brand, borderRadius:6, paddingVertical: 12, paddingHorizontal: 20, alignItems: 'center', marginTop: 20 },
 });

@@ -296,7 +296,7 @@ export default function UserInfoScreen({ navigation }) {
 
             </TouchableOpacity>
             {renderInlinePicker('weight')}
-            {bmi != null && <View style={{flexDirection:'row',gap:12,padding:16,borderRadius:14,backgroundColor:bmi>=18.5&&bmi<25?colors.successSurface:colors.warningSurface,alignItems:'center'}}><Text style={{fontFamily:'Lexend_700Bold',fontSize:12,color:bmi>=18.5&&bmi<25?colors.successText:colors.warningStrong}}>BMI</Text><Text style={{fontFamily:'Lexend_800ExtraBold',fontSize:18,color:bmi>=18.5&&bmi<25?colors.successText:colors.warningStrong}}>{bmi.toFixed(1)}</Text><Text style={{fontFamily:'Lexend_400Regular',fontSize:13,color:bmi>=18.5&&bmi<25?colors.successText:colors.warningStrong}}>· {bmiLabel}</Text></View>}
+            {bmi != null && <View style={{flexDirection:'row',gap:12,padding:16,borderRadius:6,backgroundColor:bmi>=18.5&&bmi<25?colors.successSurface:colors.warningSurface,alignItems:'center'}}><Text style={{fontFamily:'Lexend_700Bold',fontSize:12,color:bmi>=18.5&&bmi<25?colors.successText:colors.warningStrong}}>BMI</Text><Text style={{fontFamily:'Lexend_800ExtraBold',fontSize:18,color:bmi>=18.5&&bmi<25?colors.successText:colors.warningStrong}}>{bmi.toFixed(1)}</Text><Text style={{fontFamily:'Lexend_400Regular',fontSize:13,color:bmi>=18.5&&bmi<25?colors.successText:colors.warningStrong}}>— {bmiLabel}</Text></View>}
           </ScrollView>
 
           <View style={styles.bottom}>
@@ -330,20 +330,20 @@ const createStyles = (colors) => StyleSheet.create({
   title:     {color:colors.text,fontSize:26,fontFamily:'Lexend_800ExtraBold',lineHeight:31.2,marginBottom:6,textAlign:'left'},
   sub:       {color:colors.secondary,fontSize:14,fontFamily:'Lexend_400Regular',marginBottom:22,lineHeight:21},
   label:     {color:colors.secondary,fontSize:15,fontFamily:'Lexend_600SemiBold',flexShrink:1},
-  field:     {backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:16,minHeight:64,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingVertical:14,paddingHorizontal:18,marginBottom:12,gap:8},
+  field:     {backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:6,minHeight:64,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingVertical:14,paddingHorizontal:18,marginBottom:12,gap:8},
   fieldVal:  {color:colors.text,fontSize:20,fontFamily:'Lexend_800ExtraBold',textAlign:'right',flexShrink:1},
   placeholder:{fontFamily:'Lexend_400Regular', color: colors.muted, fontSize: 16 },
-  toggle:    {flexDirection:'row',gap:8,backgroundColor:colors.segmentSurface,borderRadius:14,padding:4,marginBottom:22},
+  toggle:    {flexDirection:'row',gap:8,backgroundColor:colors.segmentSurface,borderRadius:6,padding:4,marginBottom:22},
   toggleBtn: {flex:1,minHeight:44,borderRadius:11,alignItems:'center',justifyContent:'center'},
   toggleBtnOn: {backgroundColor:colors.surface},
   toggleText:  {color:colors.secondary,fontSize:14,fontFamily:'Lexend_700Bold'},
   toggleTextOn:{color:colors.text},
 
   bottom:    {paddingTop:20,paddingBottom:20},
-  nextBtn:   {backgroundColor:colors.brand,minHeight:56,borderRadius:16,alignItems:'center',justifyContent:'center'},
+  nextBtn:   {backgroundColor:colors.brand,minHeight:56,borderRadius:6,alignItems:'center',justifyContent:'center'},
   nextBtnOff:{ opacity: 0.5 },
   nextBtnText:{color:colors.onBrand,fontSize:18,fontFamily:'Lexend_700Bold'},
-  inlinePicker:{ backgroundColor: colors.surface, borderRadius: 14, borderWidth: 1, borderColor: colors.accent + '44', marginTop: -8, marginBottom: 14, overflow: 'hidden', maxHeight: 300 },
+  inlinePicker:{ backgroundColor: colors.surface, borderRadius:6, borderWidth: 1, borderColor: colors.accent + '44', marginTop: -8, marginBottom: 14, overflow: 'hidden', maxHeight: 300 },
   inlinePickerHeader:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderBottomWidth: 1, borderBottomColor: colors.border },
   pickerTitle: { color: colors.text, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   doneBtn:     { backgroundColor: colors.brand, borderRadius: 9, paddingHorizontal: 14, paddingVertical: 7 },

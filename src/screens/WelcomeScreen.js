@@ -24,4 +24,4 @@ export default function WelcomeScreen({navigation}) {
   </View>
  </ScrollView>;
 }
-const s=StyleSheet.create({brand:{fontFamily:'Lexend_400Regular',fontSize:38,letterSpacing:-0.5},button:{minHeight:56,borderRadius:16,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8}});
+const s=StyleSheet.create({brand:{fontFamily:'Lexend_400Regular',fontSize:38,letterSpacing:-0.5},button:{minHeight:56,borderRadius:6,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8}});

@@ -218,7 +218,7 @@ const createStyles = (colors) => StyleSheet.create({
   scroll:      { padding: 24, paddingTop: 28 },
   hint:        { color: colors.secondary, fontSize: 13, lineHeight: 20, marginBottom: 28 },
   lbl:         { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', marginBottom: 7, marginTop: 14 },
-  inputRow:    { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: 13, borderWidth: 1.5, borderColor: 'transparent', paddingHorizontal: 13, height: 52, marginBottom: 2 },
+  inputRow:    { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: 6, borderWidth: 1.5, borderColor: 'transparent', paddingHorizontal: 13, height: 52, marginBottom: 2 },
   focused:     { borderColor: colors.accent },
   errBorder:   { borderColor: '#D9694F' },
   errText:     { color: '#D9694F', fontSize: 11, marginTop: 2, marginLeft: 2 },
@@ -229,7 +229,7 @@ const createStyles = (colors) => StyleSheet.create({
   strengthFill:{ backgroundColor: '#E9A94A' },
   strengthStrong: { backgroundColor: '#7EC49A' },
   strengthLabel:  { color: colors.secondary, fontSize: 11, fontFamily: 'Lexend_600SemiBold', fontWeight: 'normal', minWidth: 48 },
-  btn:         { backgroundColor: colors.brand, borderRadius: 13, height: 52, alignItems: 'center', justifyContent: 'center', marginTop: 32 },
+  btn:         { backgroundColor: colors.brand, borderRadius: 6, height: 52, alignItems: 'center', justifyContent: 'center', marginTop: 32 },
   btnLoading:  { backgroundColor: colors.disabled },
   btnText:     { color: colors.onBrand, fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 });

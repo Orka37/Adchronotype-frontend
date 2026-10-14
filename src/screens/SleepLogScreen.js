@@ -354,15 +354,18 @@ export default function SleepLogScreen({ navigation }) {
 
             {/* Header */}
 <View style={styles.header}><Text style={styles.heading}>Sleep Log</Text><Text style={styles.date}>This Week</Text></View>
-<View style={styles.streak}><Feather name="zap" size={26} color={colors.warningStrong}/><View><Text style={styles.streakTitle}>{streak}-day streak</Text><Text style={styles.streakBody}>{loadingLogs?'Loading sleep logs…':streak?'Keep logging your sleep each night':'Save tonight’s sleep to start your streak'}</Text></View></View>
-<View style={styles.days}>{weekly.map((day,i)=><View key={day.day} style={{flex:1,alignItems:'center',gap:6}}><Text style={styles.dayLabel}>{day.day}</Text><View style={{width:34,height:34,borderRadius:17,backgroundColor:day.logged?'#5FA77A':i===(new Date().getDay()+6)%7?colors.brand:colors.border,alignItems:'center',justifyContent:'center'}}>{day.logged?<Feather name="check" size={16} color="#FFFFFF"/>:i===(new Date().getDay()+6)%7?<Text style={{color:'#FFFFFF'}}>·</Text>:null}</View></View>)}</View>
+<View style={styles.streak}><View><Text style={styles.streakTitle}>{streak}-day streak</Text><Text style={styles.streakBody}>{loadingLogs?'Loading sleep logs…':streak?'Keep logging your sleep each night':'Save tonight’s sleep to start your streak'}</Text></View></View>
+<View style={styles.days}>{weekly.map((day,i)=><View key={day.day} style={{flex:1,alignItems:'center',gap:6}}><Text style={styles.dayLabel}>{day.day}</Text><View style={{width:34,height:34,borderRadius:17,backgroundColor:day.logged?'#5FA77A':i===(new Date().getDay()+6)%7?colors.brand:colors.border,alignItems:'center',justifyContent:'center'}}>{day.logged?<Feather name="check" size={16} color="#FFFFFF"/>:i===(new Date().getDay()+6)%7?<Text style={{color:'#FFFFFF',fontFamily:'Lexend_400Regular',fontSize:9}}>Today</Text>:null}</View></View>)}</View>
 <View style={{gap:10}}><View style={styles.logHeaderRow}><Text style={styles.cardTitle}>Tonight</Text>{!showSleepForm&&<TouchableOpacity style={styles.editLogBtn} onPress={editTodayLog}><Text style={styles.editLogText}>Edit</Text></TouchableOpacity>}</View>
-{[['bed','moon','Bedtime',showSleepForm?fmt(bedH,bedM,bedAP):todayLog?.bedTime],['wake','sun','Wake time',showSleepForm?fmt(wakeH,wakeM,wakeAP):todayLog?.wakeTime]].map(([key,icon,label,value])=><TouchableOpacity key={key} disabled={!showSleepForm} onPress={()=>openPicker(key)} style={styles.timeCard}><View style={{flexDirection:'row',alignItems:'center',gap:12}}><Feather name={icon} size={22} color={key==='bed'?colors.accent:'#C98A12'}/><Text style={styles.timeLabel}>{label}</Text></View><Text style={styles.timeCardVal}>{value}</Text></TouchableOpacity>)}
+{[['bed','moon','Bedtime',showSleepForm?fmt(bedH,bedM,bedAP):todayLog?.bedTime],['wake','sun','Wake time',showSleepForm?fmt(wakeH,wakeM,wakeAP):todayLog?.wakeTime]].map(([key,icon,label,value])=><TouchableOpacity key={key} disabled={!showSleepForm} onPress={()=>openPicker(key)} style={styles.timeCard}><View style={{flexDirection:'row',alignItems:'center',gap:12}}><Text style={styles.timeLabel}>{label}</Text></View><Text style={styles.timeCardVal}>{value}</Text></TouchableOpacity>)}
 <View style={styles.durRow}><Text style={styles.durLabel}>Total sleep</Text><Text style={styles.durVal}>{showSleepForm?calcDuration():todayLog?Math.floor(todayLog.hours)+'h '+Math.round((todayLog.hours%1)*60)+'m':'—'}</Text></View>
 </View>
 <View style={{gap:8,marginTop:16}}>
   <Text style={styles.fieldLabel}>Sleep Quality</Text>
-  <View style={styles.qualityScale}>
+  <View accessibilityLabel={`Sleep quality ${showSleepForm?qualityScore:todayLog?.qualityScore??'not recorded'} out of 21`}>
+    <View style={{height:8,backgroundColor:colors.border,marginVertical:12}}><View style={{height:8,backgroundColor:colors.accent,width:`${Math.max(0,Math.min(21,Number(showSleepForm?qualityScore:todayLog?.qualityScore)||0))/21*100}%`}}/></View>
+    <View style={{flexDirection:'row',justifyContent:'space-between',marginBottom:8}}><Text style={styles.qualityRange}>0</Text><Text style={styles.qualityRange}>21</Text></View>
+  </View><View style={styles.qualityScale}>
     <TouchableOpacity accessibilityLabel="Decrease sleep quality score" disabled={!showSleepForm} style={styles.stepperBtn} onPress={()=>setQualityScore(value=>Math.max(0,value-1))}><Feather name="minus" size={16} color={colors.accent}/></TouchableOpacity>
     <View style={styles.qualityValueWrap}><Text style={styles.qualityValue}>{showSleepForm?qualityScore:todayLog?.qualityScore??'—'}</Text><Text style={styles.qualityRange}>0–21</Text></View>
     <TouchableOpacity accessibilityLabel="Increase sleep quality score" disabled={!showSleepForm} style={styles.stepperBtn} onPress={()=>setQualityScore(value=>Math.min(21,value+1))}><Feather name="plus" size={16} color={colors.accent}/></TouchableOpacity>
@@ -463,29 +466,29 @@ const createStyles = (colors) => StyleSheet.create({
   cardTitle:{color:colors.text,fontSize:15,fontFamily:'Lexend_800ExtraBold'},
 
   logHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  editLogBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 10, borderWidth: 1, borderColor: colors.accent + '44', backgroundColor: colors.accent + '22', paddingHorizontal: 10, paddingVertical: 7 },
+  editLogBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius:6, borderWidth: 1, borderColor: colors.accent + '44', backgroundColor: colors.accent + '22', paddingHorizontal: 10, paddingVertical: 7 },
   editLogText: { color: colors.accent, fontSize: 12, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 
   sourceHint:  {color:colors.secondary,fontSize:11.5,fontFamily:'Lexend_400Regular',textAlign:'center',marginTop:16},
 
   fieldLabel:  {color:colors.text,fontSize:14,fontFamily:'Lexend_700Bold'},
-  timeCard:    {flexDirection:'row',alignItems:'center',justifyContent:'space-between',minHeight:64,paddingVertical:14,paddingHorizontal:16,borderWidth:1,borderColor:colors.border,borderRadius:16,backgroundColor:colors.surface},
+  timeCard:    {flexDirection:'row',alignItems:'center',justifyContent:'space-between',minHeight:64,paddingVertical:14,paddingHorizontal:16,borderWidth:1,borderColor:colors.border,borderRadius:6,backgroundColor:colors.surface},
 
   timeCardVal: {color:colors.text,fontSize:18,fontFamily:'Lexend_800ExtraBold'},
 
-  durRow:  {flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingVertical:12,paddingHorizontal:16,backgroundColor:colors.successSurface,borderRadius:14},
+  durRow:  {flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingVertical:12,paddingHorizontal:16,backgroundColor:colors.successSurface,borderRadius:6},
   durLabel:{color:colors.successText,fontSize:13,fontFamily:'Lexend_600SemiBold'},
   durVal:  {color:colors.successText,fontSize:16,fontFamily:'Lexend_800ExtraBold'},
 
-  qualityScale: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.background, borderRadius: 12, borderWidth: 1, borderColor: colors.border, padding: 8 },
+  qualityScale: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.background, borderRadius:6, borderWidth: 1, borderColor: colors.border, padding: 8 },
   qualityValueWrap: { alignItems: 'center' },
   qualityValue: { color: colors.text, fontSize: 22, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   qualityRange: { color: colors.secondary, fontSize: 10, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginTop: 2 },
 
-  stepperBtn: {width:40,height:40,borderRadius:20,borderWidth:1.5,borderColor:colors.border,alignItems:'center',justifyContent:'center',backgroundColor:colors.surface},
+  stepperBtn: {width:40,height:40,borderRadius:6,borderWidth:1.5,borderColor:colors.border,alignItems:'center',justifyContent:'center',backgroundColor:colors.surface},
   stepperVal: {color:colors.text,fontSize:18,fontFamily:'Lexend_800ExtraBold'},
 
-  saveBtn:    {backgroundColor:colors.brand,borderRadius:16,minHeight:54,alignItems:'center',justifyContent:'center',marginTop:16},
+  saveBtn:    {backgroundColor:colors.brand,borderRadius:6,minHeight:54,alignItems:'center',justifyContent:'center',marginTop:16},
 
   saveBtnText:{color:colors.onBrand,fontSize:16,fontFamily:'Lexend_700Bold'},
 
@@ -498,12 +501,12 @@ const createStyles = (colors) => StyleSheet.create({
   doneBtn:      { backgroundColor: colors.brand, borderRadius: 9, paddingHorizontal: 12, paddingVertical: 6 },
   doneBtnText:  { color: colors.onBrand, fontSize: 12, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   clockHeaderRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 20, paddingTop: 14 },
-  clockTab:       { flex: 1, height: 38, borderRadius: 10, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
+  clockTab:       { flex: 1, height: 38, borderRadius:6, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
   clockTabOn:     { backgroundColor: colors.brand, borderColor: colors.accent },
   clockTabText:   { color: colors.secondary, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   clockTabTextOn: { color: colors.onBrand },
   clockFace:      { width: 260, height: 260, borderRadius: 130, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border, alignSelf: 'center', marginTop: 16 },
-  clockNumber:    { position: 'absolute', width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
+  clockNumber:    { position: 'absolute', width: 40, height: 40, borderRadius:6, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
   clockNumberOn:  { backgroundColor: colors.brand },
   clockNumberText:{ color: colors.secondary, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   clockNumberTextOn: { color: colors.onBrand },
@@ -517,11 +520,11 @@ const createStyles = (colors) => StyleSheet.create({
   apTextOn:     { color: colors.onBrand },
   previewRow:   { alignItems: 'center', paddingVertical: 10, borderTopWidth: 1, borderTopColor: colors.border, marginTop: 8, marginHorizontal: 20 },
   previewText:  { color: colors.accent, fontSize: 26, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal', letterSpacing: 2 },
-awakeningCard: {flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingVertical:12,paddingHorizontal:16,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:14,marginTop:16},
+awakeningCard: {flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingVertical:12,paddingHorizontal:16,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:6,marginTop:16},
 timeLabel: {color:colors.secondary,fontSize:14,fontFamily:'Lexend_600SemiBold'},
 dayLabel: {color:colors.secondary,fontSize:11,fontFamily:'Lexend_700Bold'},
 days: {flexDirection:'row',gap:6,marginBottom:16},
 streakBody: {color:colors.warningBody,fontSize:12,fontFamily:'Lexend_400Regular'},
 streakTitle: {color:colors.warningStrong,fontSize:17,fontFamily:'Lexend_800ExtraBold'},
-streak: {flexDirection:'row',gap:12,alignItems:'center',paddingVertical:14,paddingHorizontal:16,backgroundColor:colors.warningSurface,borderWidth:1,borderColor:colors.warningBorder,borderRadius:16,marginBottom:16},
+streak: {flexDirection:'row',gap:12,alignItems:'center',paddingVertical:14,paddingHorizontal:16,backgroundColor:colors.warningSurface,borderWidth:1,borderColor:colors.warningBorder,borderRadius:6,marginBottom:16},
 });

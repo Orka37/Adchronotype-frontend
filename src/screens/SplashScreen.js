@@ -40,11 +40,11 @@ export default function SplashScreen({ navigation, route, onDone }) {
           <Text style={{fontFamily:'Lexend_400Regular',fontSize:16,lineHeight:24,textAlign:'center',maxWidth:280,color:'#FFFFFF',opacity:0.95}}>Learn how sleep and lifestyle factors relate to cognitive health.</Text>
         </View>
         <View style={{gap:14}}>
-          <TouchableOpacity onPress={openTerms} accessibilityRole="checkbox" accessibilityState={{checked:legalAccepted}} style={{flexDirection:'row',alignItems:'flex-start',gap:12,backgroundColor:'rgba(255,255,255,0.14)',borderRadius:14,padding:14}}>
+          <TouchableOpacity onPress={openTerms} accessibilityRole="checkbox" accessibilityState={{checked:legalAccepted}} style={{flexDirection:'row',alignItems:'flex-start',gap:12,backgroundColor:'rgba(255,255,255,0.14)',borderRadius:6,padding:14}}>
             <View style={{width:20,height:20,marginTop:1,borderWidth:1.5,borderColor:'#FFFFFF',borderRadius:3,alignItems:'center',justifyContent:'center'}}>{legalAccepted && <Text style={{color:'#FFFFFF'}}>✓</Text>}</View>
             <Text style={{flex:1,fontFamily:'Lexend_400Regular',fontSize:13,lineHeight:18.85,color:'#FFFFFF'}}>{legalAccepted ? 'I have read and accept the ' : 'Read and accept the '}<Text style={{textDecorationLine:'underline'}}>Terms &amp; Conditions and Privacy Policy →</Text></Text>
           </TouchableOpacity>
-          <TouchableOpacity disabled={!legalAccepted} onPress={handleGetStarted} style={{minHeight:54,borderRadius:16,backgroundColor:'#FDF6F0',alignItems:'center',justifyContent:'center',opacity:legalAccepted?1:0.6}}><Text style={{fontFamily:'Lexend_700Bold',fontSize:17,color:'#9E4414'}}>Get Started  →</Text></TouchableOpacity>
+          <TouchableOpacity disabled={!legalAccepted} onPress={handleGetStarted} style={{minHeight:54,borderRadius:6,backgroundColor:'#FDF6F0',alignItems:'center',justifyContent:'center',opacity:legalAccepted?1:0.6}}><Text style={{fontFamily:'Lexend_700Bold',fontSize:17,color:'#9E4414'}}>Get Started  →</Text></TouchableOpacity>
           <Text style={{fontFamily:'Lexend_600SemiBold',fontSize:11,letterSpacing:0.66,textAlign:'center',color:'#FFFFFF',marginTop:4}}>NOT A CLINICAL DIAGNOSIS</Text>
         </View>
       </ScrollView>

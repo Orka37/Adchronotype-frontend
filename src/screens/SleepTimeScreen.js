@@ -331,7 +331,7 @@ const createStyles = (colors) => StyleSheet.create({
   subtitle:       {color:colors.secondary,fontSize:14,fontFamily:'Lexend_400Regular',lineHeight:21},
   inputsContainer:{gap:12},
 
-  timeCard:      {flexDirection:'row',alignItems:'center',justifyContent:'space-between',minHeight:76,paddingVertical:16,paddingHorizontal:18,backgroundColor:colors.surface,borderWidth:1.5,borderColor:colors.outline,borderRadius:18},
+  timeCard:      {flexDirection:'row',alignItems:'center',justifyContent:'space-between',minHeight:76,paddingVertical:16,paddingHorizontal:18,backgroundColor:colors.surface,borderWidth:1.5,borderColor:colors.outline,borderRadius:6},
   wakeCard:      { borderColor: colors.warningBorder },
   timeCardLeft:  { flexDirection: 'row', alignItems: 'center', gap: 14 },
   timeCardText:  {},
@@ -339,12 +339,12 @@ const createStyles = (colors) => StyleSheet.create({
   timeCardValue: {color:colors.text,fontSize:24,fontFamily:'Lexend_800ExtraBold'},
   placeholder:   {fontFamily:'Lexend_400Regular', color: colors.muted, fontSize: 18 },
 
-  summaryBox:    {flexDirection:'row',alignItems:'center',paddingVertical:16,paddingHorizontal:18,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:16},
+  summaryBox:    {flexDirection:'row',alignItems:'center',paddingVertical:16,paddingHorizontal:18,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:6},
   summaryLabel:  {color:colors.secondary,fontSize:12,fontFamily:'Lexend_400Regular'},
   summaryValue:  {color:colors.text,fontSize:20,fontFamily:'Lexend_700Bold'},
 
   bottomContainer:    {paddingTop:20,paddingBottom:20},
-  nextButton:         {backgroundColor:colors.brand,minHeight:56,borderRadius:16,alignItems:'center',justifyContent:'center'},
+  nextButton:         {backgroundColor:colors.brand,minHeight:56,borderRadius:6,alignItems:'center',justifyContent:'center'},
   nextButtonDisabled: { opacity: 0.5 },
   nextButtonText:     {color:colors.onBrand,fontSize:18,fontFamily:'Lexend_700Bold'},
 
@@ -354,16 +354,16 @@ const createStyles = (colors) => StyleSheet.create({
   pickerHandle:   { width: 40, height: 4, backgroundColor: colors.handle, borderRadius: 2, alignSelf: 'center', marginTop: 10 },
   pickerHeader:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border },
   pickerTitle:    { color: colors.text, fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
-  doneBtn:        { backgroundColor: colors.brand, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 7 },
+  doneBtn:        { backgroundColor: colors.brand, borderRadius:6, paddingHorizontal: 14, paddingVertical: 7 },
   doneBtnText:    { color: colors.onBrand, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 
   clockHeaderRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 20, paddingTop: 14 },
-  clockTab:       { flex: 1, height: 38, borderRadius: 10, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
+  clockTab:       { flex: 1, height: 38, borderRadius:6, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
   clockTabOn:     { backgroundColor: colors.brand, borderColor: colors.accent },
   clockTabText:   { color: colors.secondary, fontSize: 13, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   clockTabTextOn: { color: colors.onBrand },
   clockFace:      { width: 260, height: 260, borderRadius: 130, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border, alignSelf: 'center', marginTop: 16 },
-  clockNumber:    { position: 'absolute', width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
+  clockNumber:    { position: 'absolute', width: 40, height: 40, borderRadius:6, alignItems: 'center', justifyContent: 'center', zIndex: 2 },
   clockNumberOn:  { backgroundColor: colors.brand },
   clockNumberText:{ color: colors.secondary, fontSize: 13, fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
   clockNumberTextOn: { color: colors.onBrand },
@@ -371,7 +371,7 @@ const createStyles = (colors) => StyleSheet.create({
   clockCenter:    { position: 'absolute', left: 124, top: 124, width: 12, height: 12, borderRadius: 6, backgroundColor: colors.brand, zIndex: 3 },
 
   ampmRow:        { flexDirection: 'row', gap: 10, justifyContent: 'center', marginTop: 4 },
-  ampmBtn:        { paddingHorizontal: 12, paddingVertical: 10, borderRadius: 10, borderWidth: 1.5, borderColor: colors.border, backgroundColor: colors.background },
+  ampmBtn:        { paddingHorizontal: 12, paddingVertical: 10, borderRadius:6, borderWidth: 1.5, borderColor: colors.border, backgroundColor: colors.background },
   ampmBtnActive:  { backgroundColor: colors.brand, borderColor: colors.accent },
   ampmText:       { color: colors.secondary, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
   ampmTextActive: { color: colors.onBrand },

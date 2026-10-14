@@ -129,10 +129,11 @@ export async function revokeCarePatientMember(patientId, memberId) {
   await api.delete(`/care-patients/${patientId}/members/${memberId}`);
 }
 
-export async function createCarePatientEvent(patientId, eventType, eventTime, note) {
+export async function createCarePatientEvent(patientId, eventType, eventTime, note, durationMin = null) {
   const res = await api.post(`/care-patients/${patientId}/events`, {
     event_type: eventType,
     event_time: eventTime,
+    ...(durationMin != null ? { duration_min: durationMin } : {}),
     note: note?.trim() || null,
   });
   return res.data;
@@ -230,5 +231,16 @@ export async function createCarePatientMedicationLog(patientId, scheduleId, stat
 
 export async function getCarePatientMedicationLogs(patientId, limit = 100) {
   const res = await api.get(`/care-patients/${patientId}/medication-logs`, { params: { limit } });
+  return res.data;
+}
+
+// The server reads the selected patient's authorized history and runs the supplied rules.
+export async function getCarePatientCircadianPlan(patientId, options) {
+  const res = await api.post(`/circadian-plan/by-id/${patientId}`, options);
+  return res.data;
+}
+
+export async function getCarePatientCalmWindows(patientId, options) {
+  const res = await api.post(`/calm-windows/by-id/${patientId}`, options);
   return res.data;
 }

@@ -173,7 +173,7 @@ const createStyles = (colors) => StyleSheet.create({
   scrollContent: { padding: 20 },
   lastUpdated:   { color: colors.muted, fontSize: 11, marginBottom: 16 },
 
-  disclaimerBox:  { backgroundColor: colors.warningSurface, borderRadius: 12, padding: 14, marginBottom: 20, borderWidth: 1.5, borderColor: '#E9A94A66' },
+  disclaimerBox:  { backgroundColor: colors.warningSurface, borderRadius:6, padding: 14, marginBottom: 20, borderWidth: 1.5, borderColor: '#E9A94A66' },
   disclaimerText: { color: colors.body, fontSize: 13, lineHeight: 20 },
   bold:           { color: '#E9A94A', fontFamily: 'Lexend_800ExtraBold', fontWeight: 'normal' },
 
@@ -183,7 +183,7 @@ const createStyles = (colors) => StyleSheet.create({
 
   footer:           { padding: 16, borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.background },
   footerHint:       { color: colors.muted, fontSize: 11, textAlign: 'center', marginBottom: 8 },
-  acceptBtn:        { backgroundColor: colors.brand, borderRadius: 14, height: 52, alignItems: 'center', justifyContent: 'center' },
+  acceptBtn:        { backgroundColor: colors.brand, borderRadius:6, height: 52, alignItems: 'center', justifyContent: 'center' },
   acceptBtnDisabled:{ backgroundColor: colors.disabled, opacity: 0.6 },
   acceptBtnText:    { color: colors.onBrand, fontSize: 15, fontFamily: 'Lexend_700Bold', fontWeight: 'normal' },
 });

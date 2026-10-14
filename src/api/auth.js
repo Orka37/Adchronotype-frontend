@@ -28,3 +28,11 @@ export async function checkUsername(username) {
   const res = await api.get('/auth/check-username', { params: { username } });
   return res.data;
 }
+
+export async function loginWithGoogle(idToken, currentPassword) {
+  const res = await api.post('/auth/google', {
+    id_token: idToken,
+    ...(currentPassword ? { current_password: currentPassword } : {}),
+  });
+  return res.data;
+}
