@@ -1,12 +1,12 @@
 import { api } from './config';
 
 export async function createSleepLog(payload) {
-  const res = await api.post('/sleep-logs', payload);
+  const res = await api.post('/sleep-logs/ratings', payload);
   return res.data;
 }
 
 export async function getSleepLogs(page = 1) {
-  const res = await api.get('/sleep-logs', { params: { page, page_size: 60 } });
+  const res = await api.get('/sleep-logs', { params: { page, page_size: 60, include_ratings: true } });
   return res.data;
 }
 

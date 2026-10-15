@@ -150,13 +150,13 @@ function fromDisplayTime(value, fallbackH, fallbackM, fallbackAP) {
 }
 
 function qualityForUi(score) {
-  if (score == null) return 10;
-  return Math.max(0, Math.min(21, score));
+  if (score == null) return 5;
+  return Math.max(1, Math.min(10, score));
 }
 
 function mapBackendLogs(records) {
   return records.reduce((acc, record) => {
-    const date = new Date(record.logged_date);
+    const date = new Date(`${record.logged_date.slice(0,10)}T12:00:00`);
     const key = toDateKey(date);
     const current = acc[key];
     if (current && new Date(current.loggedAt) > new Date(record.created_at)) return acc;
@@ -169,6 +169,7 @@ function mapBackendLogs(records) {
       bedTime: formatBackendDisplay(record.sleep_time),
       wakeTime: formatBackendDisplay(record.wake_time),
       qualityScore: record.quality_score,
+      qualityScale: record.quality_scale || 'legacy_0_21',
       awakenings: record.awakenings,
       notes: record.notes,
       loggedAt: record.created_at,
@@ -191,10 +192,18 @@ export default function SleepLogScreen({ navigation }) {
   const [saved,   setSaved]   = useState(false);
   const [loadingLogs, setLoadingLogs] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [qualityScore, setQualityScore] = useState(10);
+  const [qualityScore, setQualityScore] = useState(5);
+  const [needsNewRating, setNeedsNewRating] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [awakenings, setAwakenings] = useState(0);
   const [dataSource, setDataSource] = useState('backend');
   const [sleepLogs, setSleepLogs] = useState({});
+  const [selectedDate, setSelectedDate] = useState(toDateKey());
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [hasMoreHistory, setHasMoreHistory] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [historyError, setHistoryError] = useState('');
   const [editingToday, setEditingToday] = useState(false);
   const [picker,  setPicker]  = useState(null); // 'bed' | 'wake' | null
   const [pickerStep, setPickerStep] = useState('hour');
@@ -212,11 +221,13 @@ export default function SleepLogScreen({ navigation }) {
         if (!mounted) return;
         const mapped = mapBackendLogs(records);
         setSleepLogs(mapped);
+        setHasMoreHistory(records.length === 60);
         setDataSource('backend');
         await setStoredItem(SLEEP_LOGS_KEY, JSON.stringify(mapped)).catch(() => {});
         log.info('SleepLogScreen: backend logs loaded', { count: records.length });
       } catch (err) {
         log.warn('SleepLogScreen: backend logs unavailable, using local fallback', err?.message);
+        if (mounted) setDataSource('local');
         try {
           const raw = await getStoredItem(SLEEP_LOGS_KEY);
           if (mounted && raw) {
@@ -257,8 +268,9 @@ export default function SleepLogScreen({ navigation }) {
     const wake = fromDisplayTime(logForToday.wakeTime, 6, 30, 'AM');
     setBedH(bed.h); setBedM(bed.m); setBedAP(bed.ap);
     setWakeH(wake.h); setWakeM(wake.m); setWakeAP(wake.ap);
-    setQualityScore(qualityForUi(logForToday.qualityScore));
+    setQualityScore(logForToday.qualityScale === 'rating_1_10' ? qualityForUi(logForToday.qualityScore) : 5);
     setAwakenings(logForToday.awakenings ?? 0);
+    setNeedsNewRating(logForToday.qualityScale !== 'rating_1_10');
     setEditingToday(true);
   }
 
@@ -271,19 +283,10 @@ export default function SleepLogScreen({ navigation }) {
   }
 
   async function handleSave() {
-    if (saving) return;
+    if (saving || loadingLogs || needsNewRating) return;
+    setSaveError('');
     const key = toDateKey();
     const hours = durationHours(bedH, bedM, bedAP, wakeH, wakeM, wakeAP);
-    const localRecord = {
-      date: key,
-      day: dayLabel(),
-      hours,
-      bedTime: fmt(bedH, bedM, bedAP),
-      wakeTime: fmt(wakeH, wakeM, wakeAP),
-      qualityScore,
-      awakenings,
-      loggedAt: new Date().toISOString(),
-    };
 
     try {
       setSaving(true);
@@ -292,11 +295,13 @@ export default function SleepLogScreen({ navigation }) {
         wake_time: toBackendTime(wakeH, wakeM, wakeAP),
         duration_hours: Number(hours.toFixed(2)),
         quality_score: qualityScore,
+        quality_scale: 'rating_1_10',
         awakenings,
         notes: null,
         logged_date: `${key}T12:00:00.000Z`,
       });
-      const backendRecord = mapBackendLogs([savedRecord])[key] ?? localRecord;
+      const backendRecord = mapBackendLogs([savedRecord])[key];
+      if (!backendRecord || savedRecord.quality_scale !== 'rating_1_10') throw new Error('Sleep rating service needs an update.');
       const nextLogs = { ...sleepLogs, [key]: backendRecord };
       setSleepLogs(nextLogs);
       setDataSource('backend');
@@ -306,14 +311,8 @@ export default function SleepLogScreen({ navigation }) {
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
-      const nextLogs = { ...sleepLogs, [key]: { ...localRecord, source: 'local' } };
-      setSleepLogs(nextLogs);
-      setDataSource('local');
-      await setStoredItem(SLEEP_LOGS_KEY, JSON.stringify(nextLogs))
-        .catch(storageErr => log.warn('SleepLogScreen: could not persist fallback sleep log', storageErr?.message));
+      setSaveError(`Your log was not saved. ${parseApiError(err)} Please try again.`);
       log.error('SleepLogScreen.handleSave', err);
-      setEditingToday(false);
-      Alert.alert('Saved locally', `We could not reach the server. ${parseApiError(err)}`);
     } finally {
       setSaving(false);
     }
@@ -323,16 +322,46 @@ export default function SleepLogScreen({ navigation }) {
     return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')} ${ap}`;
   }
 
+  async function loadOlderLogs() {
+    if (loadingHistory) return;
+    setLoadingHistory(true); setHistoryError('');
+    try {
+      const records = await getSleepLogs(historyPage + 1);
+      const mapped = mapBackendLogs(records);
+      setSleepLogs(current => {
+        const next = {...mapped};
+        for (const [key, value] of Object.entries(current)) {
+          if (!next[key] || new Date(value.loggedAt) >= new Date(next[key].loggedAt)) next[key] = value;
+        }
+        return next;
+      });
+      setHistoryPage(value => value + 1);
+      setHasMoreHistory(records.length === 60);
+    } catch (error) { setHistoryError(parseApiError(error)); }
+    finally { setLoadingHistory(false); }
+  }
+  function changeWeek(delta) {
+    setWeekOffset(value => value + delta);
+    const day = new Date(`${selectedDate}T12:00:00`);
+    day.setDate(day.getDate() + delta * 7);
+    setSelectedDate(toDateKey(day) > toDateKey() ? toDateKey() : toDateKey(day)); setEditingToday(false);
+  }
   const weekStart = startOfWeek();
+  weekStart.setDate(weekStart.getDate() + weekOffset * 7);
   const weekly = WEEK_DAYS.map((day, index) => {
     const date = new Date(weekStart);
     date.setDate(weekStart.getDate() + index);
     const key = toDateKey(date);
     const logForDay = sleepLogs[key];
-    return { day, hours: logForDay?.hours ?? 0, logged: !!logForDay };
+    return { day, key, date, hours: logForDay?.hours ?? 0, logged: !!logForDay };
   });
-  const todayLog = sleepLogs[toDateKey()];
-  const showSleepForm = !todayLog || editingToday;
+  const todayLog = sleepLogs[selectedDate];
+  const isToday = selectedDate === toDateKey();
+  const showSleepForm = !loadingLogs && isToday && (!todayLog || editingToday);
+  const isLegacy = !showSleepForm && todayLog && todayLog.qualityScale !== 'rating_1_10';
+  const qualityMax = isLegacy ? 21 : 10;
+  const shownQuality = showSleepForm ? qualityScore : todayLog?.qualityScore;
+  const selectedLabel = new Date(`${selectedDate}T12:00:00`).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   let streak = 0;
   const streakDate = new Date();
   if (!sleepLogs[toDateKey(streakDate)]) streakDate.setDate(streakDate.getDate()-1);
@@ -353,26 +382,43 @@ export default function SleepLogScreen({ navigation }) {
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
 
             {/* Header */}
-<View style={styles.header}><Text style={styles.heading}>Sleep Log</Text><Text style={styles.date}>This Week</Text></View>
-<View style={styles.streak}><View><Text style={styles.streakTitle}>{streak}-day streak</Text><Text style={styles.streakBody}>{loadingLogs?'Loading sleep logs…':streak?'Keep logging your sleep each night':'Save tonight’s sleep to start your streak'}</Text></View></View>
-<View style={styles.days}>{weekly.map((day,i)=><View key={day.day} style={{flex:1,alignItems:'center',gap:6}}><Text style={styles.dayLabel}>{day.day}</Text><View style={{width:34,height:34,borderRadius:17,backgroundColor:day.logged?'#5FA77A':i===(new Date().getDay()+6)%7?colors.brand:colors.border,alignItems:'center',justifyContent:'center'}}>{day.logged?<Feather name="check" size={16} color="#FFFFFF"/>:i===(new Date().getDay()+6)%7?<Text style={{color:'#FFFFFF',fontFamily:'Lexend_400Regular',fontSize:9}}>Today</Text>:null}</View></View>)}</View>
-<View style={{gap:10}}><View style={styles.logHeaderRow}><Text style={styles.cardTitle}>Tonight</Text>{!showSleepForm&&<TouchableOpacity style={styles.editLogBtn} onPress={editTodayLog}><Text style={styles.editLogText}>Edit</Text></TouchableOpacity>}</View>
+<View style={styles.header}><Text style={styles.heading}>Sleep Log</Text><Text style={styles.date}>{weekOffset===0?'This Week':'Sleep history'}</Text></View>
+<View style={styles.streak}><Feather name="zap" size={24} color={colors.warningStrong}/><View style={{flex:1}}><Text style={styles.streakTitle}>{streak}-day streak</Text><Text style={styles.streakBody}>{loadingLogs?'Loading sleep logs…':streak?'Keep logging your sleep each night':'Save tonight’s sleep to start your streak'}</Text></View></View>
+<View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
+ <TouchableOpacity accessibilityLabel="Previous week" onPress={()=>changeWeek(-1)} style={{padding:12}}><Feather name="chevron-left" size={22} color={colors.accent}/></TouchableOpacity>
+ <TouchableOpacity accessibilityLabel="Return to today" onPress={()=>{setWeekOffset(0);setSelectedDate(toDateKey());setEditingToday(false);}}><Text style={styles.dayLabel}>Week of {weekStart.toLocaleDateString('en-US',{month:'short',day:'numeric'})} · Go to today</Text></TouchableOpacity>
+ <TouchableOpacity accessibilityLabel="Next week" disabled={weekOffset===0} onPress={()=>changeWeek(1)} style={{padding:12,opacity:weekOffset===0?0.3:1}}><Feather name="chevron-right" size={22} color={colors.accent}/></TouchableOpacity>
+</View>
+<View style={styles.days}>{weekly.map(day=><TouchableOpacity key={day.key} disabled={day.key>toDateKey()} accessibilityRole="button" accessibilityState={{selected:day.key===selectedDate}} accessibilityLabel={`${day.key}${day.key===toDateKey()?', today':''}, ${day.logged?'saved log':'no loaded log'}`} onPress={()=>{setSelectedDate(day.key);setEditingToday(false);}} style={{flex:1,alignItems:'center',gap:5,opacity:day.key>toDateKey()?0.4:1}}>
+ <Text style={styles.dayLabel}>{day.day}</Text>
+ <View style={{width:36,height:36,borderRadius:18,borderWidth:day.key===selectedDate?2:0,borderColor:colors.text,backgroundColor:day.logged?'#5FA77A':day.key===toDateKey()?colors.brand:colors.border,alignItems:'center',justifyContent:'center'}}><Text style={{color:day.logged||day.key===toDateKey()?'#FFFFFF':colors.text,fontFamily:'Lexend_600SemiBold',fontSize:12}}>{day.date.getDate()}</Text></View>
+ <Text style={{fontSize:8,color:colors.secondary,height:12}}>{day.key===toDateKey()?'Today':day.logged?'Saved':''}</Text>
+</TouchableOpacity>)}</View>
+{hasMoreHistory&&<TouchableOpacity disabled={loadingHistory} onPress={loadOlderLogs} style={{padding:12}}><Text style={{color:colors.accent}}>{loadingHistory?'Loading…':'Load older logs'}</Text></TouchableOpacity>}
+{!!historyError&&<Text accessibilityRole="alert" style={{color:colors.errorText}}>{historyError}</Text>}
+{loadingLogs?<ActivityIndicator color={colors.accent}/>:!isToday&&!todayLog?<View style={styles.timeCard}><Text style={styles.timeLabel}>{selectedLabel}: {dataSource==='local'?'No cached log available.':hasMoreHistory?'No loaded log. Try Load older logs.':'No sleep log saved.'}</Text></View>:<>
+
+<View style={{gap:10}}><View style={styles.logHeaderRow}><Text style={styles.cardTitle}>{isToday?'Tonight':selectedLabel}</Text>{isToday&&!showSleepForm&&<TouchableOpacity style={styles.editLogBtn} onPress={editTodayLog}><Text style={styles.editLogText}>Edit</Text></TouchableOpacity>}</View>
 {[['bed','moon','Bedtime',showSleepForm?fmt(bedH,bedM,bedAP):todayLog?.bedTime],['wake','sun','Wake time',showSleepForm?fmt(wakeH,wakeM,wakeAP):todayLog?.wakeTime]].map(([key,icon,label,value])=><TouchableOpacity key={key} disabled={!showSleepForm} onPress={()=>openPicker(key)} style={styles.timeCard}><View style={{flexDirection:'row',alignItems:'center',gap:12}}><Text style={styles.timeLabel}>{label}</Text></View><Text style={styles.timeCardVal}>{value}</Text></TouchableOpacity>)}
 <View style={styles.durRow}><Text style={styles.durLabel}>Total sleep</Text><Text style={styles.durVal}>{showSleepForm?calcDuration():todayLog?Math.floor(todayLog.hours)+'h '+Math.round((todayLog.hours%1)*60)+'m':'—'}</Text></View>
 </View>
 <View style={{gap:8,marginTop:16}}>
   <Text style={styles.fieldLabel}>Sleep Quality</Text>
-  <View accessibilityLabel={`Sleep quality ${showSleepForm?qualityScore:todayLog?.qualityScore??'not recorded'} out of 21`}>
-    <View style={{height:8,backgroundColor:colors.border,marginVertical:12}}><View style={{height:8,backgroundColor:colors.accent,width:`${Math.max(0,Math.min(21,Number(showSleepForm?qualityScore:todayLog?.qualityScore)||0))/21*100}%`}}/></View>
-    <View style={{flexDirection:'row',justifyContent:'space-between',marginBottom:8}}><Text style={styles.qualityRange}>0</Text><Text style={styles.qualityRange}>21</Text></View>
+  {showSleepForm&&needsNewRating&&<View><Text style={styles.sourceHint}>This log used the original 0–21 scale. Choose a new 1–10 rating, or confirm 5. The original entry remains in your history.</Text><TouchableOpacity onPress={()=>setNeedsNewRating(false)} style={styles.editLogBtn}><Text style={styles.editLogText}>Use 5 for this new rating</Text></TouchableOpacity></View>}{isLegacy&&<Text style={styles.sourceHint}>Original 0–21 scale; not converted to a 1–10 rating.</Text>}
+  <View accessibilityLabel={`Sleep quality ${shownQuality??'not recorded'} out of ${qualityMax}`}>
+    <View style={{height:8,backgroundColor:colors.border,marginVertical:12}}><View style={{height:8,backgroundColor:colors.accent,width:`${Math.max(0,Math.min(qualityMax,Number(shownQuality)||0))/qualityMax*100}%`}}/></View>
+    <View style={{flexDirection:'row',justifyContent:'space-between',marginBottom:8}}><Text style={styles.qualityRange}>{isLegacy?'0':'1 · Very poor'}</Text><Text style={styles.qualityRange}>{isLegacy?'21':'10 · Excellent'}</Text></View>
   </View><View style={styles.qualityScale}>
-    <TouchableOpacity accessibilityLabel="Decrease sleep quality score" disabled={!showSleepForm} style={styles.stepperBtn} onPress={()=>setQualityScore(value=>Math.max(0,value-1))}><Feather name="minus" size={16} color={colors.accent}/></TouchableOpacity>
-    <View style={styles.qualityValueWrap}><Text style={styles.qualityValue}>{showSleepForm?qualityScore:todayLog?.qualityScore??'—'}</Text><Text style={styles.qualityRange}>0–21</Text></View>
-    <TouchableOpacity accessibilityLabel="Increase sleep quality score" disabled={!showSleepForm} style={styles.stepperBtn} onPress={()=>setQualityScore(value=>Math.min(21,value+1))}><Feather name="plus" size={16} color={colors.accent}/></TouchableOpacity>
+    <TouchableOpacity accessibilityLabel="Decrease sleep quality score" disabled={!showSleepForm} style={styles.stepperBtn} onPress={()=>{setQualityScore(value=>Math.max(1,value-1));setNeedsNewRating(false);}}><Feather name="minus" size={16} color={colors.accent}/></TouchableOpacity>
+    <View style={styles.qualityValueWrap}><Text style={styles.qualityValue}>{showSleepForm?qualityScore:todayLog?.qualityScore??'—'}</Text></View>
+    <TouchableOpacity accessibilityLabel="Increase sleep quality score" disabled={!showSleepForm} style={styles.stepperBtn} onPress={()=>{setQualityScore(value=>Math.min(10,value+1));setNeedsNewRating(false);}}><Feather name="plus" size={16} color={colors.accent}/></TouchableOpacity>
   </View>
 </View>
 <View style={styles.awakeningCard}><Text style={styles.fieldLabel}>Awakenings</Text><View style={{flexDirection:'row',gap:12,alignItems:'center'}}><TouchableOpacity accessibilityLabel="Fewer awakenings" disabled={!showSleepForm} style={styles.stepperBtn} onPress={()=>setAwakenings(v=>Math.max(0,v-1))}><Text style={styles.stepperVal}>−</Text></TouchableOpacity><Text style={styles.stepperVal}>{showSleepForm?awakenings:todayLog?.awakenings??0}</Text><TouchableOpacity accessibilityLabel="More awakenings" disabled={!showSleepForm} style={styles.stepperBtn} onPress={()=>setAwakenings(v=>Math.min(20,v+1))}><Text style={styles.stepperVal}>+</Text></TouchableOpacity></View></View>
-{showSleepForm&&<TouchableOpacity disabled={saving} onPress={handleSave} style={styles.saveBtn}>{saving?<ActivityIndicator color={colors.onBrand}/>:<Text style={styles.saveBtnText}>{todayLog?'Update Sleep Log':'Save Sleep Log'}</Text>}</TouchableOpacity>}
+{!!saveError&&<Text accessibilityRole="alert" style={{color:colors.errorText,marginTop:12}}>{saveError}</Text>}
+{saved&&<Text accessibilityRole="alert" style={{color:colors.successText,marginTop:12}}>Sleep log saved.</Text>}
+{showSleepForm&&<TouchableOpacity disabled={saving||needsNewRating} onPress={handleSave} style={styles.saveBtn}>{saving?<ActivityIndicator color={colors.onBrand}/>:<Text style={styles.saveBtnText}>{todayLog?'Update Sleep Log':'Save Sleep Log'}</Text>}</TouchableOpacity>}
+</>}
 <Text style={styles.sourceHint}>{dataSource==='local'?'Showing sleep logs saved on this device.':'Showing sleep logs saved to your account.'}</Text>
             <View style={{height:20}}/>
           </ScrollView>

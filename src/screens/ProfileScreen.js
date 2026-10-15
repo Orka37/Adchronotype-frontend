@@ -203,12 +203,11 @@ export default function ProfileScreen({ navigation }) {
 
           {/* Chronotype / Factor Details section */}
           <Text style={styles.sectionLabel}>YOUR CHRONOTYPE</Text>
-          <View style={styles.card}>
+          <View style={{gap:12,marginBottom:20,marginHorizontal:20}}>
             <TouchableOpacity style={styles.meqBtn} onPress={() => setShowMEQ(true)} activeOpacity={0.85}>
               <Feather name="external-link" size={14} color={colors.accent} />
               <Text style={styles.meqBtnText}>Know sleep type through chronotype quiz</Text>
             </TouchableOpacity>
-            <View style={styles.divider} />
             <TouchableOpacity style={styles.updateBtn} onPress={handleUpdateFactors} activeOpacity={0.85}>
 
               <Text style={styles.updateBtnText}>Update factors</Text>
@@ -391,9 +390,9 @@ const createStyles = (colors) => StyleSheet.create({
   chronoIconWrap:{width:38,height:38,borderRadius:19,backgroundColor:colors.tint,alignItems:'center',justifyContent:'center'},
   chronoTitle:   { color: colors.text, fontSize: 14, fontFamily: 'Lexend_700Bold', fontWeight: 'normal', marginBottom: 4 },
   chronoSub:     {color:colors.secondary,fontSize:12,fontFamily:'Lexend_400Regular',lineHeight:17.4},
-  meqBtn:        {flexDirection:'row',alignItems:'center',gap:7,marginHorizontal:14,marginBottom:12,backgroundColor:colors.tint,borderRadius:6,minHeight:44,paddingHorizontal:12},
+  meqBtn:        {flexDirection:'row',alignItems:'center',gap:7,paddingVertical:14,backgroundColor:colors.tint,borderRadius:6,minHeight:44,paddingHorizontal:12},
   meqBtnText:    {color:colors.accent,fontSize:13,fontFamily:'Lexend_600SemiBold',flex:1},
-  updateBtn:     {flexDirection:'row',alignItems:'center',margin:14,marginTop:12,backgroundColor:colors.brand,borderRadius:6,minHeight:48,paddingVertical:10,paddingHorizontal:14,justifyContent:'center'},
+  updateBtn:     {flexDirection:'row',alignItems:'center',margin:0,backgroundColor:colors.brand,borderRadius:6,minHeight:48,paddingVertical:10,paddingHorizontal:14,justifyContent:'center'},
   updateBtnText: {color:colors.onBrand,fontSize:13.5,fontFamily:'Lexend_700Bold',textAlign:'center',flex:1},
   updateHint:    {color:colors.muted,fontSize:11,fontFamily:'Lexend_400Regular',lineHeight:16.5,marginHorizontal:14,marginBottom:12,textAlign:'center'},
 

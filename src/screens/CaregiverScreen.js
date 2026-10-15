@@ -322,7 +322,7 @@ function LogView({ busy, events, onLog, onCustom }) {
 
   return <>
     <Text style={styles.prompt}>What happened?</Text>
-    <View style={styles.eventGrid}>{EVENT_TYPES.map(item => <TouchableOpacity accessibilityLabel={item.key === 'napped' ? 'Napped, enter time and duration' : `${item.label}, logs now`} disabled={busy} key={item.key} style={[styles.eventButton, busy && styles.disabled]} onPress={() => onLog(item.key)}><Text style={styles.eventTitle}>{item.label}</Text><Text style={styles.eventHint}>{item.key === 'napped' ? 'time & duration' : 'logs now'}</Text></TouchableOpacity>)}</View>
+    <View style={styles.eventGrid}>{EVENT_TYPES.map(item => <TouchableOpacity accessibilityLabel={item.key === 'napped' ? 'Napped, enter time and duration' : `${item.label}, logs now`} disabled={busy} key={item.key} style={[styles.eventButton, busy && styles.disabled]} onPress={() => onLog(item.key)}><Feather name={item.icon} size={28} color={colors.accent} style={{marginBottom:12}}/><Text style={styles.eventTitle}>{item.label}</Text><Text style={styles.eventHint}>{item.key === 'napped' ? 'time & duration' : 'logs now'}</Text></TouchableOpacity>)}</View>
     <TouchableOpacity style={styles.customButton} disabled={busy} onPress={onCustom}><Text style={styles.customButtonText}>Something else — set a different time</Text><Feather name="chevron-right" size={18} color={colors.secondary} /></TouchableOpacity>
     <Section title="Tonight so far">
       {events.length === 0 ? <View style={styles.emptyState}><Text style={styles.empty}>No entries yet tonight — tap above when something happens.</Text></View> : events.map((event, index) => <View key={event.id} style={[styles.timelineRow, index === events.length - 1 && styles.timelineLast]}><Text style={styles.timelineTime}>{timeLabel(event.event_time)}</Text><View style={styles.grow}><Text style={styles.timelineTitle}>{eventLabel(event.event_type)}{event.duration_min != null ? ` — ${event.duration_min} min` : ''}</Text>{event.note ? <Text style={styles.muted}>{event.note}</Text> : null}</View><Text style={styles.loggedBy}>{event.logged_by?.firstName || ''}</Text></View>)}
@@ -339,9 +339,9 @@ function DailySummary({ patientName, summaries, routine }) {
   const totalEvents = days.reduce((sum, day) => sum + day.event_count, 0);
   const duration = minutes => `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
 
-  if (!summaries || totalEvents === 0) return <Section title="Daily summary"><View style={styles.summaryEmpty}><View style={styles.grow}><Text style={styles.routineEmptyTitle}>No daily history yet</Text><Text style={styles.muted}>Log sleep, wake, nap, or agitation events to build a shared seven-day view.</Text></View></View></Section>;
+  if (!summaries || totalEvents === 0) return <Section title="Daily summary" icon="clock"><View style={styles.summaryEmpty}><View style={styles.grow}><Text style={styles.routineEmptyTitle}>No daily history yet</Text><Text style={styles.muted}>Log sleep, wake, nap, or agitation events to build a shared seven-day view.</Text></View></View></Section>;
 
-  return <Section title="Daily summary">
+  return <Section title="Daily summary" icon="clock">
     <View style={styles.summaryHero}>
       <View style={styles.grow}><Text style={styles.summaryEyebrow}>LATEST COMPLETE NIGHT</Text><Text style={styles.summaryValue}>{latestSleep ? duration(latestSleep.sleep_minutes) : 'Still learning'}</Text></View>
     </View>
@@ -588,10 +588,10 @@ function HandoffNoteModal({ visible, busy, tags, note, editing, onTags, onNote, 
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}><View style={styles.modalOverlay}><View style={styles.modalCard}><View style={styles.modalHeader}><View><Text style={styles.modalTitle}>{editing ? 'Edit handoff note' : 'End-of-shift note'}</Text><Text style={styles.modalSubtitle}>A quick update for the whole care team</Text></View><TouchableOpacity accessibilityLabel="Close" style={styles.iconButton} onPress={onCancel}><Feather name="x" size={22} color={colors.secondary} /></TouchableOpacity></View><Text style={styles.fieldLabel}>Quick tags</Text><View style={styles.typeWrap}>{HANDOFF_TAGS.map(tag => <TouchableOpacity key={tag} style={[styles.typeChip, tags.includes(tag) && styles.typeChipActive]} onPress={() => toggle(tag)}><Text style={[styles.typeChipText, tags.includes(tag) && styles.typeChipTextActive]}>{tag}</Text></TouchableOpacity>)}</View><Text style={styles.fieldLabel}>Optional note</Text><TextInput value={note} onChangeText={onNote} maxLength={500} multiline placeholder="Anything the next caregiver should know?" placeholderTextColor={colors.secondary} style={[styles.input, styles.handoffInput]} /><Text style={styles.characterCount}>{note.length}/500</Text><View style={styles.modalActions}><SmallButton label="Cancel" secondary disabled={busy} onPress={onCancel} /><SmallButton label={editing ? 'Save note' : 'Share note'} disabled={busy || (!tags.length && !note.trim())} onPress={onSave} /></View></View></View></Modal>;
 }
 
-function Section({ title, children, action }) {
+function Section({ title, children, action, icon }) {
 
   const styles = useThemedStyles(createStyles);
- return <View style={styles.section}><View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8,marginBottom:12}}><Text style={[styles.sectionTitle,{marginBottom:0}]}>{title}</Text>{action}</View>{children}</View>; }
+ return <View style={styles.section}><View style={{flexDirection:'row',alignItems:'center',gap:8,marginBottom:12}}>{icon && <Feather name={icon} size={18} color={styles.sectionTitle.color}/>}<Text style={[styles.sectionTitle,{marginBottom:0,flex:1}]}>{title}</Text>{action}</View>{children}</View>; }
 function SmallButton({ label, onPress, secondary, danger, disabled }) {
 
   const styles = useThemedStyles(createStyles);

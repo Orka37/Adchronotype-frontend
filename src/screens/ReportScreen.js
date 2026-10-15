@@ -125,11 +125,21 @@ export default function ReportScreen({ navigation }) {
  <View style={styles.riskBadge}><Text style={[styles.riskText,{color:scoreStyle.textColor || colors.text}]}>{similarityLabel}</Text></View>
 </View>
 <View style={styles.disclaimer}><Text style={styles.disclaimerTitle}>IMPORTANT — NOT A CLINICAL DIAGNOSIS</Text><Text style={styles.disclaimerBody}>{RESEARCH_DISCLAIMER_SHORT}</Text><TouchableOpacity onPress={()=>setShowResearchDetails(true)}><Text style={styles.researchToggleText}>View full disclaimer and research sources</Text></TouchableOpacity></View>
-{bmiStatus&&<View style={[styles.bmiCard,{borderLeftWidth:5,borderLeftColor:bmiStatus.color,backgroundColor:colors.surface}]}><Text style={styles.bmiText}>{bmiStatus.label} — BMI {Number(bmi).toFixed(1)}</Text><View style={{flexDirection:'row',height:6,alignSelf:'stretch',marginTop:8,gap:3}}>{['#3498db','#7EC49A','#E9A94A','#D9694F'].map(color=><View key={color} style={{flex:1,backgroundColor:color,opacity:color===bmiStatus.color?1:0.25}}/>)}</View></View>}
+{bmiStatus&&<View style={[styles.bmiCard,{backgroundColor:colors.surface}]}>
+ <Text style={styles.bmiText}>{bmiStatus.label} — BMI {Number(bmi).toFixed(1)}</Text>
+ <View style={{flexDirection:'row',alignSelf:'stretch',marginTop:12,gap:4}}>
+ {[['Underweight','<18.5','#3498db'],['Healthy Weight','18.5–24.9','#7EC49A'],['Overweight','25–29.9','#E9A94A'],['Obese','30+','#D9694F']].map(([label,range,color])=><View key={label} style={{flex:1,alignItems:'center'}}>
+   <Text accessibilityLabel={label===bmiStatus.label?'Your BMI category':undefined} style={{height:18,color:colors.text,fontSize:14}}>{label===bmiStatus.label?'▼':''}</Text>
+   <View style={{height:7,backgroundColor:color,alignSelf:'stretch'}}/>
+   <Text style={{color:colors.text,fontFamily:'Lexend_600SemiBold',fontSize:9,textAlign:'center',marginTop:6}}>{label}</Text>
+   <Text style={{color:colors.secondary,fontFamily:'Lexend_400Regular',fontSize:9,marginTop:3}}>{range}</Text>
+ </View>)}
+ </View>
+</View>}
 <View style={{marginBottom:14}}><Text style={styles.colTitle}>Factor Contribution</Text><Text style={styles.baselineText}>{baseline!=null ? 'Baseline score: '+Number(baseline).toFixed(1)+'%' : 'Baseline score: unavailable'}</Text></View>
 <View style={styles.factorGrid}>{factors?FACTOR_KEYS.map(({key,label})=>{const val=factors[key];if(val==null)return null;const impact=impactLabel(val);return <View key={key} style={styles.factorCell}>
- <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8}}><Text style={styles.factorLabel}>{label}</Text><View style={{flexDirection:'row',alignItems:'center',gap:8}}><Text style={[styles.factorVal,{color:val<0?colors.successText:colors.errorText}]}>{val>0?'+':''}{Number(val).toFixed(1)}%</Text><View style={[styles.impactBadge,{backgroundColor:impact.color+'22'}]}><Text style={[styles.impactText,{color:Math.abs(val)>=10?colors.errorText:Math.abs(val)>=5?colors.warningStrong:colors.successText}]}>{impact.text}</Text></View></View></View>
- <FactorScale value={Number(val)} limit={Math.max(10,Math.ceil(Math.max(...Object.values(factors).map(v=>Math.abs(Number(v)||0)))/5)*5)} label={label}/>
+ <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8}}><Text style={styles.factorLabel}>{label}</Text><View style={{flexDirection:'row',alignItems:'center',gap:8}}><Text style={[styles.factorVal,{color:Math.abs(val)>=10?colors.errorText:Math.abs(val)>=5?colors.warningStrong:colors.successText}]}>{val>0?'+':''}{Number(val).toFixed(1)}%</Text><View style={[styles.impactBadge,{backgroundColor:impact.color+'22'}]}><Text style={[styles.impactText,{color:Math.abs(val)>=10?colors.errorText:Math.abs(val)>=5?colors.warningStrong:colors.successText}]}>{impact.text}</Text></View></View></View>
+ <FactorScale color={impact.color} value={Number(val)} limit={Math.max(10,Math.ceil(Math.max(...Object.values(factors).map(v=>Math.abs(Number(v)||0)))/5)*5)} label={label}/>
  </View>}):<Text style={styles.factorPlaceholderText}>Factor contribution information is unavailable for this result.</Text>}</View>
 <View style={{flexDirection:'row',gap:10,marginTop:18}}><TouchableOpacity style={styles.tipsBtn} onPress={()=>navigation.navigate('Tips')}><Text style={styles.tipsBtnText}>View Tips</Text></TouchableOpacity><TouchableOpacity style={styles.reportBtn} onPress={()=>navigation.navigate('DoctorReport')}><Text style={styles.reportBtnText}>Doctor Report</Text></TouchableOpacity></View>
             <View style={{height:20}}/>

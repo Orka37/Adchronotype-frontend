@@ -17,3 +17,10 @@ test('calm timeline supports midnight, overnight and invalid ranges',()=>{
  assert.deepEqual(windowSegments([{start:'25:00',end:'26:00'},{start:'12:00',end:'12:00'}]),[]);
  assert.deepEqual(windowSegments([]),[]);
 });
+import {sleepQualityAverages} from '../src/utils/sleepQuality.js';
+test('sleep report keeps original scores and new ratings separate',()=>{
+ const result=sleepQualityAverages([{quality_score:0},{quality_score:21,quality_scale:'legacy_0_21'},{quality_score:1,quality_scale:'rating_1_10'},{quality_score:10,quality_scale:'rating_1_10'}]);
+ assert.deepEqual(result,{rating_1_10:5.5,legacy_0_21:10.5});
+ assert.deepEqual(sleepQualityAverages([]),{rating_1_10:null,legacy_0_21:null});
+ assert.deepEqual(sleepQualityAverages([{quality_score:null},{quality_score:0,quality_scale:'rating_1_10'},{quality_score:11,quality_scale:'rating_1_10'}]),{rating_1_10:null,legacy_0_21:null});
+});

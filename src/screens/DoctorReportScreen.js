@@ -1,3 +1,4 @@
+import { sleepQualityAverages } from '../utils/sleepQuality';
 import Svg, { Circle } from 'react-native-svg';
 import { useTheme, useThemedStyles } from '../theme/designTheme';
 import React, { useCallback, useState } from 'react';
@@ -86,7 +87,9 @@ function compactInputRows(prediction,fallback) {
 
 function reportText({ profile, latestPrediction, sleepLogs, cognitiveTests, fallbackInputs }) {
   const sleepAvg = average(sleepLogs.map(item => item.duration_hours));
-  const sleepQuality = average(sleepLogs.map(item => item.quality_score));
+  const qualityAverages = sleepQualityAverages(sleepLogs);
+  const sleepQuality = qualityAverages.rating_1_10;
+  const legacyQuality = qualityAverages.legacy_0_21;
   const inputLines = modelInputRows(latestPrediction, fallbackInputs).map(([label, value]) => `${label}: ${value}`);
   const factorLines = [
     ['Chronotype', latestPrediction?.factor_contributions?.chronotype],
@@ -118,7 +121,8 @@ function reportText({ profile, latestPrediction, sleepLogs, cognitiveTests, fall
     'Sleep Summary',
     `Logged nights: ${sleepLogs.length}`,
     `Average duration: ${sleepAvg == null ? '—' : `${sleepAvg.toFixed(1)} hours`}`,
-    `Average sleep quality: ${sleepQuality == null ? '—' : `${sleepQuality.toFixed(1)} / 21`}`,
+    `Average sleep quality (1 very poor, 10 excellent): ${sleepQuality == null ? '—' : `${sleepQuality.toFixed(1)} / 10`}`,
+    `Original sleep quality (0–21 scale, not converted): ${legacyQuality == null ? '—' : `${legacyQuality.toFixed(1)} / 21`}`,
     '',
     'Cognitive Test Summary',
     ...(cognitiveTests.length
@@ -224,7 +228,9 @@ export default function DoctorReportScreen({ navigation }) {
   const latestPrediction = predictionResult || predictions[0] || null;
   const factors = latestPrediction?.factor_contributions || {};
   const sleepAvg = average(sleepLogs.map(item => item.duration_hours));
-  const sleepQuality = average(sleepLogs.map(item => item.quality_score));
+  const qualityAverages = sleepQualityAverages(sleepLogs);
+  const sleepQuality = qualityAverages.rating_1_10;
+  const legacyQuality = qualityAverages.legacy_0_21;
   const generatedText = reportText({ profile, latestPrediction, sleepLogs, cognitiveTests, fallbackInputs });
 
   async function handleExport() {
@@ -311,7 +317,8 @@ export default function DoctorReportScreen({ navigation }) {
 
             </>}
             <Text style={styles.sectionTitle}>SLEEP SUMMARY — LAST 30 DAYS</Text>
-            <View style={styles.metricRow}><Metric label="AVG SLEEP" value={sleepAvg==null?'—':durationLabel(sleepAvg)}/><Metric label="QUALITY" value={sleepQuality==null?'—':sleepQuality.toFixed(1)+'/21'}/><Metric label="NIGHTS LOGGED" value={sleepLogs.length}/></View>
+            <View style={styles.metricRow}><Metric label="AVG SLEEP" value={sleepAvg==null?'—':durationLabel(sleepAvg)}/><Metric label="QUALITY" value={sleepQuality==null?'—':sleepQuality.toFixed(1)+'/10'}/><Metric label="NIGHTS LOGGED" value={sleepLogs.length}/></View>
+            {legacyQuality!=null&&<Text style={{color:colors.secondary,marginTop:10}}>Original sleep quality: {legacyQuality.toFixed(1)}/21. Historical scores are kept separate from 1–10 ratings.</Text>}
             <Text style={styles.sectionTitle}>RECENT COGNITIVE RESULTS</Text>
             <View style={styles.section}>{cognitiveTests.length?cognitiveTests.slice(0,6).map(item=><View key={item.id||item.test_type+'-'+item.tested_at} style={styles.resultRow}><Text style={[styles.resultTitle,{flex:1}]}>{item.test_type?.replace(/_/g,' ')||'Cognitive test'}</Text><Text style={styles.resultScore}>{item.score} {item.unit||''}</Text></View>):<Text style={[styles.emptyText,{paddingVertical:14}]}>No saved cognitive test results yet.</Text>}</View>
             <TouchableOpacity style={styles.exportBtn} onPress={handleExport} activeOpacity={0.85}>
