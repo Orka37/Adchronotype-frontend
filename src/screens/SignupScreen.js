@@ -7,7 +7,8 @@ import {
   Keyboard, Dimensions, Pressable,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { signupUser } from '../api/auth';
+import { signupUser, loginWithGoogle } from '../api/auth';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 import { parseApiError } from '../utils/errors';
 import { validateEmail, validateUsername, validatePassword, validateRequired } from '../utils/validators';
 import { log } from '../utils/logger';
@@ -110,6 +111,23 @@ export default function SignupScreen({ navigation }) {
     }
   }
 
+  async function handleGoogleSignup(token) {
+    setSubmitting(true);
+    setSubmitError('');
+    setErrs({});
+    Keyboard.dismiss();
+    try {
+      const result = await loginWithGoogle(token);
+      await signIn(result.user, result.tokens);
+    } catch (err) {
+      setSubmitError(err?.response?.status === 409
+        ? 'An account already exists for this Google email. Choose Log in below to link Google using your existing app password.'
+        : parseApiError(err));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   const hasErr = k => !!errs[k];
 
   return (
@@ -182,6 +200,14 @@ export default function SignupScreen({ navigation }) {
                 : <Text style={styles.btnText}>Create Account</Text>
               }
             </TouchableOpacity>
+
+            <GoogleLoginButton
+              disabled={submitting}
+              onToken={handleGoogleSignup}
+              onError={err => setSubmitError(err?.response
+                ? parseApiError(err)
+                : 'Google sign-in could not finish. Please try again or create an account with email and password.')}
+            />
 
             <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.linkRow}>
               <Text style={styles.linkText}>
